@@ -15,38 +15,41 @@
 <li>首次展开面板时，显示最近 10 年的年份（对于本项目，10 年足够了），亦或是在年份的最下面添加一个 <em>加载更多</em> 的按钮（等有时间，下次尝试一下）；</li>
 <li>每个年份都有 12 个月，这是固定不变的，重点在于一些特殊月（二月：你们看我干嘛），获取某一个月的天数；</li>
 </ul>
-<h4 id="template"><a href="#template" class="headerlink" title="template"></a><center>template</center></h4><pre class="language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
-  &lt;div class&#x3D;&quot;date-picker-wrap&quot;&gt;
-    &lt;el-cascader
-      :class&#x3D;&quot;[&#39;start-date&#39;, showPanel ? &#39;is-focus&#39; : &#39;&#39;]&quot;
-      :size&#x3D;&quot;size&quot;
-      placeholder&#x3D;&quot;开始日期&quot;
-      :options&#x3D;&quot;options&quot;
-      separator&#x3D;&quot;-&quot;
-      popper-class&#x3D;&quot;select-date&quot;
+<h4 id="template"><a href="#template" class="headerlink" title="template"></a><center>template</center></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>template<span class="token operator">></span>
+  <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"date-picker-wrap"</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span>el<span class="token operator">-</span>cascader
+      <span class="token operator">:</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"['start-date', showPanel ? 'is-focus' : '']"</span>
+      <span class="token operator">:</span>size<span class="token operator">=</span><span class="token string">"size"</span>
+      placeholder<span class="token operator">=</span><span class="token string">"开始日期"</span>
+      <span class="token operator">:</span>options<span class="token operator">=</span><span class="token string">"options"</span>
+      separator<span class="token operator">=</span><span class="token string">"-"</span>
+      popper<span class="token operator">-</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"select-date"</span>
       clearable
-      @visible-change&#x3D;&quot;isShow &#x3D;&gt; (showPanel &#x3D; isShow)&quot;
-      :props&#x3D;&quot;cascaderProp&quot;
-      @change&#x3D;&quot;handlerSelectDate&quot;
-      v-model&#x3D;&quot;startTime&quot;
-    &gt;&lt;&#x2F;el-cascader&gt;
-    &lt;el-cascader
-      :class&#x3D;&quot;[&#39;end-date&#39;, showPanel ? &#39;is-focus&#39; : &#39;&#39;]&quot;
-      :size&#x3D;&quot;size&quot;
-      placeholder&#x3D;&quot;结束日期&quot;
-      :options&#x3D;&quot;options&quot;
-      separator&#x3D;&quot;-&quot;
-      popper-class&#x3D;&quot;select-date&quot;
+      @visible<span class="token operator">-</span>change<span class="token operator">=</span><span class="token string">"isShow => (showPanel = isShow)"</span>
+      <span class="token operator">:</span>props<span class="token operator">=</span><span class="token string">"cascaderProp"</span>
+      @change<span class="token operator">=</span><span class="token string">"handlerSelectDate"</span>
+      v<span class="token operator">-</span>model<span class="token operator">=</span><span class="token string">"startTime"</span>
+    <span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>el<span class="token operator">-</span>cascader<span class="token operator">></span>
+    <span class="token operator">&lt;</span>el<span class="token operator">-</span>cascader
+      <span class="token operator">:</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"['end-date', showPanel ? 'is-focus' : '']"</span>
+      <span class="token operator">:</span>size<span class="token operator">=</span><span class="token string">"size"</span>
+      placeholder<span class="token operator">=</span><span class="token string">"结束日期"</span>
+      <span class="token operator">:</span>options<span class="token operator">=</span><span class="token string">"options"</span>
+      separator<span class="token operator">=</span><span class="token string">"-"</span>
+      popper<span class="token operator">-</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"select-date"</span>
       clearable
-      @visible-change&#x3D;&quot;isShow &#x3D;&gt; (showPanel &#x3D; isShow)&quot;
-      :props&#x3D;&quot;cascaderProp&quot;
-      @change&#x3D;&quot;handlerSelectDate&quot;
-      v-model&#x3D;&quot;endTime&quot;
-    &gt;&lt;&#x2F;el-cascader&gt;
-  &lt;&#x2F;div&gt;
-&lt;&#x2F;template&gt;</code></pre>
+      @visible<span class="token operator">-</span>change<span class="token operator">=</span><span class="token string">"isShow => (showPanel = isShow)"</span>
+      <span class="token operator">:</span>props<span class="token operator">=</span><span class="token string">"cascaderProp"</span>
+      @change<span class="token operator">=</span><span class="token string">"handlerSelectDate"</span>
+      v<span class="token operator">-</span>model<span class="token operator">=</span><span class="token string">"endTime"</span>
+    <span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>el<span class="token operator">-</span>cascader<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span></code></pre>
 
-<h4 id="script"><a href="#script" class="headerlink" title="script"></a><center>script</center></h4><pre class="language-js" data-language="js"><code class="language-js"><span class="token operator">&lt;</span>script<span class="token operator">></span>
+<blockquote>
+<p>这里我通过 <code>@visible-change</code> 事件监听弹出层的打开和关闭状态，两个级联框“背靠背”实在是太难看了，于是就通过一个类来修改了 <code>focus</code> 和 <code>hover</code> 事件，让它俩合二为一，美观加倍！</p>
+</blockquote>
+<h4 id="script"><a href="#script" class="headerlink" title="script"></a><center>script</center></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script<span class="token operator">></span>
 <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
   name<span class="token operator">:</span> <span class="token string">'date-picker'</span><span class="token punctuation">,</span>
   props<span class="token operator">:</span> <span class="token punctuation">&#123;</span>
@@ -147,9 +150,6 @@
 <span class="token punctuation">&#125;</span>
 <span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre>
 
-<blockquote>
-<p>这里我通过 <code>@visible-change</code> 事件监听弹出层的打开和关闭状态，两个级联框“背靠背”实在是太难看了，于是就通过一个类来修改了 <code>focus</code> 和 <code>hover</code> 事件，让它俩合二为一，美观加倍！</p>
-</blockquote>
 <h4 id="style-·-scss"><a href="#style-·-scss" class="headerlink" title="style · scss"></a><center>style · scss</center></h4><pre class="language-scss" data-language="scss"><code class="language-scss"><span class="token selector">.date-picker-wrap </span><span class="token punctuation">&#123;</span>
   <span class="token property">width</span><span class="token punctuation">:</span> 240px<span class="token punctuation">;</span>
   <span class="token property">height</span><span class="token punctuation">:</span> 40px<span class="token punctuation">;</span>
@@ -209,11 +209,11 @@
   <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span></code></pre>
 
-<h4 id="在父组件中引入"><a href="#在父组件中引入" class="headerlink" title="在父组件中引入"></a><center>在父组件中引入</center></h4><pre class="language-vue" data-language="vue"><code class="language-vue">&lt;template&gt;
-  &lt;div&gt;
-    &lt;ElCascaderDatePicker @update:time&#x3D;&quot;times &#x3D;&gt; (timeRange &#x3D; times)&quot; &#x2F;&gt;
-  &lt;&#x2F;div&gt;
-&lt;&#x2F;template&gt;</code></pre>
+<h4 id="在父组件中引入"><a href="#在父组件中引入" class="headerlink" title="在父组件中引入"></a><center>在父组件中引入</center></h4><pre class="language-js" data-language="js"><code class="language-js"><span class="token operator">&lt;</span>template<span class="token operator">></span>
+  <span class="token operator">&lt;</span>div<span class="token operator">></span>
+    <span class="token operator">&lt;</span>ElCascaderDatePicker @update<span class="token operator">:</span>time<span class="token operator">=</span><span class="token string">"times => (timeRange = times)"</span> <span class="token operator">/</span><span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span></code></pre>
 
 <pre class="language-js" data-language="js"><code class="language-js"><span class="token operator">&lt;</span>script<span class="token operator">></span>
 <span class="token keyword">import</span> ElCascaderDatePicker <span class="token keyword">from</span> <span class="token string">'el-cascader-date-picker.vue'</span>
