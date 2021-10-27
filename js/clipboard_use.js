@@ -7,7 +7,9 @@
     copyHtml += '</button>';
     $("code.hljs").before(copyHtml);
     $('.btn-copy').click(function (e) {
+      if ($('.copyMessage').length) return e.returnValue = false
       let div = document.createElement('div')
+      div.className = 'copyMessage'
       div.innerHTML = '复制成功'
       div.style = `
         position: fixed;
