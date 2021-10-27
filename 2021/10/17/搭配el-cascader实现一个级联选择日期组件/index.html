@@ -15,7 +15,7 @@
 <li>首次展开面板时，显示最近 10 年的年份（对于本项目，10 年足够了），亦或是在年份的最下面添加一个 <em>加载更多</em> 的按钮（等有时间，下次尝试一下）；</li>
 <li>每个年份都有 12 个月，这是固定不变的，重点在于一些特殊月（二月：你们看我干嘛），获取某一个月的天数；</li>
 </ul>
-<h4 id="template"><a href="#template" class="headerlink" title="template"></a><center>template</center></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>template<span class="token operator">></span>
+<h4 id="template"><a href="#template" class="headerlink" title="template"></a><center>template</center></h4><pre class="language-js" data-language="js"><code class="language-js"><span class="token operator">&lt;</span>template<span class="token operator">></span>
   <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"date-picker-wrap"</span><span class="token operator">></span>
     <span class="token operator">&lt;</span>el<span class="token operator">-</span>cascader
       <span class="token operator">:</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"['start-date', showPanel ? 'is-focus' : '']"</span>
@@ -49,7 +49,7 @@
 <blockquote>
 <p>这里我通过 <code>@visible-change</code> 事件监听弹出层的打开和关闭状态，两个级联框“背靠背”实在是太难看了，于是就通过一个类来修改了 <code>focus</code> 和 <code>hover</code> 事件，让它俩合二为一，美观加倍！</p>
 </blockquote>
-<h4 id="script"><a href="#script" class="headerlink" title="script"></a><center>script</center></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script<span class="token operator">></span>
+<h4 id="script"><a href="#script" class="headerlink" title="script"></a><center>script</center></h4><pre class="language-js" data-language="js"><code class="language-js"><span class="token operator">&lt;</span>script<span class="token operator">></span>
 <span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
   name<span class="token operator">:</span> <span class="token string">'date-picker'</span><span class="token punctuation">,</span>
   props<span class="token operator">:</span> <span class="token punctuation">&#123;</span>

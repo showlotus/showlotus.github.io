@@ -1,6 +1,5 @@
 (function (e, t, a) {
   /*页面载入完成后，创建复制按钮*/
-  /* code */
   var initCopyCode = function () {
     var copyHtml = '';
     copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
@@ -12,26 +11,34 @@
       div.innerHTML = '复制成功'
       div.style = `
         position: fixed;
+        padding: 5px;
+        border-radius: 4px;
+        background: #333;
+        color: #ccc;
+        transition: all 0.5s;
+        transform: scale(0);
       `
-      let x = e.clientX + 20
-      let y = e.clientY - 20
+      let x = e.clientX + 30
+      let y = e.clientY - 30
       div.style.left = x + 'px'
       div.style.top = y + 'px'
+      div.style.transform = 'scale(1)'
       document.body.appendChild(div)
-      let timer = setInterval(function () {
-        if (e.clientY - y >= 40) {
-          clearInterval(timer)
+      setTimeout(function () {
+        div.style.transform = 'scale(0)'
+        setTimeout(function () {
           document.body.removeChild(div)
-        }
-        div.style.top = y + 'px'
-        y -= 2
-      }, 17)
+        }, 500)
+      }, 500)
     })
-    new ClipboardJS('.btn-copy', {
+    const clipboard = new ClipboardJS('.btn-copy', {
       target: function (trigger) {
         return trigger.nextElementSibling;
       }
     });
+    clipboard.on('success', function (successEvent) {
+      return successEvent.clearSelection();
+    })
   }
   initCopyCode();
 })(window, document);
