@@ -13,21 +13,19 @@
       div.innerHTML = '复制成功'
       div.style = `
         position: fixed;
+        left: 50%;
+        top: 40%;
         padding: 5px;
         border-radius: 4px;
         background: #333;
         color: #ccc;
-        transition: all 0.5s;
-        transform: scale(0);
+        transition: opacity 0.5s ease;
+        transform: translate(-50%);
+        opacity: 1;
       `
-      let x = e.clientX + 30
-      let y = e.clientY - 30
-      div.style.left = x + 'px'
-      div.style.top = y + 'px'
-      div.style.transform = 'scale(1)'
       document.body.appendChild(div)
       setTimeout(function () {
-        div.style.transform = 'scale(0)'
+        div.style.opacity = 0
         setTimeout(function () {
           document.body.removeChild(div)
         }, 500)
