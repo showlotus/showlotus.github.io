@@ -30,7 +30,7 @@
       max-height: 360px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
       will-change: transform;
-      transition: transform 500ms; }
+      transition: all 500ms !important; }
     .post-container .post-item-card > header:hover .post-cover-img {
       transform: scale(1.04); }
   .post-container .post-item-card .post-card-content {
@@ -138,6 +138,17 @@
     .post-container .profile-widget .sns-container i {
       margin: 0 8px;
       font-size: 30px; }
+    .post-container .profile-widget .sns-container .iconfont.icon-gitee {
+      display: flex;
+      align-items: center;
+      justify-content: center; }
+      .post-container .profile-widget .sns-container .iconfont.icon-gitee::after {
+        content: 'Gitee';
+        font-size: 20px;
+        font-weight: bold;
+        color: crimson;
+        font-style: italic;
+        text-shadow: 0 0 2px #ccc; }
 
 .post-container .recent-widget ul li {
   margin-bottom: 15px; }

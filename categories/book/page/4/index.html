@@ -1,0 +1,97 @@
+<!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>showlotus's blog</title><meta name="description"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.0"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><span>分类 · book</span></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="https://cn.bing.com/th?id=OHR.CrystalCave_ZH-CN1284839856_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-5%E3%80%91/"><img class="post-cover-img js-img-fadeIn" src="https://cn.bing.com/th?id=OHR.CrystalCave_ZH-CN1284839856_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-5%E3%80%91/">【掘金小册·Vue组件精讲-5】实战 1：具有数据校验功能的表单组件——Form</a></h2><time class="has-text-grey" datetime="2022-03-01T06:59:05.000Z">2022-03-01</time><p class="is-flex-grow-2 mt-2">
+
+
+
+  
+    在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide / inject 和 dispatch /
+    broadcast，前者是 Vue.js
+    内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Form。
+  
+  Form 组件概览
+  
+    表单类组件在项目中会大量使用，比如输入框（Input）、单选（Radio）、多选（Checkbox）、下拉选择器（Select）等。在使用表单类组件时，也会经常用到数据校验，如果每次都写校验程序来对每一个表单控件校验，会很低效，因此需要一个能够校验基础表单控件的组件，..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-5%E3%80%91/">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="https://cn.bing.com/th?id=OHR.WheatonYukon_ZH-CN5573629391_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-4%E3%80%91/"><img class="post-cover-img js-img-fadeIn" src="https://cn.bing.com/th?id=OHR.WheatonYukon_ZH-CN5573629391_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-4%E3%80%91/">【掘金小册·Vue组件精讲-4】组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法</a></h2><time class="has-text-grey" datetime="2022-03-01T06:59:04.000Z">2022-03-01</time><p class="is-flex-grow-2 mt-2">
+
+
+
+  
+    上一讲的 provide / inject API
+    主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。然后有两种场景它不能很好的解决：
+  
+  
+    父组件向子组件（支持跨级）传递数据；
+    子组件向父组件（支持跨级）传递数据。
+  
+  
+    这种父子（含跨级）传递数据的通信方式，Vue.js 并没有提供原生的 API
+    来支持，而是推荐使用大型数据状态管理工具 Vuex，而我们之前已经介绍过 Vuex
+    的场景与在独立组件（或库）中使用的限制。本小节则介绍一种在父子组件间通信的方法
+    dispatch 和 broadcast。
+  
+  $on 与 $emit
+  ..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-4%E3%80%91/">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="https://cn.bing.com/th?id=OHR.LamplughGlacier_ZH-CN5709513673_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-3%E3%80%91/"><img class="post-cover-img js-img-fadeIn" src="https://cn.bing.com/th?id=OHR.LamplughGlacier_ZH-CN5709513673_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-3%E3%80%91/">【掘金小册·Vue组件精讲-3】组件的通信 1：provide &amp; inject</a></h2><time class="has-text-grey" datetime="2022-03-01T06:59:03.000Z">2022-03-01</time><p class="is-flex-grow-2 mt-2">
+
+
+
+  
+    上一节中我们说到，ref 和
+    $parent / $children 在跨级通信时是有弊端的。当组件 A 和组件 B
+    中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus
+    这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js 内置的
+    provide / inject 接口。
+  
+  什么是 provide / inject
+  provide / inject 是 Vue.js 2.2.0 版本后新增的 API，在文档中这样介绍 ：
+  
+    
+      cn.vuejs.org/v2/api/#pro…
+    
+    
+      这对选项需要一起使用，以允许一个祖先组件向其所有子孙后..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-3%E3%80%91/">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="https://cn.bing.com/th?id=OHR.IPBDMom_ZH-CN5918907676_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-2%E3%80%91/"><img class="post-cover-img js-img-fadeIn" src="https://cn.bing.com/th?id=OHR.IPBDMom_ZH-CN5918907676_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-2%E3%80%91/">【掘金小册·Vue组件精讲-2】基础：Vue.js 组件的三个 API：prop、event、slot</a></h2><time class="has-text-grey" datetime="2022-03-01T06:59:02.000Z">2022-03-01</time><p class="is-flex-grow-2 mt-2">
+
+
+
+  
+    如果您已经对 Vue.js 组件的基础用法了如指掌，可以跳过本小节，不过当做复习稍读一下也无妨。
+  
+  组件的构成
+  
+    一个再复杂的组件，都是由三部分组成的：prop、event、slot，它们构成了 Vue.js 组件的
+    API。如果你开发的是一个通用组件，那一定要事先设计好这三部分，因为组件一旦发布，后面再修改 API
+    就很困难了，使用者都是希望不断新增功能，修复
+    bug，而不是经常变更接口。如果你阅读别人写的组件，也可以从这三个部分展开，它们可以帮助你快速了解一个组件的所有功能。
+  
+  属性 prop
+  
+    prop
+    定义了这个组件有哪些可配置的属性，组件的核心功能也都是它来确定的。写通用组件时，props
+    最好用..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-2%E3%80%91/">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="https://cn.bing.com/th?id=OHR.ZugspitzeGipfelstation_ZH-CN6120971585_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-1%E3%80%91/"><img class="post-cover-img js-img-fadeIn" src="https://cn.bing.com/th?id=OHR.ZugspitzeGipfelstation_ZH-CN6120971585_1920x1080.jpg&amp;rf=LaDigue_1920x1080.jpg&amp;pid=hp" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-1%E3%80%91/">【掘金小册·Vue组件精讲-1】开篇：Vue.js 的精髓——组件</a></h2><time class="has-text-grey" datetime="2022-03-01T05:59:01.000Z">2022-03-01</time><p class="is-flex-grow-2 mt-2">
+
+
+
+  写在前面
+  
+    Vue.js，无疑是当下最火热的前端框架 Almost，而 Vue.js 最精髓的，正是它的组件与组件化。写一个 Vue 工程，也就是在写一个个的组件。
+  
+  
+    业务场景是千变万化的，而不变的是 Vue.js 组件开发的核心思想和使用技巧，掌握了 Vue.js
+    组件的各种开发模式，再复杂的业务场景也可以轻松化解。本小册则着重介绍笔者在 3 年的 Vue.js
+    开发及两年的
+    iView
+    开源中积累和沉淀的对 Vue.js 组件的见解和经验。
+  
+  
+    本小册不会介绍 Vue.js 的基础用法，因为市面上已经沉淀了大量的相关技术资料，而且
+    Vue.js 的文档已经足够详细。如果您尚未接触 Vue.js 或正打算开始..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/2022/03/01/%E3%80%90%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2-1%E3%80%91/">更多</a></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><a class="extend prev" rel="prev" href="/categories/book/page/3/"><i class="iconfont icon-prev has-text-grey"></i></a><a class="page-number" href="/categories/book/">1</a><a class="page-number" href="/categories/book/page/2/">2</a><a class="page-number" href="/categories/book/page/3/">3</a><span class="page-number current">4</span></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><div style="position: sticky; top: 50px;"><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/book/">book</a><span class="category-list-count">20</span></li></ul></section></main></div></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2022</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>
