@@ -25,11 +25,12 @@
     transform: translateY(0); }
 
 .post-page .post-content {
-  /* 代码块复制按钮 */ }
+  /* TAG 代码块复制按钮 */ }
   .post-page .post-content code {
     border-radius: 4px;
     background: var(--third-bg-color); }
   .post-page .post-content pre {
+    margin-bottom: 1em;
     padding: 0;
     background: transparent;
     /* 方便copy代码按钮（btn-copy）的定位 */
@@ -52,9 +53,8 @@
     user-select: none;
     -webkit-appearance: none;
     font-size: 13px;
-    font-weight: 700;
     line-height: 20px;
-    color: #333;
+    color: #000;
     -webkit-transition: opacity 0.3s ease-in-out;
     -o-transition: opacity 0.3s ease-in-out;
     transition: opacity 0.3s ease-in-out;
@@ -70,6 +70,7 @@
   .post-page .post-content img {
     display: block;
     margin: 0 auto;
+    margin-bottom: 1em;
     max-height: 500px;
     border-radius: 6px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
@@ -97,7 +98,9 @@
   height: calc(100vh - 100px);
   overflow: auto;
   list-style: none !important;
-  border-left: 1px solid var(--border-line-color); }
+  /* DONE 导航栏居左显示 */
+  border-left: 1px solid var(--border-line-color);
+  border-right: 1px solid var(--border-line-color); }
   .post-page .toc::-webkit-scrollbar {
     display: none; }
   .post-page .toc ol {

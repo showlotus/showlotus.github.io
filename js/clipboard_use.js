@@ -1,16 +1,16 @@
-(function (e, t, a) {
-  /*页面载入完成后，创建复制按钮*/
+;(function (e, t, a) {
+  /* TAG 页面载入完成后，创建复制按钮*/
   var initCopyCode = function () {
-    var copyHtml = '';
-    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">';
-    copyHtml += '<span>COPY</span>';
-    copyHtml += '</button>';
-    $("code.hljs").before(copyHtml);
-    $('.btn-copy').click(function (e) {
-      if ($('.copyMessage').length) return e.returnValue = false
-      let div = document.createElement('div')
-      div.className = 'copyMessage'
-      div.innerHTML = '复制成功'
+    var copyHtml = ""
+    copyHtml += '<button class="btn-copy" data-clipboard-snippet="">'
+    copyHtml += "<span>复制</span>"
+    copyHtml += "</button>"
+    $("code.hljs").before(copyHtml)
+    $(".btn-copy").click(function (e) {
+      if ($(".copyMessage").length) return (e.returnValue = false)
+      let div = document.createElement("div")
+      div.className = "copyMessage"
+      div.innerHTML = "复制成功"
       div.style = `
         position: fixed;
         left: 50%;
@@ -31,14 +31,14 @@
         }, 500)
       }, 500)
     })
-    const clipboard = new ClipboardJS('.btn-copy', {
+    const clipboard = new ClipboardJS(".btn-copy", {
       target: function (trigger) {
-        return trigger.nextElementSibling;
+        return trigger.nextElementSibling
       }
-    });
-    clipboard.on('success', function (successEvent) {
-      return successEvent.clearSelection();
+    })
+    clipboard.on("success", function (successEvent) {
+      return successEvent.clearSelection()
     })
   }
-  initCopyCode();
-})(window, document);
+  initCopyCode()
+})(window, document)
