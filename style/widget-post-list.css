@@ -179,8 +179,7 @@
   max-height: 80vh; }
 
 .post-container .tag-widget > section {
-  overflow: auto;
-  max-height: 30vh; }
+  overflow: auto; }
 
 .post-container .tag-widget.is-in-tag-page > section {
   max-height: 80vh; }
