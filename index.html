@@ -1,117 +1,23 @@
 <!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>showlotus's blog</title><meta name="description"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
-<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.1"><style>mjx-container[jax="SVG"] {
-  direction: ltr;
-}
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.1"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/a970cecdfebd/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/a970cecdfebd.html"><img class="post-cover-img js-img-fadeIn" src="/a970cecdfebd/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue指令</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/a970cecdfebd.html">v-set-title-attr 【每周一篇·5】</a></h2><time class="has-text-grey" datetime="2022-10-02T11:22:29.000Z">2022-10-02</time><p class="is-flex-grow-2 mt-2">
 
-mjx-container[jax="SVG"] > svg {
-  overflow: visible;
-}
 
-mjx-container[jax="SVG"][display="true"] {
-  display: block;
-  text-align: center;
-  margin: 1em 0;
-}
+有个需求，下拉框里的选项分组后，因为组名可能会很长，于是就想添加一个文本超出时显示省略号的样式，这个用 CSS 就能做到，小意思。不过，如果文本超出后，我还想有一个能展示当前文字所有信息的提示。因为本身就是一个浮层了，再添加一个浮层就感觉很怪（说实话也不好加 😂），于是就想用原生的 title 实现（先看效果，如下图所示）。
 
-mjx-container[jax="SVG"][justify="left"] {
-  text-align: left;
-}
 
-mjx-container[jax="SVG"][justify="right"] {
-  text-align: right;
-}
 
-g[data-mml-node="merror"] > g {
-  fill: red;
-  stroke: red;
-}
+思路首先可能会想到，把 OptionGroup 上加一个 title 属性，不过这会导致一个问题（以下面的代码为例）：
+&amp;lt;Select style=&quot;width:200px&quot;&gt;
+  &amp;lt;OptionGroup
+    label=&quot;AAAAAAAAAAAAAAAAAAAAAAAA&quot;
+    title=&quot;AAAAAAAAAAAAAAAAAAAAAAAA&quot;
+  &gt;..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/a970cecdfebd.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/a338c903e073/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/a338c903e073.html"><img class="post-cover-img js-img-fadeIn" src="/a338c903e073/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/a338c903e073.html">一周年啦！</a></h2><time class="has-text-grey" datetime="2022-10-01T14:20:40.000Z">2022-10-01</time><p class="is-flex-grow-2 mt-2">
 
-g[data-mml-node="merror"] > rect[data-background] {
-  fill: yellow;
-  stroke: none;
-}
 
-g[data-mml-node="mtable"] > line[data-line] {
-  stroke-width: 70px;
-  fill: none;
-}
+封面的图用的还是去年这个时候的必应每日一图，就当做是一种传承吧 🤭。
 
-g[data-mml-node="mtable"] > rect[data-frame] {
-  stroke-width: 70px;
-  fill: none;
-}
-
-g[data-mml-node="mtable"] > .mjx-dashed {
-  stroke-dasharray: 140;
-}
-
-g[data-mml-node="mtable"] > .mjx-dotted {
-  stroke-linecap: round;
-  stroke-dasharray: 0,140;
-}
-
-g[data-mml-node="mtable"] > svg {
-  overflow: visible;
-}
-
-[jax="SVG"] mjx-tool {
-  display: inline-block;
-  position: relative;
-  width: 0;
-  height: 0;
-}
-
-[jax="SVG"] mjx-tool > mjx-tip {
-  position: absolute;
-  top: 0;
-  left: 0;
-}
-
-mjx-tool > mjx-tip {
-  display: inline-block;
-  padding: .2em;
-  border: 1px solid #888;
-  font-size: 70%;
-  background-color: #F8F8F8;
-  color: black;
-  box-shadow: 2px 2px 5px #AAAAAA;
-}
-
-g[data-mml-node="maction"][data-toggle] {
-  cursor: pointer;
-}
-
-mjx-status {
-  display: block;
-  position: fixed;
-  left: 1em;
-  bottom: 1em;
-  min-width: 25%;
-  padding: .2em .4em;
-  border: 1px solid #888;
-  font-size: 90%;
-  background-color: #F8F8F8;
-  color: black;
-}
-
-foreignObject[data-mjx-xml] {
-  font-family: initial;
-  line-height: normal;
-  overflow: visible;
-}
-
-.MathJax path {
-  stroke-width: 3;
-}
-
-mjx-container[display="true"] {
-  overflow: auto hidden;
-}
-
-mjx-container[display="true"] + br {
-  display: none;
-}
-</style></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/8f2bce5a649a/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/8f2bce5a649a.html"><img class="post-cover-img js-img-fadeIn" src="/8f2bce5a649a/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><i class="tag post-item-tag">JavaScript设计模式与开发实践</i></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/8f2bce5a649a.html">this、闭包和高阶函数【每周一篇·4】</a></h2><time class="has-text-grey" datetime="2022-09-24T05:20:41.000Z">2022-09-24</time><p class="is-flex-grow-2 mt-2">
+去年的这个时候，在我那小房间里研究怎么搭建博客，弄了一下午，晚上的时候才给搭好。转眼间，晃晃悠悠一年过去了，好快啊。回顾这一年，满打满算才写了 12 篇，差不多一个月一篇。今年有几个月都没写过，都是最近这两个月，开始坚持【每周一篇】系列，才给顶上来了，今后还要坚持 ✊。
+想想去年的自己，偶尔上班还迟到 😂，下班回去打打游戏看看书，生活没什么压力，过的还算平静。毕竟，当时自己也没什么想法，就老老实实工作就好了，要学的东西还很多。不过，从今年开始，慢慢的觉得平常的任务，做来做去都是那些，也没什么成长空间。于是开始了解 Vue2 底层的实现原理（前提是把 Vue2 的所有的 API 差不多都用过一遍，除了一些比较冷门的），把《深入浅..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/a338c903e073.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/8f2bce5a649a/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/8f2bce5a649a.html"><img class="post-cover-img js-img-fadeIn" src="/8f2bce5a649a/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><i class="tag post-item-tag">JavaScript设计模式与开发实践</i></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/8f2bce5a649a.html">this、闭包和高阶函数【每周一篇·4】</a></h2><time class="has-text-grey" datetime="2022-09-24T05:20:41.000Z">2022-09-24</time><p class="is-flex-grow-2 mt-2">
 
 
 这周没遇到什么比较有意思的地方，就拿这篇读书笔记凑数吧，写了也挺久的了，从 9.11 开始写，9.24 才结束，太能拖啦~
@@ -129,7 +35,7 @@ obj.getName() // &quot;Tom&quot;
 
 作为普通函数调用当函数作为普通函数被调用时，此时的 this 总指向全局对象。在浏览器中全局对象是 window ，在 Nodejs 中全局对象是 globalThis 。
 window.name = &quot;globalName&quot;
-co..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/8f2bce5a649a.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/c0a82c74046d/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/c0a82c74046d.html"><img class="post-cover-img js-img-fadeIn" src="/c0a82c74046d/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue指令</i></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/c0a82c74046d.html">v-scroll-to【每周一篇·3】</a></h2><time class="has-text-grey" datetime="2022-09-16T07:55:54.000Z">2022-09-16</time><p class="is-flex-grow-2 mt-2">
+co..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/8f2bce5a649a.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/c0a82c74046d/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/c0a82c74046d.html"><img class="post-cover-img js-img-fadeIn" src="/c0a82c74046d/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue指令</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/c0a82c74046d.html">v-scroll-to【每周一篇·3】</a></h2><time class="has-text-grey" datetime="2022-09-16T07:55:54.000Z">2022-09-16</time><p class="is-flex-grow-2 mt-2">
 
 
 实现的功能：将当前容器或子容器的滚动条移动到底部或顶部。主要源于，某个弹窗里有一个按钮可以将当前表格新增一行，如果弹窗内容过长，就会出现滚动条，然后测试说，点了新增后，是不是滚动条需要滚动到底部。这个效果，之前在另一个弹窗里实现过，怕不是他看到了，感觉这样更合理，然后给我提需求，算是自己埋了个坑。不过，也还好，想着如果用之前的代码，直接 CV 过来，太 low 了，打算写个指令，高端大气上档次！
@@ -147,39 +53,7 @@ scrollHeight：该元素在不使用滚动条的情况下为了适应视口中�
 
 
 
-实现方案方案一 🙁基于 ViewDesign 的 Input 进行扩展，Input 可以设置文本框前后的插槽，可以通过这个来放置单位，然后设置 type=&amp;quot;number&amp;quot;，这样就能实现了。不过，这样就丢失了原来 InputNumber 的一些属性，比如 min..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/42f83b8c5d0e.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/12fcb2e6f8b0/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/12fcb2e6f8b0.html"><img class="post-cover-img js-img-fadeIn" src="/12fcb2e6f8b0/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a><a href="/tags/ivu-extends"><i class="tag post-item-tag">ivu-extends</i></a><a href="/tags/ivu-color-picker"><i class="tag post-item-tag">ivu-color-picker</i></a><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue指令</i></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/12fcb2e6f8b0.html">ColorPicker 扩展指令 v-modify-opacity【每周一篇·1】</a></h2><time class="has-text-grey" datetime="2022-09-02T04:37:37.000Z">2022-09-02</time><p class="is-flex-grow-2 mt-2">
-
-
-产品提了个意见：颜色选择器的颜色能不能不要默认为透明，选完颜色后，就立马确认了，容易忘记设置不透明度（如下图所示）。由于这个颜色是和所有组件的背景色绑定的，设为透明是为了组件更好的展示，改默认颜色固然不可行。其实每当选中颜色的时候，上方的色块会显示当前的颜色，如果用的多，看到这个颜色没变，大概也能知道缺了啥。不过对于用户而言，这确实是个不好的体验，于是，就有了一个想法：如果当前颜色的透明度为 0 ，选择颜色时，将不透明度置为 1，这样上方的色块也能显示当前的颜色，体验会很不错。大体思路有了，开搞！
-
-
-
-组件内部逻辑展开颜色面板，鼠标在上面选中颜色时，会触发内部的回调 childChange，传递的参数是下面这样的：
-&amp;#123;
-  &quot;h&quot;: 0,
-  &quot;s&quot;: 0.4916666666666666..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/12fcb2e6f8b0.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="https://bing.com/th?id=OHR.LacMontagnon_ZH-CN8301464080_UHD.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/47f6c65d4d86.html"><img class="post-cover-img js-img-fadeIn" src="https://bing.com/th?id=OHR.LacMontagnon_ZH-CN8301464080_UHD.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript%20%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6"><i class="tag post-item-tag">JavaScript 正则表达式迷你书</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/47f6c65d4d86.html">正则学习笔记 + 案例</a></h2><time class="has-text-grey" datetime="2022-08-13T07:47:15.000Z">2022-08-13</time><p class="is-flex-grow-2 mt-2">
-
-
-「JavaScript 正则表达式迷你书.pdf」https://www.aliyundrive.com/s/i77Fq6HocdT
-
-匹配 16 进制颜色
-匹配 6 位的 16 进制
-const regex = /#[0-9a-fA-F]{6}/;
-
-
-
-颜色也有可能是 3 位的，由于管道符也是贪婪匹配，所以需要先匹配 6 位再匹配 3 位
-const regex = /#[0-9a-fA-F]{6}|[0-9a-fA-F]{3}/;
-
-匹配时间
-匹配小时，00-19，20-23
-const regex = /([01][0-9]|2[0-3])/;
-
-匹配分钟，00-59
-const regex = /[0-5][0-9]/;
-
-最终结果
-const regex = /^([01][0-9]|2[..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/47f6c65d4d86.html">更多</a></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="iconfont icon-next has-text-grey"></i></a></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><style>.search-widget .search-input {
+实现方案方案一 🙁基于 ViewDesign 的 Input 进行扩展，Input 可以设置文本框前后的插槽，可以通过这个来放置单位，然后设置 type=&amp;quot;number&amp;quot;，这样就能实现了。不过，这样就丢失了原来 InputNumber 的一些属性，比如 min..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/42f83b8c5d0e.html">更多</a></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="page-number" href="/page/3/">3</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/2/"><i class="iconfont icon-next has-text-grey"></i></a></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><style>.search-widget .search-input {
     border: none;
     outline: none;
     background: transparent;
@@ -308,7 +182,7 @@ searchButtonEl.onclick = function () {
         var doc = domparser.parseFromString(res, 'application/xml')
         searchDatabase = doc.getElementsByTagName('search')[0].children
     })
-}</script><main class="aside-card-container profile-widget"><!-- todo: 使用取色工具动态阴影--><section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"><section class="is-flex is-justify-content-center avatar is-clipped skeleton"><!-- debug images "https://api.ixiaowai.cn/gqapi/gqapi.php"--><img class="js-img-fadeIn" src="/images/avatar.jpg" alt="user avatar"></section><h3 class="user-name">showlotus</h3><address class="has-text-centered has-text-grey"><i class="iconfont icon-location" style="margin-right: 5px;"></i><span class="has-text-grey">In the Henan of China</span></address></section><section class="sns-container is-flex is-justify-content-center is-align-items-center"><!-- TODO 配置个人网站链接--><!-- Github--><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section></main><main class="aside-card-container recent-widget"><h3>最近</h3><ul><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/8f2bce5a649a/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/8f2bce5a649a.html">this、闭包和高阶函数【每周一篇·4】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-09-24T05:20:41.000Z">2022-09-24</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/c0a82c74046d/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/c0a82c74046d.html">v-scroll-to【每周一篇·3】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-09-16T07:55:54.000Z">2022-09-16</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/42f83b8c5d0e/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/42f83b8c5d0e.html">InputNumberUnit 【每周一篇·2·中秋节不打烊】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-09-10T11:51:58.000Z">2022-09-10</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/12fcb2e6f8b0/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/12fcb2e6f8b0.html">ColorPicker 扩展指令 v-modify-opacity【每周一篇·1】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-09-02T04:37:37.000Z">2022-09-02</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="https://bing.com/th?id=OHR.LacMontagnon_ZH-CN8301464080_UHD.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/47f6c65d4d86.html">正则学习笔记 + 案例</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-08-13T07:47:15.000Z">2022-08-13</time></section></li></ul></main><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/book/">book</a><span class="category-list-count">20</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/notes/">notes</a><span class="category-list-count">3</span></li></ul></section></main><main class="aside-card-container archives-widget"><h3>归档</h3><section><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">八月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">3</span></li></ul></section></main><main class="aside-card-container tag-widget"><h3>标签</h3><section><a href="/tags/JavaScript"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript</span></a><a href="/tags/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript设计模式与开发实践</span></a><a href="/tags/Vue"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue</span></a><a href="/tags/Dev%20Tools"><span class="tag post-item-tag" style="margin-bottom: 5px;">Dev Tools</span></a><a href="/tags/ViewDesign"><span class="tag post-item-tag" style="margin-bottom: 5px;">ViewDesign</span></a><a href="/tags/ivu-extends"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-extends</span></a><a href="/tags/ivu-color-picker"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-color-picker</span></a><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue指令</span></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><span class="tag post-item-tag" style="margin-bottom: 5px;">每周一篇</span></a><a href="/tags/ivu-input-number"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-input-number</span></a><a href="/tags/IView"><span class="tag post-item-tag" style="margin-bottom: 5px;">IView</span></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><span class="tag post-item-tag" style="margin-bottom: 5px;">转载</span></a><a href="/tags/npm"><span class="tag post-item-tag" style="margin-bottom: 5px;">npm</span></a><a href="/tags/Fiddler"><span class="tag post-item-tag" style="margin-bottom: 5px;">Fiddler</span></a><a href="/tags/%E6%8A%93%E5%8C%85"><span class="tag post-item-tag" style="margin-bottom: 5px;">抓包</span></a><a href="/tags/%E6%89%8B%E5%86%99%E7%BB%84%E4%BB%B6"><span class="tag post-item-tag" style="margin-bottom: 5px;">手写组件</span></a><a href="/tags/flow-chart"><span class="tag post-item-tag" style="margin-bottom: 5px;">flow-chart</span></a><a href="/tags/ElementUI"><span class="tag post-item-tag" style="margin-bottom: 5px;">ElementUI</span></a><a href="/tags/el-cascader"><span class="tag post-item-tag" style="margin-bottom: 5px;">el-cascader</span></a><a href="/tags/JavaScript%20%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 正则表达式迷你书</span></a></section></main></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+}</script><main class="aside-card-container profile-widget"><!-- todo: 使用取色工具动态阴影--><section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"><section class="is-flex is-justify-content-center avatar is-clipped skeleton"><!-- debug images "https://api.ixiaowai.cn/gqapi/gqapi.php"--><img class="js-img-fadeIn" src="/images/avatar.jpg" alt="user avatar"></section><h3 class="user-name">showlotus</h3><address class="has-text-centered has-text-grey"><i class="iconfont icon-location" style="margin-right: 5px;"></i><span class="has-text-grey">In the Henan of China</span></address></section><section class="sns-container is-flex is-justify-content-center is-align-items-center"><!-- TODO 配置个人网站链接--><!-- Github--><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section></main><main class="aside-card-container recent-widget"><h3>最近</h3><ul><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/a970cecdfebd/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/a970cecdfebd.html">v-set-title-attr 【每周一篇·5】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-10-02T11:22:29.000Z">2022-10-02</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/a338c903e073/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/a338c903e073.html">一周年啦！</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-10-01T14:20:40.000Z">2022-10-01</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/8f2bce5a649a/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/8f2bce5a649a.html">this、闭包和高阶函数【每周一篇·4】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-09-24T05:20:41.000Z">2022-09-24</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/c0a82c74046d/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/c0a82c74046d.html">v-scroll-to【每周一篇·3】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-09-16T07:55:54.000Z">2022-09-16</time></section></li><li class="is-flex"><!-- change to element replace image placeholder--><img class="js-img-fadeIn" src="/42f83b8c5d0e/banner.jpg" alt="cover"><!--else--><!--    div.post-img-placeholder--><section class="is-flex-grow-2"><p class="has-text-weight-semibold" style="line-height: 20px; font-size: 14px"><a href="/42f83b8c5d0e.html">InputNumberUnit 【每周一篇·2·中秋节不打烊】</a></p><time class="has-text-weight-semibold has-text-grey" datetime="2022-09-10T11:51:58.000Z">2022-09-10</time></section></li></ul></main><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/book/">book</a><span class="category-list-count">20</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/notes/">notes</a><span class="category-list-count">3</span></li></ul></section></main><main class="aside-card-container archives-widget"><h3>归档</h3><section><ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/10/">十月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/09/">九月 2022</a><span class="archive-list-count">4</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/08/">八月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/07/">七月 2022</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/04/">四月 2022</a><span class="archive-list-count">2</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2022/03/">三月 2022</a><span class="archive-list-count">21</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/12/">十二月 2021</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2021/10/">十月 2021</a><span class="archive-list-count">3</span></li></ul></section></main><main class="aside-card-container tag-widget"><h3>标签</h3><section><a href="/tags/JavaScript"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript</span></a><a href="/tags/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript设计模式与开发实践</span></a><a href="/tags/Vue"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue</span></a><a href="/tags/ViewDesign"><span class="tag post-item-tag" style="margin-bottom: 5px;">ViewDesign</span></a><a href="/tags/ivu-extends"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-extends</span></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><span class="tag post-item-tag" style="margin-bottom: 5px;">每周一篇</span></a><a href="/tags/Dev%20Tools"><span class="tag post-item-tag" style="margin-bottom: 5px;">Dev Tools</span></a><a href="/tags/ivu-color-picker"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-color-picker</span></a><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue指令</span></a><a href="/tags/ivu-input-number"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-input-number</span></a><a href="/tags/IView"><span class="tag post-item-tag" style="margin-bottom: 5px;">IView</span></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><span class="tag post-item-tag" style="margin-bottom: 5px;">转载</span></a><a href="/tags/npm"><span class="tag post-item-tag" style="margin-bottom: 5px;">npm</span></a><a href="/tags/Fiddler"><span class="tag post-item-tag" style="margin-bottom: 5px;">Fiddler</span></a><a href="/tags/%E6%8A%93%E5%8C%85"><span class="tag post-item-tag" style="margin-bottom: 5px;">抓包</span></a><a href="/tags/%E6%89%8B%E5%86%99%E7%BB%84%E4%BB%B6"><span class="tag post-item-tag" style="margin-bottom: 5px;">手写组件</span></a><a href="/tags/flow-chart"><span class="tag post-item-tag" style="margin-bottom: 5px;">flow-chart</span></a><a href="/tags/ElementUI"><span class="tag post-item-tag" style="margin-bottom: 5px;">ElementUI</span></a><a href="/tags/el-cascader"><span class="tag post-item-tag" style="margin-bottom: 5px;">el-cascader</span></a><a href="/tags/JavaScript%20%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 正则表达式迷你书</span></a></section></main></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
 
 window.addEventListener('resize', $claudia.throttle(function () {
     var images = document.querySelectorAll('.js-img-fadeIn')
