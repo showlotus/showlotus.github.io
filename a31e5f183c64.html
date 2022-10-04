@@ -1,8 +1,6 @@
 <!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</title><meta name="description"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
 <!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
 
-
-
   概述
   
     前面的小节我们已经介绍了两种组件间通信的方法：provide / inject 和 dispatch /
@@ -16,9 +14,7 @@
   它适用于以下场景：
   
     由一个组件，向上找到最近的指定组件；
-    由一个组件，向上.."><meta name="generator" content="Hexo 5.4.1"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向上找到最近的指定组件——findComponentUpward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向上找到所有的指定组件——findComponentsUpward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向下找到最近的指定组件——findComponentDownward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向下找到所有指定的组件——findComponentsDownward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">找到指定组件的兄弟组件——findBrothersComponents</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">扩展阅读</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</h1><time class="has-text-grey" datetime="2022-03-01T06:59:06.000Z">2022-03-01</time><article class="mt-2 post-content">
-<img alt="雷斯岬国家海岸公园里的柏树隧道，美国加利福尼亚州 (© Spondylolithesis/Getty Images)" src="https://cn.bing.com/th?id=OHR.CypressTunnel_ZH-CN1174542149_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp" loading="lazy">
-
+    由一个组件，向上找到.."><meta name="generator" content="Hexo 5.4.1"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/daily">日常</a></h3><h3 class="is-inline-block"><a href="/categories/note">笔记</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/daily">日常</a></h3><h3 class="is-inline-block"><a href="/categories/note">笔记</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向上找到最近的指定组件——findComponentUpward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向上找到所有的指定组件——findComponentsUpward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向下找到最近的指定组件——findComponentDownward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向下找到所有指定的组件——findComponentsDownward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">找到指定组件的兄弟组件——findBrothersComponents</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">扩展阅读</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</h1><time class="has-text-grey" datetime="2022-03-01T06:59:06.000Z">2022-03-01</time><article class="mt-2 post-content">
 <div class="markdown-body">
   <h2 data-id="heading-1">概述</h2>
   <p>
@@ -51,7 +47,8 @@
     </p>
   </blockquote>
   <p>
-    在目录 <code>src</code> 下新建文件夹 <code>utils</code> 用来放置工具函数，并新建文件
+    在目录 <code>src</code> 下新建文件夹
+    <code>utils</code> 用来放置工具函数，并新建文件
     <code>assist.js</code>，本节所有函数都在这个文件里完成，每个函数都通过
     <code>export</code> 对外提供（如果你不了解 export，请查看扩展阅读1）。
   </p>
@@ -78,13 +75,13 @@
   </p>
   <p>
     findComponentUpward 方法会在 while 语句里不断向上覆盖当前的
-    <code>parent</code> 对象，通过判断组件（即 parent）的 name 与传入的 componentName
-    是否一致，直到直到最近的一个组件为止。
+    <code>parent</code> 对象，通过判断组件（即 parent）的 name 与传入的
+    componentName 是否一致，直到直到最近的一个组件为止。
   </p>
   <p>
     与 dispatch 不同的是，findComponentUpward
-    是直接拿到组件的实例，而非通过事件通知组件。比如下面的示例，有组件 A 和组件 B，A 是 B
-    的父组件，在 B 中获取和调用 A 中的数据和方法：
+    是直接拿到组件的实例，而非通过事件通知组件。比如下面的示例，有组件 A 和组件
+    B，A 是 B 的父组件，在 B 中获取和调用 A 中的数据和方法：
   </p>
   <pre><code lang="html" class><span>&lt;!-- component-a.vue --&gt;</span>
 <span>&lt;<span>template</span>&gt;</span>
@@ -135,8 +132,8 @@
 </span><span>&lt;/<span>script</span>&gt;</span>
 </code></pre>
   <p>
-    使用起来很简单，只要在需要的地方调用 findComponentUpward 方法就行，第一个参数一般都是传入
-    this，即当前组件的上下文（实例）。
+    使用起来很简单，只要在需要的地方调用 findComponentUpward
+    方法就行，第一个参数一般都是传入 this，即当前组件的上下文（实例）。
   </p>
   <p>
     上例的 comA，保险起见，加了一层 <code>if (comA)</code> 来判断是否找到了组件
@@ -170,8 +167,8 @@
   <p>
     findComponentsUpward
     的使用场景较少，一般只用在递归组件里面（后面小节会介绍），因为这个函数是一直向上寻找父级（parent）的，只有递归组件的父级才是自身。事实上，iView
-    在使用这个方法也都是用在递归组件的场景，比如菜单组件 Menu。由于递归组件在 Vue.js
-    组件里面并不常用，那自然 findComponentsUpward 也不常用了。
+    在使用这个方法也都是用在递归组件的场景，比如菜单组件 Menu。由于递归组件在
+    Vue.js 组件里面并不常用，那自然 findComponentsUpward 也不常用了。
   </p>
   <h3 data-id="heading-5">向下找到最近的指定组件——findComponentDownward</h3>
   <p>代码如下：</p>
@@ -201,7 +198,8 @@
   <p>
     <code>context.$children</code>
     得到的是当前组件的全部子组件，所以需要遍历一遍，找到有没有匹配到的组件
-    <code>name</code>，如果没找到，继续递归找每个 $children 的 $children，直到找到最近的一个为止。
+    <code>name</code>，如果没找到，继续递归找每个 $children 的
+    $children，直到找到最近的一个为止。
   </p>
   <p>来看个示例，仍然是 A、B 两个组件，A 是 B 的父组件，在 A 中找到 B：</p>
   <pre><code lang="html" class><span>&lt;!-- component-b.vue --&gt;</span>
@@ -255,7 +253,9 @@
     <code>ref</code> 来访问，但如果不是父子关系，中间间隔多代，用它就很方便了。
   </p>
   <h3 data-id="heading-6">向下找到所有指定的组件——findComponentsDownward</h3>
-  <p>如果要向下找到所有的指定组件，要用到 findComponentsDownward 函数，代码如下：</p>
+  <p>
+    如果要向下找到所有的指定组件，要用到 findComponentsDownward 函数，代码如下：
+  </p>
   <pre><code lang="js" class><span>// assist.js</span>
 <span>// 由一个组件，向下找到所有指定的组件</span>
 <span><span>function</span> <span>findComponentsDownward</span> (<span>context, componentName</span>) </span>&#123;
@@ -289,14 +289,16 @@
 </code></pre>
   <p>
     相比其它 4 个函数，findBrothersComponents 多了一个参数
-    <code>exceptMe</code>，是否把本身除外，默认是 true。寻找兄弟组件的方法，是先获取
-    <code>context.$parent.$children</code>，也就是父组件的全部子组件，这里面当前包含了本身，所有也会有第三个参数 exceptMe。Vue.js
-    在渲染组件时，都会给每个组件加一个内置的属性 <code>_uid</code>，这个 _uid
+    <code>exceptMe</code>，是否把本身除外，默认是
+    true。寻找兄弟组件的方法，是先获取
+    <code>context.$parent.$children</code>，也就是父组件的全部子组件，这里面当前包含了本身，所有也会有第三个参数
+    exceptMe。Vue.js 在渲染组件时，都会给每个组件加一个内置的属性
+    <code>_uid</code>，这个 _uid
     是不会重复的，借此我们可以从一系列兄弟组件中把自己排除掉。
   </p>
   <p>
-    举个例子，组件 A 是组件 B 的父级，在 B 中找到所有在 A 中的兄弟组件（也就是所有在 A 中的 B
-    组件）：
+    举个例子，组件 A 是组件 B 的父级，在 B 中找到所有在 A
+    中的兄弟组件（也就是所有在 A 中的 B 组件）：
   </p>
   <pre><code lang="html" class><span>&lt;!-- component-a.vue --&gt;</span>
 <span>&lt;<span>template</span>&gt;</span>
@@ -333,8 +335,9 @@
 </span><span>&lt;/<span>script</span>&gt;</span>
 </code></pre>
   <p>
-    在 ① 的位置，打印出的内容为空数组，原因是当前 A 中只有一个 B，而 findBrothersComponents
-    的第三个参数默认是 true，也就是将自己除外。如果在 A 中再写一个 B：
+    在 ① 的位置，打印出的内容为空数组，原因是当前 A 中只有一个 B，而
+    findBrothersComponents 的第三个参数默认是 true，也就是将自己除外。如果在 A
+    中再写一个 B：
   </p>
   <pre><code lang="html" class><span>&lt;!-- component-a.vue --&gt;</span>
 <span>&lt;<span>template</span>&gt;</span>
@@ -346,8 +349,9 @@
 <span>&lt;/<span>template</span>&gt;</span>
 </code></pre>
   <p>
-    这时就会打印出 <code>[VueComponent]</code>，有一个组件了，但要注意在控制台会打印两遍，因为在 A
-    中写了两个 B，而 <code>console.log</code> 是在 B
+    这时就会打印出
+    <code>[VueComponent]</code>，有一个组件了，但要注意在控制台会打印两遍，因为在 A 中写了两个 B，而
+    <code>console.log</code> 是在 B
     中定义的，所以两个都会执行到。如果你看懂了这里，那应该明白打印的两遍
     <code>[VueComponent]</code>，分别是另一个
     <code>&lt;component-b&gt;</code>（如果没有搞懂，要仔细琢磨琢磨哦）。
@@ -362,8 +366,12 @@
   &#125;
 &#125;
 </code></pre>
-  <p>此时就会打印出 <code>[VueComponent, VueComponent]</code>，也就是包含自身了。</p>
-  <p>以上就是 5 个函数的详细介绍，get 到这 5 个，以后就再也不用担心组件通信了。</p>
+  <p>
+    此时就会打印出 <code>[VueComponent, VueComponent]</code>，也就是包含自身了。
+  </p>
+  <p>
+    以上就是 5 个函数的详细介绍，get 到这 5 个，以后就再也不用担心组件通信了。
+  </p>
   <h2 data-id="heading-8">结语</h2>
   <p>只有你认真开发过 Vue.js 独立组件，才会明白这 5 个函数的强大之处。</p>
   <h2 data-id="heading-9">扩展阅读</h2>

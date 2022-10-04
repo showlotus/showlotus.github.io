@@ -1,40 +1,43 @@
 <!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-1】开篇：Vue.js 的精髓——组件</title><meta name="description"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
 <!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
 
-
-
   写在前面
   
-    Vue.js，无疑是当下最火热的前端框架 Almost，而 Vue.js 最精髓的，正是它的组件与组件化。写一个 Vue 工程，也就是在写一个个的组件。
+    Vue.js，无疑是当下最火热的前端框架 Almost，而 Vue.js 最精髓的，正是它的组件与组件化。写一个 Vue
+    工程，也就是在写一个个的组件。
   
   
-    业务场景是千变万化的，而不变的是 Vue.js 组件开发的核心思想和使用技巧，掌握了 Vue.js
-    组件的各种开发模式，再复杂的业务场景也可以轻松化解。本小册则着重介绍笔者在 3 年的 Vue.js
-    开发及两年的
+    业务场景是千变万化的，而不变的是 Vue.js 组件开发的核心思想和使用技巧，掌握了
+    Vue.js
+    组件的各种开发模式，再复杂的业务场景也可以轻松化解。本小册则着重介绍笔者在 3
+    年的 Vue.js 开发及两年的
     iView
     开源中积累和沉淀的对 Vue.js 组件的见解和经验。
   
   
-    本小册不会介绍 Vue.js 的基础用法，因为市面上已经沉淀了大量的相关技术资料，而且
-    Vue.js 的文档已经足够详细。如果您尚未接触 Vue.js 或正打算开始.."><meta name="generator" content="Hexo 5.4.1"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-1】开篇：Vue.js 的精髓——组件</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/book">书籍</a></h3><h3 class="is-inline-block"><a href="/categories/notes">笔记</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">组件的分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">小册的内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-1】开篇：Vue.js 的精髓——组件</h1><time class="has-text-grey" datetime="2022-03-01T05:59:01.000Z">2022-03-01</time><article class="mt-2 post-content">
-<img alt="楚格峰山顶的缆车站，德国格赖瑙市 (© Robert Jank/Alamy)" src="https://cn.bing.com/th?id=OHR.ZugspitzeGipfelstation_ZH-CN6120971585_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp" loading="lazy" class="medium-zoom-image">
-
+    本小册不会介绍 Vue.js
+    的基础用法，因为市面上已经沉淀了大量的相关技术资料，而且 Vue.js
+    的文档已经足够详细。如果您尚未接触 Vue.."><meta name="generator" content="Hexo 5.4.1"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-1】开篇：Vue.js 的精髓——组件</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/daily">日常</a></h3><h3 class="is-inline-block"><a href="/categories/note">笔记</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/daily">日常</a></h3><h3 class="is-inline-block"><a href="/categories/note">笔记</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">组件的分类</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">小册的内容</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-1】开篇：Vue.js 的精髓——组件</h1><time class="has-text-grey" datetime="2022-03-01T05:59:01.000Z">2022-03-01</time><article class="mt-2 post-content">
 <div class="markdown-body">
   <h2 data-id="heading-1">写在前面</h2>
   <p>
-    Vue.js，无疑是当下最火热的前端框架 <sup><em>Almost</em></sup>，而 Vue.js 最精髓的，正是它的组件与组件化。写一个 Vue 工程，也就是在写一个个的组件。
+    Vue.js，无疑是当下最火热的前端框架 <sup><em>Almost</em></sup>，而 Vue.js 最精髓的，正是它的组件与组件化。写一个 Vue
+    工程，也就是在写一个个的组件。
   </p>
   <p>
-    业务场景是千变万化的，而不变的是 Vue.js 组件开发的核心思想和使用技巧，掌握了 Vue.js
-    组件的各种开发模式，再复杂的业务场景也可以轻松化解。本小册则着重介绍笔者在 3 年的 Vue.js
-    开发及两年的
+    业务场景是千变万化的，而不变的是 Vue.js 组件开发的核心思想和使用技巧，掌握了
+    Vue.js
+    组件的各种开发模式，再复杂的业务场景也可以轻松化解。本小册则着重介绍笔者在 3
+    年的 Vue.js 开发及两年的
     <a href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fiview%2Fiview" target="_blank" rel="nofollow noopener noreferrer" title="https://github.com/iview/iview" ref="nofollow noopener noreferrer">iView</a>
     开源中积累和沉淀的对 Vue.js 组件的见解和经验。
   </p>
   <p>
-    本小册<strong>不会</strong>介绍 Vue.js 的基础用法，因为市面上已经沉淀了大量的相关技术资料，而且
-    Vue.js 的文档已经足够详细。如果您尚未接触 Vue.js 或正打算开始了解，推荐您先阅读笔者出版的<a href="https://link.juejin.cn?target=https%3A%2F%2Fitem.jd.com%2F12215519.html" target="_blank" rel="nofollow noopener noreferrer" title="https://item.jd.com/12215519.html" ref="nofollow noopener noreferrer">《Vue.js 实战》</a>（清华大学出版社）一书，它适合刚接触 Vue.js 的开发者。因此，本小册适合已经了解或使用过 Vue.js
-    的开发者。
+    本小册<strong>不会</strong>介绍 Vue.js
+    的基础用法，因为市面上已经沉淀了大量的相关技术资料，而且 Vue.js
+    的文档已经足够详细。如果您尚未接触 Vue.js
+    或正打算开始了解，推荐您先阅读笔者出版的<a href="https://link.juejin.cn?target=https%3A%2F%2Fitem.jd.com%2F12215519.html" target="_blank" rel="nofollow noopener noreferrer" title="https://item.jd.com/12215519.html" ref="nofollow noopener noreferrer">《Vue.js 实战》</a>（清华大学出版社）一书，它适合刚接触 Vue.js
+    的开发者。因此，本小册适合已经了解或使用过 Vue.js 的开发者。
   </p>
   <p>这一节，我们先笼统地聊聊 Vue.js 组件和组件化以及本小册各章节的梳理。</p>
   <h2 data-id="heading-2">组件的分类</h2>
@@ -43,8 +46,9 @@
     <li>
       <p>
         由
-        <code>vue-router</code> 产生的每个页面，它本质上也是一个组件（.vue），主要承载当前页面的
-        HTML 结构，会包含数据获取、数据整理、数据可视化等常规业务。整个文件相对较大，但一般不会有
+        <code>vue-router</code>
+        产生的每个页面，它本质上也是一个组件（.vue），主要承载当前页面的 HTML
+        结构，会包含数据获取、数据整理、数据可视化等常规业务。整个文件相对较大，但一般不会有
         <code>props</code> 选项和
         <code>自定义事件</code>，因为它作为路由的渲染，不会被复用，因此也不会对外提供接口。
       </p>
@@ -55,8 +59,8 @@
     <li>
       <p>
         不包含业务，独立、具体功能的基础组件，比如<strong>日期选择器</strong>、<strong>模态框</strong>等。这类组件作为项目的基础控件，会被大量使用，因此组件的
-        API 进行过高强度的抽象，可以通过不同配置实现不同的功能。比如笔者开源的 iView，就是包含了 50
-        多个这样基础组件的 UI 组件库。
+        API 进行过高强度的抽象，可以通过不同配置实现不同的功能。比如笔者开源的
+        iView，就是包含了 50 多个这样基础组件的 UI 组件库。
       </p>
       <p>
         每个公司都有自己的组件使用规范或组件库，但要开发和维护一套像 iView
@@ -68,7 +72,9 @@
         的编程能力有一定要求，也会包含非常多的技巧，比如在不依赖 Vuex 和
         Bus（因为独立组件，无法依赖其它库）的情况下，各组件间的通信，还会涉及很多脑壳疼的逻辑，比如日期选择器要考虑不同时区、国家的日历习惯，支持多种日期格式。
       </p>
-      <p>本小册也会重点介绍此类组件的各种开发模式和技巧，对应不同的模式，会带有具体的组件实战。</p>
+      <p>
+        本小册也会重点介绍此类组件的各种开发模式和技巧，对应不同的模式，会带有具体的组件实战。
+      </p>
     </li>
     <li>
       <p>
@@ -96,7 +102,8 @@
   </ol>
   <p>本小册都会以这种核心科技 + 对应实战的形式展开。</p>
   <p>
-    8 - 10 小节介绍 Vue 的构造器 extend 和手动挂载组件 $mount 的用法及案例。Vue.js 除了我们正常
+    8 - 10 小节介绍 Vue 的构造器 extend 和手动挂载组件 $mount
+    的用法及案例。Vue.js 除了我们正常
     <code>new Vue()</code> 外，还可以手动挂载的，这 3 节将介绍手动挂载一个 Vue
     组件的使用场景。其中涉及到两个案例：
   </p>
@@ -105,11 +112,13 @@
     <li>全局通知组件 —— $Alert。</li>
   </ol>
   <p>
-    <strong>Display</strong> 组件用于将 <code>.vue</code> 文件渲染出来，线上的案例是
+    <strong>Display</strong> 组件用于将
+    <code>.vue</code> 文件渲染出来，线上的案例是
     <a href="https://link.juejin.cn?target=https%3A%2F%2Frun.iviewui.com%2F" target="_blank" rel="nofollow noopener noreferrer" title="https://run.iviewui.com/" ref="nofollow noopener noreferrer">iView Run</a>，它不需要你重新编译项目，就可以渲染一个标准的 Vue.js 组件。
   </p>
   <p>
-    <strong>$Alert</strong> 是全局的通知组件，它的调用方法不同于常规组件。常规组件使用方法形如：
+    <strong>$Alert</strong>
+    是全局的通知组件，它的调用方法不同于常规组件。常规组件使用方法形如：
   </p>
   <pre><code class="hljs language-html" lang="html"><span class="hljs-tag">&lt;<span class="hljs-name">template</span>&gt;</span>
     <span class="hljs-tag">&lt;<span class="hljs-name">Alert</span> <span class="hljs-attr">content</span>=<span class="hljs-string">"通知内容"</span> <span class="hljs-attr">:duration</span>=<span class="hljs-string">"3"</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">Alert</span>&gt;</span>
@@ -136,26 +145,25 @@
 </code></pre>
   <p>虽然与常规 Vue 组件调用方式不同，但底层仍然由 Vue 组件构成和维护。</p>
   <p>
-    11 - 12 小节介绍 Render 函数与 Functional Render，并完成一个能够渲染自定义列的 Table
-    组件。Render 函数也是 Vue.js
+    11 - 12 小节介绍 Render 函数与 Functional
+    Render，并完成一个能够渲染自定义列的 Table 组件。Render 函数也是 Vue.js
     组件重要的一部分，只不过在大多数业务中不常使用。本小节会介绍它的使用场景。
   </p>
   <p>
-    13 小节介绍<strong>作用域 slot（slot-scope）</strong>，并基于这种方法同样实现 Table 组件。slot
-    用的很多，但 slot-scope
+    13 小节介绍<strong>作用域 slot（slot-scope）</strong>，并基于这种方法同样实现 Table 组件。slot 用的很多，但 slot-scope
     在业务中并不常用，但在一些特定场景下，比如组件内部有循环体时，会非常实用。
   </p>
   <p>14 - 15 小节介绍递归组件，并完成树形控件 —— Tree。</p>
   <p>
-    16 - 19 小节是综合拓展，会着重讲解 Vue.js 容易忽略却很重要的 API，以及对 Vue.js
-    面试题的详细分析。除此之外，还会总结笔者在两年的 iView
+    16 - 19 小节是综合拓展，会着重讲解 Vue.js 容易忽略却很重要的 API，以及对
+    Vue.js 面试题的详细分析。除此之外，还会总结笔者在两年的 iView
     开源经历中的经验，除了技术细节外，还包括开源项目的持续性发展、推广等。
   </p>
   <h2 data-id="heading-4">结语</h2>
   <p>
     三年前，我开始接触 Vue.js 框架，当时就被它的轻量、组件化和友好的 API
-    所吸引。与此同时，我也开源了 iView 项目。三年的磨(cǎi )砺(kēng)，沉淀了不少关于 Vue.js
-    组件的经验。
+    所吸引。与此同时，我也开源了 iView 项目。三年的磨(cǎi
+    )砺(kēng)，沉淀了不少关于 Vue.js 组件的经验。
   </p>
   <p>本小册的内容也许不会让你的技术一夜间突飞猛进，但绝对使你醍醐灌顶。</p>
   <p>那么，请准备好一台电脑和一杯咖啡，一起来探索 Vue.js 的精髓吧。</p>
