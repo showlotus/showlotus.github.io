@@ -1,0 +1,74 @@
+<!DOCTYPE html><html class="appearance-auto" lang="zh-CN"><head><meta charset="UTF-8"><title>showlotus's blog</title><meta name="description"><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.1"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><span>标签 · 每周一篇</span></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/daily">日常</a></h3><h3 class="is-inline-block"><a href="/categories/weekly">每周一篇</a></h3><h3 class="is-inline-block"><a href="/categories/note">笔记</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/categories/daily">日常</a></h3><h3 class="is-inline-block"><a href="/categories/weekly">每周一篇</a></h3><h3 class="is-inline-block"><a href="/categories/note">笔记</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/a52cd5c85106/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/a52cd5c85106.html"><img class="post-cover-img js-img-fadeIn" src="/a52cd5c85106/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a><a href="/tags/ivu-extends"><i class="tag post-item-tag">ivu-extends</i></a><a href="/tags/ivu-input-number"><i class="tag post-item-tag">ivu-input-number</i></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/a52cd5c85106.html">ivu-input-number-union【每周一篇·7】</a></h2><time class="has-text-grey" datetime="2022-10-15T11:51:58.000Z">2022-10-15</time><p class="is-flex-grow-2 mt-2">
+
+
+最近朋友问我，多个数字输入框联动怎么做？他遇到一个需求，表格里的某一列是输入数字输入框，有多行，而最后一行是这些数字的总和。要达到的效果是，当输入框中的数字和超出总和时，清空所有输入框；如果未超出最大值，且还剩一个输入框未输入时，自动对最后一个输入框赋值。刚好前一段时间，做了一个下拉框联动的，两者的大体思路是相同的。首先是采用指令去实现，过程稍稍有点复杂，于是最后又实现了一个二次封装组件的版本。
+
+
+
+指令版本思路多个组件联动，首先想到的就是需要有一个【组】的概念，用来记录这些组件的信息。而要把多个绑定相同指令的组件联系起来，就需要通过它们的组件上下文实例进行联系，也即，要把【组】的信息挂在当前 Vue 实例上，这样绑定在同一个组下的每个组件都能访问到这个【组】里的信息了。为了方便分组，需要在指令里传..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/a52cd5c85106.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/3ed3a5c9f88d/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/3ed3a5c9f88d.html"><img class="post-cover-img js-img-fadeIn" src="/3ed3a5c9f88d/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a><a href="/tags/ivu-extends"><i class="tag post-item-tag">ivu-extends</i></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a><a href="/tags/ivu-select"><i class="tag post-item-tag">ivu-select</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/3ed3a5c9f88d.html">ivu-select-union【每周一篇·6】</a></h2><time class="has-text-grey" datetime="2022-10-03T11:24:24.000Z">2022-10-03</time><p class="is-flex-grow-2 mt-2">
+
+
+有这样一个场景，多个下拉框共用同一个下拉列表，如果有一个下拉框选中了某一项，那么该项不能被其他下拉框选中，也就是选中项不能重复。同时每个下拉框的下拉列表也是动态的，会根据已选中的值的变化而变化（看下图）。
+
+
+
+方案一（外部实现）用一个「列表」记录当前所有下拉框已选中的值，每个下拉框的下拉列表都会根据已选中值和当前下拉框的值的变化而变化，前提是 Option 是采用 v-for 渲染的。
+&amp;lt;template&gt;
+  &amp;lt;div&gt;
+    &amp;lt;Select v-for=&quot;(_, key) in formData&quot; :key=&quot;key&quot; v-model=&quot;formData[key]&quot;&gt;
+      &amp;lt;Option
+        v-for=&quot;item in getUnselectedL..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/3ed3a5c9f88d.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/a970cecdfebd/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/a970cecdfebd.html"><img class="post-cover-img js-img-fadeIn" src="/a970cecdfebd/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue指令</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/a970cecdfebd.html">v-set-title-attr 【每周一篇·5】</a></h2><time class="has-text-grey" datetime="2022-10-02T11:22:29.000Z">2022-10-02</time><p class="is-flex-grow-2 mt-2">
+
+
+有个需求，下拉框里的选项分组后，因为组名可能会很长，于是就想添加一个文本超出时显示省略号的样式，这个用 CSS 就能做到，小意思。不过，如果文本超出后，我还想有一个能展示当前文字所有信息的提示。因为本身就是一个浮层了，再添加一个浮层就感觉很怪（说实话也不好加 😂），于是就想用原生的 title 实现（先看效果，如下图所示）。
+
+
+
+思路首先可能会想到，把 OptionGroup 上加一个 title 属性，不过这会导致一个问题（以下面的代码为例）：
+&amp;lt;Select style=&quot;width:200px&quot;&gt;
+  &amp;lt;OptionGroup
+    label=&quot;AAAAAAAAAAAAAAAAAAAAAAAA&quot;
+    title=&quot;AAAAAAAAAAAAAAAAAAAAAAAA&quot;
+  &gt;..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/a970cecdfebd.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/8f2bce5a649a/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/8f2bce5a649a.html"><img class="post-cover-img js-img-fadeIn" src="/8f2bce5a649a/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><i class="tag post-item-tag">JavaScript设计模式与开发实践</i></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/8f2bce5a649a.html">this、闭包和高阶函数【每周一篇·4】</a></h2><time class="has-text-grey" datetime="2022-09-24T05:20:41.000Z">2022-09-24</time><p class="is-flex-grow-2 mt-2">
+
+
+这周没遇到什么比较有意思的地方，就拿这篇读书笔记凑数吧，写了也挺久的了，从 9.11 开始写，9.24 才结束，太能拖啦~
+
+thisthis 的指向大致分为四种：
+作为对象的方法调用当函数作为对象的方法调用时，this 指向该对象。
+const obj = &amp;#123;
+  name: &quot;Tom&quot;,
+  getName() &amp;#123;
+    console.log(this.name)
+  &amp;#125;
+&amp;#125;
+
+obj.getName() // &quot;Tom&quot;
+
+作为普通函数调用当函数作为普通函数被调用时，此时的 this 总指向全局对象。在浏览器中全局对象是 window ，在 Nodejs 中全局对象是 globalThis 。
+window.name = &quot;globalName&quot;
+co..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/8f2bce5a649a.html">更多</a></section></article><article class="post-item-card"><header class="is-relative is-flex"><div class="post-cover-backdrop is-hidden"><img src="/c0a82c74046d/banner.jpg" alt="loading.."></div><a class="post-cover-link has-text-centered skeleton" href="/c0a82c74046d.html"><img class="post-cover-img js-img-fadeIn" src="/c0a82c74046d/banner.jpg" alt="loading.." data-backdrop="true"></a></header><section class="content post-card-content p-4 pb-5"><header><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><i class="tag post-item-tag">每周一篇</i></a><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue指令</i></a></header><h2 class="mt-4 mb-0 is-family-serif"><a href="/c0a82c74046d.html">v-scroll-to【每周一篇·3】</a></h2><time class="has-text-grey" datetime="2022-09-16T07:55:54.000Z">2022-09-16</time><p class="is-flex-grow-2 mt-2">
+
+
+实现的功能：将当前容器或子容器的滚动条移动到底部或顶部。主要源于，某个弹窗里有一个按钮可以将当前表格新增一行，如果弹窗内容过长，就会出现滚动条，然后测试说，点了新增后，是不是滚动条需要滚动到底部。这个效果，之前在另一个弹窗里实现过，怕不是他看到了，感觉这样更合理，然后给我提需求，算是自己埋了个坑。不过，也还好，想着如果用之前的代码，直接 CV 过来，太 low 了，打算写个指令，高端大气上档次！
+
+
+
+实现原理主要依靠 DOM 元素的两个属性和一个方法：clientHeight 、 scrollHeight 和 scrollTo ，先看看 MDN 上的解释：
+
+clientHeight：元素内容区高度 + 内边距；
+
+scrollHeight：该元素在不使用滚动条的情况下为了适应视口中所用内容所需的最..</p><a class="button is-default mt-2 has-text-weight-semibold" href="/c0a82c74046d.html">更多</a></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><span class="page-number current">1</span><a class="page-number" href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87/page/2/">2</a><a class="extend next" rel="next" href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87/page/2/"><i class="iconfont icon-next has-text-grey"></i></a></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><div style="position: sticky; top: 50px;"><main class="aside-card-container tag-widget is-in-tag-page"><h3>标签</h3><section><a href="/tags/JavaScript"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript</span></a><a href="/tags/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript设计模式与开发实践</span></a><a href="/tags/Vue"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue</span></a><a href="/tags/ViewDesign"><span class="tag post-item-tag" style="margin-bottom: 5px;">ViewDesign</span></a><a href="/tags/ivu-extends"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-extends</span></a><a href="/tags/ivu-input-number"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-input-number</span></a><a href="/tags/%E6%AF%8F%E5%91%A8%E4%B8%80%E7%AF%87"><span class="tag post-item-tag" style="margin-bottom: 5px;">每周一篇</span></a><a href="/tags/ivu-select"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-select</span></a><a href="/tags/Vue%E6%8C%87%E4%BB%A4"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue指令</span></a><a href="/tags/IView"><span class="tag post-item-tag" style="margin-bottom: 5px;">IView</span></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><span class="tag post-item-tag" style="margin-bottom: 5px;">转载</span></a><a href="/tags/Dev%20Tools"><span class="tag post-item-tag" style="margin-bottom: 5px;">Dev Tools</span></a><a href="/tags/Fiddler"><span class="tag post-item-tag" style="margin-bottom: 5px;">Fiddler</span></a><a href="/tags/%E6%8A%93%E5%8C%85"><span class="tag post-item-tag" style="margin-bottom: 5px;">抓包</span></a><a href="/tags/npm"><span class="tag post-item-tag" style="margin-bottom: 5px;">npm</span></a><a href="/tags/%E6%89%8B%E5%86%99%E7%BB%84%E4%BB%B6"><span class="tag post-item-tag" style="margin-bottom: 5px;">手写组件</span></a><a href="/tags/flow-chart"><span class="tag post-item-tag" style="margin-bottom: 5px;">flow-chart</span></a><a href="/tags/ElementUI"><span class="tag post-item-tag" style="margin-bottom: 5px;">ElementUI</span></a><a href="/tags/el-cascader"><span class="tag post-item-tag" style="margin-bottom: 5px;">el-cascader</span></a><a href="/tags/ivu-color-picker"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-color-picker</span></a></section></main></div></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2022</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"><p>Powered by Hexo &verbar;&nbsp;</p><p class="is-flex is-justify-content-center"><a title="Hexo theme author" target="_blank" rel="noopener" href="//github.com/haojen">Theme by Haojen&nbsp;</a></p><div style="margin-top: 2px"><a class="github-button" title="github-button" target="_blank" rel="noopener" href="https://github.com/haojen/hexo-theme-Claudia" data-color-scheme="no-preference: light; light: light; dark: dark;" data-show-count="true"></a></div></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>

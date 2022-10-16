@@ -39,7 +39,8 @@
       padding: 15px;
       border: 1px solid var(--border-line-color);
       background: var(--pre-code-bg-color); }
-  .post-page .post-content .btn-copy {
+  .post-page .post-content .btn-copy,
+  .post-page .post-content .link-btn {
     display: inline-block;
     cursor: pointer;
     background-color: #eee;
@@ -297,3 +298,31 @@
 
 .post-page .hljs-strong {
   font-weight: 700; }
+
+.post-page .iframe-codepen {
+  position: relative;
+  padding: 5px;
+  border-radius: 4px;
+  border: 1px solid var(--border-line-color);
+  box-shadow: 0 0 4px #ccc;
+  overflow: hidden; }
+  .post-page .iframe-codepen::before, .post-page .iframe-codepen::after {
+    content: '';
+    position: absolute;
+    display: block;
+    width: calc(100% - 10px);
+    height: 70px;
+    background-color: #fff; }
+  .post-page .iframe-codepen::before {
+    top: 5px; }
+  .post-page .iframe-codepen::after {
+    bottom: 5px; }
+  .post-page .iframe-codepen iframe {
+    background-color: #fff; }
+  .post-page .iframe-codepen .border-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: -1;
+    width: 100%;
+    height: 100%; }
