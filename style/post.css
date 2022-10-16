@@ -64,6 +64,9 @@
     right: 5px;
     top: 5px;
     opacity: 1; }
+  .post-page .post-content .link-btn {
+    right: 10px;
+    top: 10px; }
   .post-page .post-content pre:hover .btn-copy {
     opacity: 1; }
   .post-page .post-content .hljs {

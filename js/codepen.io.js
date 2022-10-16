@@ -11,7 +11,7 @@
       .attr("width", width)
       .attr("height", height)
     var linkBtn = $(
-      `<button class="link-btn"><a href="${editorSrc}" target="_blank" style="color: inherit">在 codepen.io 中运行</a></button>`
+      `<button class="link-btn"><a href="${editorSrc}" target="_blank" style="color: inherit">在 codepen.io 中查看</a></button>`
     )
     var borderBar = $(`<div class="border-bar"></div>`)
     wrap.append(iframe).append(linkBtn).append(borderBar)
