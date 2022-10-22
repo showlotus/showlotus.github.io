@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>Vue：beforeCreate -&gt; created【每周一篇·8】</title>
+      <link href="/356c15bd4f32.html"/>
+      <url>/356c15bd4f32.html</url>
+      
+        <content type="html"><![CDATA[<img src="/356c15bd4f32/banner.png" class><blockquote><p>如上图所示，Vue 在 <code>beforeCreate -&gt; created</code> 阶段，按这个步骤进行初始化操作。按照这个顺序，也就意味着后者初始化的时候，可以使用前者已经初始化的变量。例如：在 <code>data</code> 中可以使用 <code>methods</code> 里定义的方法，也可以用 <code>props</code> 引入的属性进行初始化。</p></blockquote><h2 id="initInjections"><a href="#initInjections" class="headerlink" title="initInjections"></a>initInjections</h2><p><em><code>inject</code> 的使用请参考<a href="https://v2.cn.vuejs.org/v2/api/#provide-inject">官方文档</a>。</em></p><ul><li><p>先获取当前实例上注册的 <code>inject</code>，读取每一个 <code>key</code>；</p></li><li><p>然后自底向上不断循环获取父组件的 <code>provide</code> 中是否有提供该 <code>key</code>：</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token comment">// 自底向上循环，获取父组件的 provide</span><span class="token keyword">let</span> curr <span class="token operator">=</span> <span class="token keyword">this</span><span class="token keyword">while</span> <span class="token punctuation">(</span>curr<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>  <span class="token keyword">if</span> <span class="token punctuation">(</span>curr<span class="token punctuation">.</span>provide <span class="token operator">&amp;&amp;</span> key <span class="token keyword">in</span> curr<span class="token punctuation">.</span>provide<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    <span class="token comment">// ...</span>    <span class="token keyword">break</span>  <span class="token punctuation">&#125;</span>  curr <span class="token operator">=</span> curr<span class="token punctuation">.</span>$parent<span class="token punctuation">&#125;</span></code></pre><ul><li>若找到了，则跳出循环，并返回结果；</li><li>若未找到，则使用配置的默认值 <code>default</code>；</li><li>特殊的，对于 <code>default</code> 为 <code>function</code> 类型（非原始值的默认值），则会将该方法通过 <code>call</code> 修改 <code>this</code> 为当前实例后，再将执行结果返回；</li><li>如果既没找到，也没设置 <code>default</code>，则抛出一个 <code>非生产警告</code>。</li></ul><b></b></li><li><p>然后对于收集到的结果，会遍历每一个 <code>key</code>，然后通过 <code>defineReactive</code> 注册到当前实例上，而在 <code>defineReactive</code> 前会有一个 &quot;取消响应式&quot; 的操作：</p><pre class="language-js" data-language="js"><code class="language-js">observerState<span class="token punctuation">.</span>shouldConvert <span class="token operator">=</span> <span class="token boolean">false</span></code></pre><p>这一步就是通知 <code>defineReactive</code> 不要将接下来挂载的数据转换成响应式数据，这也就印证了官方说的 <code>inject</code> 注入的内容不是响应式数据。其实就是把提供的 <code>provide</code> 的内容在引入 <code>inject</code> 的实例上，重新复制了一份。如果是基本数据类型，只是值复制，那么自然而然不是响应式数据，但是如果是引用类型，还是引用的同一个地址，如果源数据是响应式的，那么 <code>inject</code> 引入的也是响应式数据。</p><p>如果想实现基础数据类型的响应式呢？换个角度，如果我们把 <code>provide</code> 提供的属性的 <code>this</code> 绑定在原实例上，那么是否就能通过原实例的 <code>this</code> 访问到原实例上的一些响应式的数据？那么 <code>inject</code> 注入的内容是不是就是响应式的呢？</p><p>看一个例子：</p><b><ul><li><p>父组件</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token comment">// parent</span><span class="token operator">&lt;</span>template<span class="token operator">></span>  <span class="token operator">&lt;</span>div<span class="token operator">></span>    <span class="token operator">&lt;</span>input v<span class="token operator">-</span>model<span class="token operator">=</span><span class="token string">"msg"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>input<span class="token operator">></span>  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span><span class="token operator">&lt;</span>script<span class="token operator">></span><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>  <span class="token function">provide</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>      <span class="token function-variable function">getMsg</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span>msg<span class="token punctuation">,</span>      <span class="token function">getMsg2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span> <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>msg <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>      <span class="token literal-property property">getMsg3</span><span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>getMsg3<span class="token punctuation">,</span>    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>  <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>      <span class="token literal-property property">msg</span><span class="token operator">:</span> <span class="token string">"parent msg"</span><span class="token punctuation">,</span>    <span class="token punctuation">&#125;</span><span class="token punctuation">;</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span><span class="token punctuation">&#125;</span><span class="token punctuation">;</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre><b></b></li><li><p>子组件</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token comment">// child</span><span class="token operator">&lt;</span>template<span class="token operator">></span>  <span class="token operator">&lt;</span>div<span class="token operator">></span>    <span class="token operator">&lt;</span>p<span class="token operator">></span>getMsg<span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> msg1 <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>p<span class="token operator">></span>    <span class="token operator">&lt;</span>p<span class="token operator">></span>getMsg2<span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> msg2 <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>p<span class="token operator">></span>    <span class="token operator">&lt;</span>p<span class="token operator">></span>getMsg3<span class="token operator">:</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> msg3 <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>p<span class="token operator">></span>  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span><span class="token operator">&lt;</span>script<span class="token operator">></span><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>  <span class="token literal-property property">inject</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"getMsg"</span><span class="token punctuation">,</span> <span class="token string">"getMsg2"</span><span class="token punctuation">,</span> <span class="token string">"getMsg3"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>  <span class="token literal-property property">computed</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>    <span class="token function">msg1</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getMsg</span><span class="token punctuation">(</span><span class="token punctuation">)</span>    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>    <span class="token function">msg2</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getMsg2</span><span class="token punctuation">(</span><span class="token punctuation">)</span>    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>    <span class="token function">msg3</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getMsg3</span><span class="token punctuation">(</span><span class="token punctuation">)</span>    <span class="token punctuation">&#125;</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre></li></ul></b></li></ul><p>子组件中的 <code>msg1</code> 和 <code>msg3</code> 是响应式的，而 <code>msg2</code> 为空（<code>&quot;&quot;</code>）。这其实就是 <code>this</code> 指向的问题：</p><ul><li><code>msg1</code>：箭头函数的 <code>this</code> 是由创建时的环境决定的，也即 <code>this == ParentVm(父组件实例)</code>，所以 <code>getMsg() == &quot;parent msg&quot;</code>。</li><li><code>msg2</code>：正常的函数调用的 <code>this</code> 由当前的执行环境决定，也即 <code>this == ChildVm(子组件实例)</code>，因为子组件上没有定义 <code>msg</code>，所以 <code>getMsg2() == undefined</code>，通过 <code>&#123;&#123;&#125;&#125;</code> 渲染到页面上就是 <code>&quot;&quot;(空字符串)</code>。</li><li><code>msg3</code>：根据结果论，<code>getMsg</code> 和 <code>getMsg3</code> 的 <code>this</code> 都指向 <code>ParentVm</code>，这里就涉及到 <code>methods</code> 的初始化了，在下面 <code>initMethods</code> 章节里会有详细说明。</li></ul><h2 id="initState"><a href="#initState" class="headerlink" title="initState"></a>initState</h2><h3 id="initProps"><a href="#initProps" class="headerlink" title="initProps"></a>initProps</h3><p><em><code>props</code> 的使用请参考<a href="https://cn.vuejs.org/v2/guide/components-props.html">官方文档</a>。</em></p><ul><li><p>在解析模板生成 render 函数的阶段，会将解析到的 <code>props</code> 数据传递给子组件，在子组件中使用 <code>props</code> 中的参数，会触发对应参数的 <code>getter</code>，然后将子组件中对应的 <code>Watcher</code> 放入当前参数的依赖中，从而实现在父组件更新值后，子组件也会同步更新。</p></li><li><p>在父组件模板中给子组件传递属性，既可以以短杠的形式 <code>user-name</code>，也可以用小驼峰的形式 <code>userName</code>，不过在子组件中注册到 <code>props</code> 中，只能以 <code>userName</code> 的形式接收。</p></li><li><p>只有在当前是根组件时，才会将 <code>props</code> 中的数据转换为响应式数据。因为从父组件传入的 <code>props</code> 都已经在父组件中定义成响应式了，子组件只是引入，并在使用的时候，再往 <code>props</code> 里添加对应的依赖，所以不需要转为响应式。特殊的，对于父组件没有提供，且定义了 <code>default</code> 的 <code>prop</code>，需要将默认值转为响应式。</p></li><li><p><code>Boolean</code> 类型 <code>prop</code> 的处理：以下四种情况都会将子组件的 <code>prop</code> 设置为 <code>true</code>：</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token operator">&lt;</span>child name <span class="token operator">/</span><span class="token operator">></span><span class="token operator">&lt;</span>child name<span class="token operator">=</span><span class="token string">"name"</span> <span class="token operator">/</span><span class="token operator">></span><span class="token operator">&lt;</span>child userName<span class="token operator">=</span><span class="token string">"user-name"</span> <span class="token operator">/</span><span class="token operator">></span><span class="token operator">&lt;</span>child user<span class="token operator">-</span>name<span class="token operator">=</span><span class="token string">"user-name"</span> <span class="token operator">/</span><span class="token operator">></span></code></pre><p>比对时，会将 <code>key</code> 进行驼峰转化，即 <code>userName -&gt; user-name</code>，如果与提供的值相等，那么也设置为 <code>true</code>。</p></li><li><p>最后，遍历 <code>props</code> 中的每一项，然后将不在当前 <code>vm</code> 实例上的，设置一层代理，然后挂载在 <code>vm</code> 实例上。</p></li></ul><h3 id="initMethods"><a href="#initMethods" class="headerlink" title="initMethods"></a>initMethods</h3><ul><li>遍历 <code>$options.methods</code>，先检验是否有与 <code>props</code> 中的有重复的，如果有，则抛出一个 <code>非生产警告</code>。注意这只是一个警告，如果没有修正，那么依然还会将当前 <code>methods</code> 挂载在当前实例上（也即，如果某一个 <code>key</code> 同时存在于 <code>props</code> 和 <code>methods</code> 上，那么最后使用时，使用的是 <code>methods</code> 上的）。</li><li>挂载时会通过 <code>bind</code> 修改 <code>methods</code> 的 <code>this</code> 为当前实例。</li></ul><h3 id="initData"><a href="#initData" class="headerlink" title="initData"></a>initData</h3><ul><li><p>特殊的，<code>data</code> 必须是一个对象，或者是一个返回对象的函数。</p></li><li><p>遍历 <code>data</code> 的校验阶段：</p><ul><li>先判断，如果属性已存在于 <code>methods</code> 中，则抛出一个 <code>非生产警告</code>；</li><li>再判断，如果属性已存在于 <code>props</code> 中，抛出一个 <code>非生产警告</code>，但是不会挂载，只有当前属性不以 <code>$</code> 或 <code>_</code> 开头时，才会代理到实例上。</li></ul></li></ul><blockquote><p>Vue 内部使用的代理方法</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> <span class="token function-variable function">noop</span> <span class="token operator">=</span> <span class="token parameter">_</span> <span class="token operator">=></span> _<span class="token keyword">const</span> sharePropertyDefinition <span class="token operator">=</span> <span class="token punctuation">&#123;</span>  <span class="token literal-property property">enumerable</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>  <span class="token literal-property property">configurable</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>  <span class="token literal-property property">get</span><span class="token operator">:</span> noop<span class="token punctuation">,</span>  <span class="token literal-property property">set</span><span class="token operator">:</span> noop<span class="token punctuation">&#125;</span><span class="token keyword">function</span> <span class="token function">proxy</span><span class="token punctuation">(</span><span class="token parameter">target<span class="token punctuation">,</span> sourceKey<span class="token punctuation">,</span> key</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>  sharePropertyDefinition<span class="token punctuation">.</span><span class="token function-variable function">get</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">proxyGetter</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">[</span>sourceKey<span class="token punctuation">]</span><span class="token punctuation">[</span>key<span class="token punctuation">]</span>  <span class="token punctuation">&#125;</span>  sharePropertyDefinition<span class="token punctuation">.</span><span class="token function-variable function">set</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token function">proxySetter</span><span class="token punctuation">(</span><span class="token parameter">val</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    <span class="token keyword">this</span><span class="token punctuation">[</span>sourceKey<span class="token punctuation">]</span><span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> val  <span class="token punctuation">&#125;</span>  Object<span class="token punctuation">.</span><span class="token function">defineProperty</span><span class="token punctuation">(</span>target<span class="token punctuation">,</span> key<span class="token punctuation">,</span> sharePropertyDefinition<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></code></pre></blockquote><h3 id="initComputed"><a href="#initComputed" class="headerlink" title="initComputed"></a>initComputed</h3><p><em><code>computed</code> 的使用请参考<a href="https://cn.vuejs.org/v2/guide/computed.html#%E8%AE%A1%E7%AE%97%E5%B1%9E%E6%80%A7">官方文档</a>。</em></p><ul><li>先检验，如果当前的属性名已存在 <code>vm</code> 上，则不会处理这个属性。</li><li>收集当前 <code>getter</code> 中所有用到的属性的依赖，当这些属性变化时，通知 <code>computed Watcher</code> 去更新。</li></ul><blockquote><p>在 18 年有人提了一个 <em>Issue</em> ：<code>computed</code> 依赖的值发生了变化，但 <code>computed</code> 的值没有改变，仍然会触发 <code>render</code>。官方虽然在后续也重新解决了，不过我最近用最新版的 <em>Vue2.7</em> 试了试，貌似还存在这个问题（<a href="https://codepen.io/olderk/pen/XWqvyKV">戳这里</a>）。</p></blockquote><p>粗略地看了看，尝试解释一下。比如下面这个：<em>sum</em> 依赖于 <em>a</em> 和 <em>b</em> ，其中 <em>sum</em> 的 <em>Watcher</em> 有一个：<code>render Watcher</code>，按理说 <em>a</em> 和 <em>b</em> 的 <em>Watcher</em> 应该只有一个 <code>computed Watcher</code>，那就是当 <em>a</em> 或 <em>b</em> 发生变化后，通知计算属性 <em>sum</em> 重新计算，但是这样无法通知 <em>sum</em> 的 <em>Watcher</em> 去更新。所以 <em>sum</em> 的每个依赖里都会把 <em>sum</em> 的 <em>Watcher</em> 存一份，也即 <em>a</em> 和 <em>b</em> 的 <em>Watcher</em> 里还有一份 <code>render Watcher</code>。然后就导致，就算 <em>a</em> 和 <em>b</em> 的值同时改变了，但是 <em>sum</em> 的结果没变，还是会触发 <code>render Watcher</code>，重新执行一次 <em>render</em> 。虽然在 <em>diff</em> 阶段，最新的一次 <em>render</em> 没有任何变化，但还是会造成性能的浪费。（个人愚见哈 😂）</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token operator">&lt;</span>template<span class="token operator">></span>  <span class="token operator">&lt;</span>div<span class="token operator">></span><span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> sum <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span><span class="token operator">&lt;</span>script<span class="token operator">></span><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>  <span class="token literal-property property">computed</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>    <span class="token function">sum</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>a <span class="token operator">+</span> <span class="token keyword">this</span><span class="token punctuation">.</span>b    <span class="token punctuation">&#125;</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre><h3 id="initWatch"><a href="#initWatch" class="headerlink" title="initWatch"></a>initWatch</h3><p><em><code>watch</code> 的使用请参考<a href="https://cn.vuejs.org/v2/guide/computed.html#%E4%BE%A6%E5%90%AC%E5%99%A8">官方文档</a>。</em></p><p>初始化时，创建 <code>Watcher</code> 与 <code>$watch</code> 使用的是同一个方法。参数类型可以为 <code>String</code>、<code>Function</code>、<code>Object</code> 和 <code>Array</code> 这四种类型。</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token literal-property property">watch</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>  <span class="token function-variable function">a</span><span class="token operator">:</span> <span class="token keyword">function</span><span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>  <span class="token literal-property property">b</span><span class="token operator">:</span> <span class="token string">'handlerWatchB'</span><span class="token punctuation">,</span>  <span class="token literal-property property">c</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>    <span class="token function">handler</span><span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>    <span class="token literal-property property">deep</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>    <span class="token literal-property property">immediate</span><span class="token operator">:</span> <span class="token boolean">false</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>  <span class="token literal-property property">d</span><span class="token operator">:</span> <span class="token punctuation">[</span>    <span class="token keyword">function</span> <span class="token function">handlerWatchD1</span><span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>    <span class="token keyword">function</span> <span class="token function">handlerWatchD2</span><span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>  <span class="token punctuation">]</span><span class="token punctuation">&#125;</span></code></pre><p>鉴于参数的特殊性，需要对类型为 <code>Array</code> 的特殊处理，批量创建 <code>Watcher</code>。</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token comment">// 创建 Watcher</span><span class="token keyword">function</span> <span class="token function">createWatcher</span><span class="token punctuation">(</span><span class="token parameter">vm<span class="token punctuation">,</span> expOrFn<span class="token punctuation">,</span> handler<span class="token punctuation">,</span> options</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isPlainObject</span><span class="token punctuation">(</span>handler<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    options <span class="token operator">=</span> handler    handler <span class="token operator">=</span> handler<span class="token punctuation">.</span>handler  <span class="token punctuation">&#125;</span>  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">typeof</span> handler <span class="token operator">===</span> <span class="token string">"string"</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    handler <span class="token operator">=</span> vm<span class="token punctuation">[</span>handler<span class="token punctuation">]</span>  <span class="token punctuation">&#125;</span>  <span class="token keyword">return</span> vm<span class="token punctuation">.</span><span class="token function">$watch</span><span class="token punctuation">(</span>expOrFn<span class="token punctuation">,</span> handler<span class="token punctuation">,</span> options<span class="token punctuation">)</span><span class="token punctuation">&#125;</span></code></pre><h2 id="initProvide"><a href="#initProvide" class="headerlink" title="initProvide"></a>initProvide</h2><p><em><code>provide</code> 的使用请参考<a href="https://v2.cn.vuejs.org/v2/api/#provide-inject">官方文档</a>。</em></p><ul><li>如果是 <code>object</code> 类型，则直接挂载在当前实例上；</li><li>如果是 <code>function</code> 类型，则通过 <code>call</code> 修改 <code>this</code> 为当前实例后，再将执行结果返回。</li></ul>]]></content>
+      
+      
+      <categories>
+          
+          <category> 笔记 </category>
+          
+          <category> 每周一篇 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Vue </tag>
+            
+            <tag> 源码 </tag>
+            
+            <tag> 深入浅出 Vue.js </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>v-resize：监听 DOM 尺寸变化</title>
       <link href="/ba04c9685d97.html"/>
       <url>/ba04c9685d97.html</url>
@@ -38,9 +69,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 每周一篇 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -50,8 +81,6 @@
             <tag> ViewDesign </tag>
             
             <tag> ivu-extends </tag>
-            
-            <tag> 每周一篇 </tag>
             
             <tag> ivu-input-number </tag>
             
@@ -71,9 +100,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 每周一篇 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -83,8 +112,6 @@
             <tag> ViewDesign </tag>
             
             <tag> ivu-extends </tag>
-            
-            <tag> 每周一篇 </tag>
             
             <tag> ivu-select </tag>
             
@@ -104,9 +131,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 每周一篇 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -114,8 +141,6 @@
         <tags>
             
             <tag> Vue指令 </tag>
-            
-            <tag> 每周一篇 </tag>
             
         </tags>
       
@@ -148,9 +173,9 @@
           
           <category> 笔记 </category>
           
-          <category> 日常 </category>
-          
           <category> 每周一篇 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -160,8 +185,6 @@
             <tag> JavaScript </tag>
             
             <tag> JavaScript设计模式与开发实践 </tag>
-            
-            <tag> 每周一篇 </tag>
             
         </tags>
       
@@ -179,9 +202,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 每周一篇 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -189,8 +212,6 @@
         <tags>
             
             <tag> Vue指令 </tag>
-            
-            <tag> 每周一篇 </tag>
             
         </tags>
       
@@ -208,9 +229,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 每周一篇 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -220,8 +241,6 @@
             <tag> ViewDesign </tag>
             
             <tag> ivu-extends </tag>
-            
-            <tag> 每周一篇 </tag>
             
             <tag> ivu-input-number </tag>
             
@@ -241,9 +260,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 每周一篇 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -257,8 +276,6 @@
             <tag> ivu-color-picker </tag>
             
             <tag> Vue指令 </tag>
-            
-            <tag> 每周一篇 </tag>
             
         </tags>
       
