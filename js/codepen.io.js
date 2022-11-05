@@ -2,6 +2,7 @@
   /* TAG 页面载入完成后，添加跳转链接按钮 */
   var initLinkBtn = function () {
     var wrap = $(".iframe-codepen")
+    if (!wrap.length) return
     var src = wrap.attr("src")
     var width = wrap.attr("width")
     var height = wrap.attr("height")

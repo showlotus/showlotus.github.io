@@ -10243,7 +10243,7 @@ a.has-text-danger-dark:focus {
 
 .is-flex-direction-row-reverse {
   /* DONE 导航栏居左显示 */
-  /* flex-direction: row-reverse !important; */
+  flex-direction: row-reverse !important;
 }
 
 .is-flex-direction-column {
