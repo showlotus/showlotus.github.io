@@ -4,6 +4,35 @@
   
     
     <entry>
+      <title>拦截网页请求并处理数据 &lt;W12&gt;</title>
+      <link href="/50542ea338ab.html"/>
+      <url>/50542ea338ab.html</url>
+      
+        <content type="html"><![CDATA[<img src="/50542ea338ab/banner.jpg" class><blockquote><p>有时候需要拦截网页的某个请求，收集响应数据，单个请求直接操作就好了；如果是多个相同 API 的请求，如果有个批处理数据的工具岂不美哉。于是，它来了。本来打算弄成一个油猴插件，但是浏览器总是会把插件的打印日志给 “吞掉”，那就先直接在控制台运行脚本，更简单明了。</p></blockquote><h4 id="介绍"><a href="#介绍" class="headerlink" title="介绍"></a>介绍</h4><p>用到了一个插件 <a href="https://github.com/wendux/ajax-hook">ajaxhook</a>，官方是这样介绍的：</p><blockquote><p>在 <code>XMLHttpRequest</code> 对象发起请求之前、收到响应内容之后以及发生错误时获得处理权，通过它你可以提前对请求、响应以及错误进行一些预处理。</p></blockquote><p>要想在网站上用其他的脚本，首先需要将它引入，这里是通过动态创建 <code>script</code> 标签的方式，将这个标签插入到当前页面中，然后浏览器会自动获取这个 <code>JS</code> 资源。</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token keyword">const</span> script <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">"script"</span><span class="token punctuation">)</span>script<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">"type"</span><span class="token punctuation">,</span> <span class="token string">"text/javascript"</span><span class="token punctuation">)</span>script<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span>  <span class="token string">"src"</span><span class="token punctuation">,</span>  <span class="token string">"https://unpkg.com/ajax-hook@2.1.3/dist/ajaxhook.min.js"</span><span class="token punctuation">)</span>document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>script<span class="token punctuation">)</span></code></pre><p>创建完标签还不行，还要检测当前是否已经引入完成了。引入完成后，<code>ajaxhook</code> 会在全局定义一个名叫 <code>ah</code> 的变量，那么就可以根据这个变量来判断。</p><p>通过在一个 <code>Promise</code> 实例里，定时检测是否 <code>ah !== undefined</code> 来判断。虽然看起来很笨拙，但是很实用 🤭。</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>  <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>    <span class="token keyword">var</span> ajaxHookTimer <span class="token operator">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>      <span class="token keyword">if</span> <span class="token punctuation">(</span>ah <span class="token operator">!==</span> <span class="token keyword">undefined</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>        <span class="token function">clearInterval</span><span class="token punctuation">(</span>ajaxHookTimer<span class="token punctuation">)</span>        <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>      <span class="token punctuation">&#125;</span>    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">500</span><span class="token punctuation">)</span>  <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    <span class="token function">reject</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre><p>脚本其余部分都是按照官网案例，可以自行查阅。</p><h4 id="脚本"><a href="#脚本" class="headerlink" title="脚本"></a>脚本</h4><p>完整的脚本代码如下：</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token punctuation">;</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>  <span class="token comment">/* --- 收集数据 Start --- */</span>  <span class="token comment">// 用来收集数据的数组对象</span>  <span class="token keyword">const</span> resData <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>  <span class="token comment">// 需要拦截的请求地址</span>  <span class="token keyword">const</span> url <span class="token operator">=</span> <span class="token string">""</span>  <span class="token comment">// 自定义的数据格式化方法</span>  <span class="token keyword">function</span> <span class="token function">formatData</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    <span class="token comment">/* 处理 data */</span>    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>resData<span class="token punctuation">)</span>  <span class="token punctuation">&#125;</span>  <span class="token comment">/* --- 收集数据 End --- */</span>  <span class="token function">injectAjaxHook</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"开启拦截"</span><span class="token punctuation">)</span>    <span class="token function">openIntercept</span><span class="token punctuation">(</span><span class="token punctuation">)</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>  <span class="token comment">// 注入第三方插件</span>  <span class="token keyword">function</span> <span class="token function">injectAjaxHook</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"拦截准备中..."</span><span class="token punctuation">)</span>    <span class="token keyword">const</span> script <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">createElement</span><span class="token punctuation">(</span><span class="token string">"script"</span><span class="token punctuation">)</span>    script<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span><span class="token string">"type"</span><span class="token punctuation">,</span> <span class="token string">"text/javascript"</span><span class="token punctuation">)</span>    script<span class="token punctuation">.</span><span class="token function">setAttribute</span><span class="token punctuation">(</span>      <span class="token string">"src"</span><span class="token punctuation">,</span>      <span class="token string">"https://unpkg.com/ajax-hook@2.1.3/dist/ajaxhook.min.js"</span>    <span class="token punctuation">)</span>    document<span class="token punctuation">.</span>documentElement<span class="token punctuation">.</span><span class="token function">appendChild</span><span class="token punctuation">(</span>script<span class="token punctuation">)</span>    <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve<span class="token punctuation">,</span> reject</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>      <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>        <span class="token keyword">var</span> ajaxHookTimer <span class="token operator">=</span> <span class="token function">setInterval</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>          <span class="token keyword">if</span> <span class="token punctuation">(</span>ah <span class="token operator">!==</span> <span class="token keyword">undefined</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>            <span class="token function">clearInterval</span><span class="token punctuation">(</span>ajaxHookTimer<span class="token punctuation">)</span>            <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>          <span class="token punctuation">&#125;</span>        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">500</span><span class="token punctuation">)</span>      <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>        <span class="token function">reject</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span>      <span class="token punctuation">&#125;</span>    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>  <span class="token punctuation">&#125;</span>  <span class="token comment">// 开启数据拦截</span>  <span class="token keyword">function</span> <span class="token function">openIntercept</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>    ah<span class="token punctuation">.</span><span class="token function">proxy</span><span class="token punctuation">(</span>      <span class="token punctuation">&#123;</span>        <span class="token comment">// 请求发起前进入</span>        <span class="token function-variable function">onRequest</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">config<span class="token punctuation">,</span> handler</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>          handler<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>        <span class="token comment">// 请求发生错误时进入，比如超时；注意，不包括http状态码错误，如404仍然会认为请求成功</span>        <span class="token function-variable function">onError</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">err<span class="token punctuation">,</span> handler</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>          console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>err<span class="token punctuation">.</span>type<span class="token punctuation">)</span>          handler<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>err<span class="token punctuation">)</span>        <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>        <span class="token comment">// 请求成功后进入</span>        <span class="token function-variable function">onResponse</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">res<span class="token punctuation">,</span> handler</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>          <span class="token keyword">try</span> <span class="token punctuation">&#123;</span>            <span class="token keyword">const</span> url <span class="token operator">=</span> res<span class="token punctuation">.</span>config<span class="token punctuation">.</span>url            <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isUsefulUrl</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>              <span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>res<span class="token punctuation">.</span>response<span class="token punctuation">)</span>              <span class="token function">formatData</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>            <span class="token punctuation">&#125;</span>            handler<span class="token punctuation">.</span><span class="token function">next</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>          <span class="token punctuation">&#125;</span> <span class="token keyword">catch</span> <span class="token punctuation">(</span>e<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>            console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span>          <span class="token punctuation">&#125;</span>        <span class="token punctuation">&#125;</span>      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>      window    <span class="token punctuation">)</span>    <span class="token comment">// 是否是有效链接</span>    <span class="token keyword">function</span> <span class="token function">isUsefulUrl</span><span class="token punctuation">(</span><span class="token parameter">testUrl</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>      <span class="token keyword">let</span> path <span class="token operator">=</span> testUrl<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(\.\w+)?(\/\w+)+(?=(\?|$))</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">)</span>      <span class="token keyword">if</span> <span class="token punctuation">(</span>path<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>        path <span class="token operator">=</span> path<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>      <span class="token punctuation">&#125;</span>      <span class="token keyword">return</span> testUrl<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>url<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token operator">-</span><span class="token number">1</span> <span class="token operator">||</span> url<span class="token punctuation">.</span><span class="token function">indexOf</span><span class="token punctuation">(</span>path<span class="token punctuation">)</span> <span class="token operator">></span> <span class="token operator">-</span><span class="token number">1</span>    <span class="token punctuation">&#125;</span>  <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre><h4 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h4><p>以百度图片搜索为例，每次切换图片时，会发起这个请求。</p><img src="/50542ea338ab/2.png" class><p>假如需要收集响应数据中的 <code>bfe_log_id</code> 字段。</p><img src="/50542ea338ab/1.png" class><p>那么在收集数据部分就可以写成下面这样：</p><pre class="language-js" data-language="js"><code class="language-js"><span class="token comment">/* --- 收集数据 Start --- */</span><span class="token comment">// 用来收集数据的数组对象</span><span class="token keyword">const</span> resData <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token comment">// 需要拦截的请求地址</span><span class="token keyword">const</span> url <span class="token operator">=</span> <span class="token string">"https://image.baidu.com/simple/simplesearch"</span><span class="token comment">// 自定义的数据格式化方法</span><span class="token keyword">function</span> <span class="token function">formatData</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>  resData<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>data<span class="token punctuation">.</span>bfe_log_id<span class="token punctuation">)</span>  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>resData<span class="token punctuation">)</span><span class="token punctuation">&#125;</span><span class="token comment">/* --- 收集数据 End --- */</span></code></pre><p>打开控制台，粘贴脚本代码，回车。当控制台出现【开启拦截】时，说明拦截器已经加载完毕，就可以发请求了。</p><img src="/50542ea338ab/result.gif" class><p>大功告成，快去试试吧。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 日常 </category>
+          
+          <category> 每周一篇 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> JavaScript </tag>
+            
+            <tag> 浏览器脚本 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>CSS实现曲线导航菜单 &lt;W11&gt;</title>
       <link href="/fc7e022e1ff1.html"/>
       <url>/fc7e022e1ff1.html</url>
@@ -22,9 +51,9 @@
       
         <tags>
             
-            <tag> JavaScript </tag>
-            
             <tag> CSS </tag>
+            
+            <tag> JavaScript </tag>
             
         </tags>
       
@@ -42,9 +71,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 笔记 </category>
+          
+          <category> 日常 </category>
           
           <category> 每周一篇 </category>
           
@@ -102,9 +131,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 笔记 </category>
+          
+          <category> 日常 </category>
           
           <category> 每周一篇 </category>
           
@@ -262,9 +291,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 笔记 </category>
+          
+          <category> 日常 </category>
           
           <category> 每周一篇 </category>
           
@@ -384,9 +413,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 笔记 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
@@ -438,9 +467,9 @@
       
       <categories>
           
-          <category> 日常 </category>
-          
           <category> 笔记 </category>
+          
+          <category> 日常 </category>
           
       </categories>
       
