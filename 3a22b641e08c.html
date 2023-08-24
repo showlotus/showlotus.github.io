@@ -1,0 +1,219 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>开发一个 Prettier 插件：全局替换资源引入路径 &lt;W15&gt;</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+最近在迁移项目，对于一些资源的引用路径，需要换成一个新的路径。还好之前都把资源引用的方式，改成以 @/.. 别名引入的方式，替换起来还算简单。先把新旧路径列出来，然后用 VSCode 的全局替换，因为就只有三种，CV 三次就好了。这种方法，在当时我认为是比较好的了，其实也有打算整个什么脚本啥的，但不知道从何做起。直到当天晚些时候，看到了神光大佬最新发布的一篇文章：写一个同事见了会打你的 Prettier 插件。直接对我醍醐灌顶，这不就是我想要的工具嘛！于是就打算写一个 prettier 插件，统一格式化路径，想法有了，开干！
+
+
+
+
+最终的效果如上，点击保存后，自动将 path 进行替换。
+
+对于一段普通的 import 代码，转成 AST 后，是下面这样：
+
+
+import 中的 path 对应的就.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">开发一个 Prettier 插件：全局替换资源引入路径 &lt;W15&gt;</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/AST"><i class="tag post-item-tag">AST</i></a><a href="/tags/Babel"><i class="tag post-item-tag">Babel</i></a><a href="/tags/Prettier"><i class="tag post-item-tag">Prettier</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">开发一个 Prettier 插件：全局替换资源引入路径 &lt;W15&gt;</h1><time class="has-text-grey custom-date-font" datetime="2022-12-10T06:35:46.000Z">2022/12/10 14:35</time><article class="mt-2 post-content"><img src="/3a22b641e08c/banner.jpg" class>
+
+<blockquote>
+<p>最近在迁移项目，对于一些资源的引用路径，需要换成一个新的路径。还好之前都把资源引用的方式，改成以 <code>@/..</code> 别名引入的方式，替换起来还算简单。先把新旧路径列出来，然后用 <em>VSCode</em> 的全局替换，因为就只有三种，<em>CV</em> 三次就好了。这种方法，在当时我认为是比较好的了，其实也有打算整个什么脚本啥的，但不知道从何做起。直到当天晚些时候，看到了神光大佬最新发布的一篇文章：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/w1ms6ltvPTU5Hes6o7AJYQ">写一个同事见了会打你的 Prettier 插件</a>。直接对我醍醐灌顶，这不就是我想要的工具嘛！于是就打算写一个 <em>prettier</em> 插件，统一格式化路径，想法有了，开干！</p>
+</blockquote>
+<img src="/3a22b641e08c/result.gif" class>
+
+<blockquote>
+<p>最终的效果如上，点击保存后，自动将 <code>path</code> 进行替换。</p>
+</blockquote>
+<p>对于一段普通的 <code>import</code> 代码，转成 <code>AST</code> 后，是下面这样：</p>
+<img src="/3a22b641e08c/1.png" class>
+
+<p><code>import</code> 中的 <code>path</code> 对应的就是每个 <code>ImportDeclaration</code> 节点中的 <code>source.value</code>。</p>
+<p>只需要把每个节点中的 <code>source.value</code> 按照指定的替换规则给替换一遍，然后再用替换后的 <code>AST</code> 去生成代码，这样就大功告成了。是不是很简单？完整的 <code>preprocess</code> 如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">myPreprocessor</span><span class="token punctuation">(</span><span class="token parameter">code<span class="token punctuation">,</span> options</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> ast <span class="token operator">=</span> parser<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"jsx"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sourceType</span><span class="token operator">:</span> <span class="token string">"module"</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> importNodes <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+
+  <span class="token function">traverse</span><span class="token punctuation">(</span>ast<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">ImportDeclaration</span><span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      importNodes<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token function">clone</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span>node<span class="token punctuation">)</span><span class="token punctuation">)</span>
+      path<span class="token punctuation">.</span><span class="token function">remove</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// 写入自定义替换规则，用一个二维数组记录</span>
+  <span class="token comment">// 数组第一项为匹配规则，第二项为替换后的路径</span>
+  <span class="token keyword">const</span> rules <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">[</span><span class="token string">"^@/packages/mixins/"</span><span class="token punctuation">,</span> <span class="token string">"@/mixins/"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token string">"^@/libs/assist"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/assist"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token string">"^@/views/editor/editor-props"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/editor-props"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">]</span>
+
+  rules<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">rule</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    rule<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>rule<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  importNodes<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">node<span class="token punctuation">,</span> i</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token punctuation">[</span>rule<span class="token punctuation">,</span> t<span class="token punctuation">]</span> <span class="token keyword">of</span> rules<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> value <span class="token operator">=</span> node<span class="token punctuation">.</span>source<span class="token punctuation">.</span>value
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span>rule<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        node<span class="token punctuation">.</span>source<span class="token punctuation">.</span>value <span class="token operator">=</span> value<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>rule<span class="token punctuation">,</span> t<span class="token punctuation">)</span>
+        <span class="token keyword">break</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> newAST <span class="token operator">=</span> types<span class="token punctuation">.</span><span class="token function">file</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"Program"</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">body</span><span class="token operator">:</span> importNodes
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> newCode <span class="token operator">=</span> <span class="token function">generate</span><span class="token punctuation">(</span>newAST<span class="token punctuation">)</span><span class="token punctuation">.</span>code <span class="token operator">+</span> <span class="token string">"\n"</span> <span class="token operator">+</span> <span class="token function">generate</span><span class="token punctuation">(</span>ast<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">retainLines</span><span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span>code
+
+  <span class="token keyword">return</span> newCode
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>看看效果如何。</p>
+<img src="/3a22b641e08c/2.gif" class>
+
+<p>咦~ 不对劲啊！怎么把 <em>17</em> 行的注释，又重新生成了一次 😦。排查了一下，貌似是因为 <code>newAST</code> 中最后一个 <code>ImportDeclaration</code> 节点中有一个 <code>trailingComments</code> 节点（即 <code>// this is test</code>），而 <code>ast</code> 中第一个 <code>FunctionDeclaration</code> 节点的 <code>leadingComments</code> 中同样也有这个注释节点，导致就生成了两次，那么把最后一个 <code>ImportDeclaration</code> 节点中的 <code>trailingComments</code> 清空是不是就行了？先试一下。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">importNodes<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">node<span class="token punctuation">,</span> i</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token punctuation">[</span>rule<span class="token punctuation">,</span> t<span class="token punctuation">]</span> <span class="token keyword">of</span> rules<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> value <span class="token operator">=</span> node<span class="token punctuation">.</span>source<span class="token punctuation">.</span>value
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span>rule<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      node<span class="token punctuation">.</span>source<span class="token punctuation">.</span>value <span class="token operator">=</span> value<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>rule<span class="token punctuation">,</span> t<span class="token punctuation">)</span>
+      <span class="token keyword">break</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 清空最后一个 import 节点的 trailingComments</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">===</span> importNodes<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    node<span class="token punctuation">.</span>trailingComments <span class="token operator">=</span> <span class="token keyword">null</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<img src="/3a22b641e08c/3.gif" class>
+
+<p>看样子，没啥问题。不妨再看一个例子。</p>
+<img src="/3a22b641e08c/4.gif" class>
+
+<p>这次又把 <code>import</code> 代码间的注释重新生成了一份。(⊙﹏⊙) 总不能去比较每个注释节点，看看是否有相同的，然后再去重吧 🤡。转念一想，可以去看看 <code>prettier-plugin-sort-imports</code> 的源码啊，看看人家怎么处理的。<em>Get ~</em></p>
+<p>源码是用 <em>TS</em> 写的，虽然没写过 <em>TS</em> ，但是大致思路还是能看懂的，吭吭哧哧也算看明白了个大概。总体下来，处理思路大致是这样的：</p>
+<ol>
+<li>先从 <code>importNodes</code> 中获取所有注释节点 <code>allCommentsFromImports</code>。</li>
+<li>然后从源代码片段中，移除 <code>importNodes</code> 与 <code>allCommentsFromImports</code>，得到一份干净的源代码 <code>codeWithoutImportsAndInterpreter</code>。</li>
+<li>最后，用 <code>importNodes</code> 生成的 <code>AST</code> 重新生成的代码 + <code>codeWithoutImportsAndInterpreter</code>。</li>
+</ol>
+<p>大致思路有了，又从 <code>prettier-plugin-sort-imports</code> 那里借鉴了两个方法：<code>getAllCommentsFromNodes</code>（获取 <code>importNodes</code> 中的所有注释）、<code>removeNodesFromOriginalCode</code>（从源代码片段中移除某些节点）。</p>
+<p>完整的 <code>preprocess</code> 如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">myPreprocessor</span><span class="token punctuation">(</span><span class="token parameter">code<span class="token punctuation">,</span> options</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> ast <span class="token operator">=</span> parser<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"jsx"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">sourceType</span><span class="token operator">:</span> <span class="token string">"module"</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> importNodes <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token function">traverse</span><span class="token punctuation">(</span>ast<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">ImportDeclaration</span><span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      importNodes<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token function">clone</span><span class="token punctuation">(</span>path<span class="token punctuation">.</span>node<span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> rules <span class="token operator">=</span> <span class="token punctuation">[</span>
+    <span class="token punctuation">[</span><span class="token string">"^@/packages/mixins/"</span><span class="token punctuation">,</span> <span class="token string">"@/mixins/"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token string">"^@/libs/assist"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/assist"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token string">"^@/views/editor/editor-props"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/editor-props"</span><span class="token punctuation">]</span>
+  <span class="token punctuation">]</span>
+  rules<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">rule</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    rule<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>rule<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  importNodes<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">node<span class="token punctuation">,</span> i</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> <span class="token punctuation">[</span>rule<span class="token punctuation">,</span> t<span class="token punctuation">]</span> <span class="token keyword">of</span> rules<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> value <span class="token operator">=</span> node<span class="token punctuation">.</span>source<span class="token punctuation">.</span>value
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>value<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span>rule<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        node<span class="token punctuation">.</span>source<span class="token punctuation">.</span>value <span class="token operator">=</span> value<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>rule<span class="token punctuation">,</span> t<span class="token punctuation">)</span>
+        <span class="token keyword">break</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">===</span> importNodes<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      node<span class="token punctuation">.</span>trailingComments <span class="token operator">=</span> <span class="token keyword">null</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> newAST <span class="token operator">=</span> types<span class="token punctuation">.</span><span class="token function">file</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"Program"</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">body</span><span class="token operator">:</span> importNodes
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> allCommentsFromImports <span class="token operator">=</span> <span class="token function">getAllCommentsFromNodes</span><span class="token punctuation">(</span>importNodes<span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> nodesToRemoveFromCode <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">...</span>importNodes<span class="token punctuation">,</span> <span class="token operator">...</span>allCommentsFromImports<span class="token punctuation">]</span>
+  <span class="token keyword">const</span> codeWithoutImportsAndInterpreter <span class="token operator">=</span> <span class="token function">removeNodesFromOriginalCode</span><span class="token punctuation">(</span>code<span class="token punctuation">,</span> nodesToRemoveFromCode<span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> newCode <span class="token operator">=</span> <span class="token function">generate</span><span class="token punctuation">(</span>newAST<span class="token punctuation">)</span><span class="token punctuation">.</span>code <span class="token operator">+</span> codeWithoutImportsAndInterpreter
+  <span class="token keyword">return</span> newCode
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>再来看看效果如何。完美！</p>
+<img src="/3a22b641e08c/5.gif" class>
+
+<p>最后，为了让它看起来更像一个插件，我把路径替换规则挪到了 <code>prettier</code> 的配置中：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// .prettierrc.js</span>
+<span class="token keyword">const</span> myPlugin <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"./plugins/index"</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">tabWidth</span><span class="token operator">:</span> <span class="token number">2</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">arrowParens</span><span class="token operator">:</span> <span class="token string">"avoid"</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">singleQuote</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">semi</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">trailingComma</span><span class="token operator">:</span> <span class="token string">"none"</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">pathReplaceRules</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"^@/packages/mixins/"</span><span class="token punctuation">,</span> <span class="token string">"@/mixins/"</span><span class="token punctuation">,</span> <span class="token string">"^@/libs/assist"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/assist"</span><span class="token punctuation">,</span> <span class="token string">"^@/views/editor/editor-props"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/editor-props"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span>myPlugin<span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>同时需要在插件中，添加自定义的配置项，不然 <em>prettier</em> 会忽略这个配置。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// plugin/index.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">parsers</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">babel</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token operator">...</span>babelParsers<span class="token punctuation">.</span>babel<span class="token punctuation">,</span>
+      <span class="token literal-property property">preprocess</span><span class="token operator">:</span> myPreprocessor
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">pathReplaceRules</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"path"</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">array</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">category</span><span class="token operator">:</span> <span class="token string">"Global"</span><span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">]</span> <span class="token punctuation">&#125;</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">description</span><span class="token operator">:</span> <span class="token string">"Provide an rule to replace imports."</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>在 <em>prettier</em> 官方文档里翻了好久，也没找到如何将配置配成一个二维数组的形式，貌似只能是一维字符串数组的形式。不过，好在可以把配置数组按每两个进行分块，格式化成下面这样：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> rules <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">[</span><span class="token string">"^@/packages/mixins/"</span><span class="token punctuation">,</span> <span class="token string">"@/mixins/"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token string">"^@/libs/assist"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/assist"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token punctuation">[</span><span class="token string">"^@/views/editor/editor-props"</span><span class="token punctuation">,</span> <span class="token string">"@/utils/editor-props"</span><span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+
+<p>一个简单的算法题：《数组分块》 😁</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">arrayChunk</span><span class="token punctuation">(</span><span class="token parameter">arr<span class="token punctuation">,</span> size</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> arr<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span>
+    <span class="token punctuation">(</span><span class="token parameter">res<span class="token punctuation">,</span> curr</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>res<span class="token punctuation">[</span>res<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span>length <span class="token operator">&lt;</span> size<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        res<span class="token punctuation">[</span>res<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>curr<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        res<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">[</span>curr<span class="token punctuation">]</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">return</span> res
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">[</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">]</span>
+  <span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>虽然看起来很怪，但是整体还是不错的，使用后，开发效率咔咔往上升！😜</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/7362ccce6f09.html" title="给 ViewDesign 加个主题换肤💖 &lt;W16&gt;"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 给 ViewDesign 加个主题换肤💖 &lt;W16&gt;</span></a><a class="button is-default" href="/7f8249359ab2.html" title="用 npm-pack-all 批量生成 .tgz 文件 &lt;W14&gt;"><span class="has-text-weight-semibold">下一页: 用 npm-pack-all 批量生成 .tgz 文件 &lt;W14&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

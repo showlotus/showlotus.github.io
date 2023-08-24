@@ -1,0 +1,188 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>给 ViewDesign 加个主题换肤💖 &lt;W16&gt;</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+最近要做主题换肤的功能，项目用的 UI 框架是 ViewDesign ，只支持定制主题，不支持动态主题。查了好多资料，比如：用 less 变量更换、预设几种主题的 CSS 的文件，再动态切换 link 标签的引入资源路径等等。这些方案的应用场景是，对项目中完全自主开发的模块的颜色进行切换。也即，你自己开发了一个导航栏（Menu）和顶部（Header），这俩你是完全控制的，用上述提到的方案是完全可行的。而 UI 框架是第三方的，用 less 变量替换，也仅限于在编译前，编译后它就是 CSS 格式了，再想用 less 变量是不可行的。而预设几种主题 CSS 文件，对于已经编译后的组件库，外部引入组件库的 CSS 不会对内部有任何影响（也有可能是优先级不够 🤔）。ViewDesign 官方提供了定制主题的.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">给 ViewDesign 加个主题换肤💖 &lt;W16&gt;</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#1-%E5%AE%89%E8%A3%85%E4%B8%BB%E9%A2%98%E7%94%9F%E6%88%90%E5%B7%A5%E5%85%B7"><span class="toc-text">1. 安装主题生成工具</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E8%8E%B7%E5%8F%96%E5%AF%B9%E5%BA%94%E7%89%88%E6%9C%AC%E7%9A%84%E6%A0%B7%E5%BC%8F%E6%96%87%E4%BB%B6"><span class="toc-text">2. 获取对应版本的样式文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E4%B8%BB%E9%A2%98%E8%89%B2%E7%9B%B8%E5%85%B3%E9%A2%9C%E8%89%B2%E8%BD%AC%E6%8D%A2"><span class="toc-text">3. 主题色相关颜色转换</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E4%BF%AE%E6%94%B9%E7%BC%96%E8%AF%91%E5%90%8E%E7%9A%84-CSS-%E6%96%87%E4%BB%B6"><span class="toc-text">4. 修改编译后的 CSS 文件</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E9%80%9A%E8%BF%87%E4%B8%BB%E9%A2%98%E8%89%B2%E7%94%9F%E6%88%90%E5%90%84%E7%A7%8D%E5%BB%B6%E7%94%B3%E8%89%B2"><span class="toc-text">5. 通过主题色生成各种延申色</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/CSS"><i class="tag post-item-tag">CSS</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">给 ViewDesign 加个主题换肤💖 &lt;W16&gt;</h1><time class="has-text-grey custom-date-font" datetime="2022-12-21T02:55:12.000Z">2022/12/21 10:55</time><article class="mt-2 post-content"><img src="/7362ccce6f09/banner.jpg" class>
+
+<blockquote>
+<p>最近要做主题换肤的功能，项目用的 UI 框架是 <em>ViewDesign</em> ，只支持定制主题，不支持动态主题。查了好多资料，比如：用 <em>less</em> 变量更换、预设几种主题的 <em>CSS</em> 的文件，再动态切换 <em>link</em> 标签的引入资源路径等等。这些方案的应用场景是，对项目中完全自主开发的模块的颜色进行切换。也即，你自己开发了一个导航栏（Menu）和顶部（Header），这俩你是完全控制的，用上述提到的方案是完全可行的。而 UI 框架是第三方的，用 <em>less</em> 变量替换，也仅限于在编译前，编译后它就是 <em>CSS</em> 格式了，再想用 <em>less</em> 变量是不可行的。而预设几种主题 <em>CSS</em> 文件，对于已经编译后的组件库，外部引入组件库的 <em>CSS</em> 不会对内部有任何影响（也有可能是优先级不够 🤔）。<em>ViewDesign</em> 官方提供了定制主题的方式，可以对一些 <em>less</em> 变量进行重新覆盖，这些变量，在编译后，肯定就转成 <em>CSS</em> 格式了。比如 <code>@color1</code> 编译后就是 <code>red</code>，<code>@color2</code> 编译后就是 <code>blue</code>。它们也是有映射关系的，而且这种关系是一对一的。那么，如果把编译后的 <em>CSS</em> 中的颜色值，都改为 <em>CSS var()</em> 的格式，然后再外部动态设置这些 <em>CSS</em> 变量，是不是就能实现动态主题了？好，开干！</p>
+</blockquote>
+<h4 id="1-安装主题生成工具"><a href="#1-安装主题生成工具" class="headerlink" title="1. 安装主题生成工具"></a>1. 安装主题生成工具</h4><pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> iview-theme <span class="token parameter variable">-g</span></code></pre>
+
+<p>这个工具官方有介绍，版本有点老，不过只需要用它打包一下，够用了。</p>
+<h4 id="2-获取对应版本的样式文件"><a href="#2-获取对应版本的样式文件" class="headerlink" title="2. 获取对应版本的样式文件"></a>2. 获取对应版本的样式文件</h4><img src="/7362ccce6f09/1.png" class>
+
+<p>官方虽然说这样可以下载对应版本的，但是我试了，并不可行，可能不支持高版本。如果想要下载指定版本的，可以先下载指定版本的 <em>ViewDesign</em> （我用的是 <em>v4.7.0</em> ）：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash"><span class="token function">npm</span> <span class="token function">install</span> view-design@4.7.0</code></pre>
+
+<p>然后找到 <code>node_modules/view-design/src/styles</code> 目录，这个文件夹下的，就是对应版本的样式文件，复制出来一份就行。</p>
+<h4 id="3-主题色相关颜色转换"><a href="#3-主题色相关颜色转换" class="headerlink" title="3. 主题色相关颜色转换"></a>3. 主题色相关颜色转换</h4><p>下载后的样式文件里，有一个 <code>custom.less</code> 文件，这里罗列了所有可配置的颜色，我们只需要在意所有与主题色有关的就行。如下（后面的注释编号，代表当前的颜色种类，也即共有 10 种颜色与主题色有关）：</p>
+<pre class="language-less" data-language="less"><code class="language-less"><span class="token comment">// Color</span>
+<span class="token variable">@primary-color<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@processing-color<span class="token punctuation">:</span></span> <span class="token variable">@primary-color</span><span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@link-color<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@link-hover-color<span class="token punctuation">:</span></span> <span class="token function">tint</span><span class="token punctuation">(</span><span class="token variable">@link-color</span><span class="token punctuation">,</span> 20%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 2</span>
+<span class="token variable">@link-active-color<span class="token punctuation">:</span></span> <span class="token function">shade</span><span class="token punctuation">(</span><span class="token variable">@link-color</span><span class="token punctuation">,</span> 5%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 3</span>
+<span class="token variable">@selected-color<span class="token punctuation">:</span></span> <span class="token function">fade</span><span class="token punctuation">(</span><span class="token variable">@primary-color</span><span class="token punctuation">,</span> 90%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 4</span>
+
+<span class="token comment">// Button</span>
+<span class="token variable">@btn-group-border<span class="token punctuation">:</span></span> <span class="token function">shade</span><span class="token punctuation">(</span><span class="token variable">@primary-color</span><span class="token punctuation">,</span> 5%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 3</span>
+<span class="token variable">@btn-primary-bg<span class="token punctuation">:</span></span> <span class="token variable">@primary-color</span><span class="token punctuation">;</span> <span class="token comment">// 1</span>
+
+<span class="token comment">// Input</span>
+<span class="token variable">@input-hover-border-color<span class="token punctuation">:</span></span> <span class="token variable">@primary-color</span><span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@input-focus-border-color<span class="token punctuation">:</span></span> <span class="token variable">@primary-color</span><span class="token punctuation">;</span> <span class="token comment">// 1</span>
+
+<span class="token comment">// Slider</span>
+<span class="token variable">@slider-color<span class="token punctuation">:</span></span> <span class="token function">tint</span><span class="token punctuation">(</span><span class="token variable">@primary-color</span><span class="token punctuation">,</span> 20%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 2</span>
+
+<span class="token comment">// 特殊的，有些需要额外替换</span>
+<span class="token comment">// 表单的聚焦外阴影</span>
+<span class="token selector">.ivu-input:focus</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">box-shadow</span><span class="token punctuation">:</span> 0 0 0 2px <span class="token function">fade</span><span class="token punctuation">(</span><span class="token variable">@primary-color</span><span class="token punctuation">,</span> 20%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 5</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 树形组件悬浮和选中时的背景色</span>
+<span class="token selector">.ivu-tree-title:hover</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">tint</span><span class="token punctuation">(</span><span class="token variable">@primary-color</span><span class="token punctuation">,</span> 90%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 6</span>
+<span class="token punctuation">&#125;</span>
+<span class="token selector">.ivu-tree-title-selected,
+.ivu-tree-title-selected:hover</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> <span class="token function">tint</span><span class="token punctuation">(</span><span class="token variable">@primary-color</span><span class="token punctuation">,</span> 80%<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 7</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 导航菜单激活时的背景颜色</span>
+<span class="token selector">.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu)</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background</span><span class="token punctuation">:</span> #f0faff<span class="token punctuation">;</span> <span class="token comment">// 8 => tint(@primary-color, 95%)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 不是从主题色中延申而来的颜色，用主题色延申色替换</span>
+<span class="token variable">@table-td-hover-bg<span class="token punctuation">:</span></span> #ebf7ff<span class="token punctuation">;</span> <span class="token comment">// 9 => tint(@primary-color, 90%)</span>
+<span class="token variable">@table-td-highlight-bg<span class="token punctuation">:</span></span> #ebf7ff<span class="token punctuation">;</span> <span class="token comment">// 9 => tint(@primary-color, 90%)</span>
+<span class="token variable">@date-picker-cell-hover-bg<span class="token punctuation">:</span></span> #e1f0fe<span class="token punctuation">;</span> <span class="token comment">// 10 => tint(@primary-color, 85%)</span></code></pre>
+
+<blockquote>
+<p>你可能注意到了，有些完全和主题色八竿子打不着，确实如此。把所有组件都测试了一遍后，发现有些组件使用的颜色是固定的颜色值，要想和主题色相关联，只能把这个颜色替换成由主题色延申的方式，颜色 8、9 和 10 就是如此，用主题色生成了一个差不多类似的颜色，差别微乎其微，还可以接受。</p>
+</blockquote>
+<p>接着把其中由 <em>less</em> 函数生成的，都转为最后的实际颜色，这一步是为了方便后续的全局替换。</p>
+<blockquote>
+<p>在线编译 <em>less</em> ：<a target="_blank" rel="noopener" href="https://www.dute.org/less-to-css">https://www.dute.org/less-to-css</a></p>
+</blockquote>
+<p>转换后如下：</p>
+<pre class="language-less" data-language="less"><code class="language-less"><span class="token comment">// Color</span>
+<span class="token variable">@primary-color<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@processing-color<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@link-color<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@link-hover-color<span class="token punctuation">:</span></span> #57a3f3<span class="token punctuation">;</span> <span class="token comment">// 2</span>
+<span class="token variable">@link-active-color<span class="token punctuation">:</span></span> #2b85e4<span class="token punctuation">;</span> <span class="token comment">// 3</span>
+<span class="token variable">@selected-color<span class="token punctuation">:</span></span> <span class="token function">rgba</span><span class="token punctuation">(</span>45<span class="token punctuation">,</span> 140<span class="token punctuation">,</span> 240<span class="token punctuation">,</span> 0.9<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 4</span>
+
+<span class="token comment">// Button</span>
+<span class="token variable">@btn-group-border<span class="token punctuation">:</span></span> #2b85e4<span class="token punctuation">;</span> <span class="token comment">// 3</span>
+<span class="token variable">@btn-primary-bg<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+
+<span class="token comment">// Input</span>
+<span class="token variable">@input-hover-border-color<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+<span class="token variable">@input-focus-border-color<span class="token punctuation">:</span></span> #2d8cf0<span class="token punctuation">;</span> <span class="token comment">// 1</span>
+
+<span class="token comment">// Slider</span>
+<span class="token variable">@slider-color<span class="token punctuation">:</span></span> #57a3f3<span class="token punctuation">;</span> <span class="token comment">// 2</span>
+
+<span class="token comment">// 特殊的，有些需要额外替换</span>
+<span class="token comment">// 表单的聚焦外阴影</span>
+<span class="token selector">.ivu-input:focus</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">box-shadow</span><span class="token punctuation">:</span> 0 0 0 2px <span class="token function">rgba</span><span class="token punctuation">(</span>45<span class="token punctuation">,</span> 140<span class="token punctuation">,</span> 240<span class="token punctuation">,</span> 0.2<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// 5</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 树形组件悬浮和选中时的背景色</span>
+<span class="token selector">.ivu-tree-title:hover</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> #eaf4fe<span class="token punctuation">;</span> <span class="token comment">// 6 tint(@primary-color, 90%)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token selector">.ivu-tree-title-selected,
+.ivu-tree-title-selected:hover</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background-color</span><span class="token punctuation">:</span> #d5e8fc<span class="token punctuation">;</span> <span class="token comment">// 7 tint(@primary-color, 80%)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 导航菜单激活时的背景颜色</span>
+<span class="token selector">.ivu-menu-light.ivu-menu-vertical .ivu-menu-item-active:not(.ivu-menu-submenu)</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">background</span><span class="token punctuation">:</span> #f0faff<span class="token punctuation">;</span> <span class="token comment">// 8 => tint(@primary-color, 95%)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 不是从主题色中延申而来的颜色，用主题色延申色替换</span>
+<span class="token variable">@table-td-hover-bg<span class="token punctuation">:</span></span> #ebf7ff<span class="token punctuation">;</span> <span class="token comment">// 9 => tint(@primary-color, 90%)</span>
+<span class="token variable">@table-td-highlight-bg<span class="token punctuation">:</span></span> #ebf7ff<span class="token punctuation">;</span> <span class="token comment">// 9 => tint(@primary-color, 90%)</span>
+<span class="token variable">@date-picker-cell-hover-bg<span class="token punctuation">:</span></span> #e1f0fe<span class="token punctuation">;</span> <span class="token comment">// 10 => tint(@primary-color, 85%)</span></code></pre>
+
+<h4 id="4-修改编译后的-CSS-文件"><a href="#4-修改编译后的-CSS-文件" class="headerlink" title="4. 修改编译后的 CSS 文件"></a>4. 修改编译后的 <em>CSS</em> 文件</h4><p>执行打包命令：</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">iview-theme build <span class="token parameter variable">-o</span> dist/</code></pre>
+
+<p>如果打包报如下错误，把当前 <em>Node</em> 版本换成 <em><big>v11</big></em> 版本即可，亲测有效（PS：我用的 <em><u>v11.15.0</u></em> ）。</p>
+<img src="/7362ccce6f09/2.png" class>
+
+<p>打开 <code>dist/iview.css</code> 文件，将上述的 <big><strong>10</strong></big> 种颜色，都转为以 <em>CSS</em> 变量的方式，同时将预留值设为原颜色值。转换规则如下：</p>
+<ol>
+<li><code>#2d8cf0</code>：替换为 <code>var(--ivu-primary-color, #2d8cf0)</code>，总计 <big><strong>113</strong></big> 个；</li>
+<li><code>#57a3f3</code>：替换为 <code>var(--ivu-link-hover-color, #57a3f3)</code>，总计 <big><strong>46</strong></big> 个；</li>
+<li><code>#2b85e4</code>：替换为 <code>var(--ivu-link-active-color-color, #2b85e4)</code>，总计 <big><strong>22</strong></big> 个；</li>
+<li><code>rgba(45,140,240,.9)</code>：替换为 <code>var(--ivu-selected-color, rgba(45,140,240,.9))</code>，总计 <big><strong>2</strong></big> 个。</li>
+<li><code>rgba(45,140,240,.2)</code>：替换为 <code>var(--ivu-input-shadow-color, rgba(45,140,240,.2))</code>，总计 <big><strong>25</strong></big> 个。</li>
+<li><code>#eaf4fe</code>：替换为 <code>var(--ivu-tree-title-hover-color, #eaf4fe)</code>，总计 <big><strong>1</strong></big> 个。</li>
+<li><code>#d5e8fc</code>：替换为 <code>var(--ivu-tree-title-selected-color, #d5e8fc)</code>，总计 <big><strong>4</strong></big> 个。</li>
+<li><code>#f0faff</code>：替换为 <code>var(--ivu-menu-active-color, #f0faff)</code>，总计 <big><strong>5</strong></big> 个。</li>
+<li><code>#ebf7ff</code>：替换为 <code>var(--ivu-table-hover-bg-color, #ebf7ff)</code>，总计 <big><strong>3</strong></big> 个。</li>
+<li><code>#e1f0fe</code>：替换为 <code>var(--ivu-date-picker-hover-bg-color, #e1f0fe)</code>，总计 <big><strong>2</strong></big> 个。</li>
+</ol>
+<h4 id="5-通过主题色生成各种延申色"><a href="#5-通过主题色生成各种延申色" class="headerlink" title="5. 通过主题色生成各种延申色"></a>5. 通过主题色生成各种延申色</h4><p>延申色都是由 <em>less</em> 内置函数生成的，最好的办法也就是还用 <em>less</em> 提供的函数去生成，经历一番探索，终于找到了 <em>less</em> 中函数的位置（藏的可太深了&#x2F;(ㄒ o ㄒ)&#x2F;~~）。最终的转换方法如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">import</span> less <span class="token keyword">from</span> <span class="token string">"less"</span>
+
+<span class="token keyword">const</span> Color <span class="token operator">=</span> less<span class="token punctuation">.</span>color
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> fade<span class="token punctuation">,</span> shade<span class="token punctuation">,</span> tint <span class="token punctuation">&#125;</span> <span class="token operator">=</span> less<span class="token punctuation">.</span>functions<span class="token punctuation">.</span>functionRegistry<span class="token punctuation">.</span>_data
+
+<span class="token keyword">function</span> <span class="token function">toRgb</span><span class="token punctuation">(</span><span class="token parameter">color</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> alpha<span class="token punctuation">,</span> rgb <span class="token punctuation">&#125;</span> <span class="token operator">=</span> color
+  <span class="token keyword">const</span> <span class="token punctuation">[</span>r<span class="token punctuation">,</span> g<span class="token punctuation">,</span> b<span class="token punctuation">]</span> <span class="token operator">=</span> rgb<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">v</span> <span class="token operator">=></span> <span class="token function">parseInt</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">rgba(</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>r<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">, </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>g<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">, </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>b<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">, </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>alpha<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">)</span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">/**
+ * 生成主题色
+ * @param &#123;string&#125; themeColor 十六进制的颜色值
+ * @returns
+ */</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token keyword">function</span> <span class="token function">genThemeColor</span><span class="token punctuation">(</span><span class="token parameter">themeColor</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> color <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Color</span><span class="token punctuation">(</span>themeColor<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> linkHoverColor <span class="token operator">=</span> <span class="token function">tint</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> linkActiveColor <span class="token operator">=</span> <span class="token function">shade</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">5</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> selectedColor <span class="token operator">=</span> <span class="token function">fade</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">90</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> inputShadowColor <span class="token operator">=</span> <span class="token function">fade</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">20</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> treeTitleHoverColor <span class="token operator">=</span> <span class="token function">tint</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">90</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> treeTitleSelectedColor <span class="token operator">=</span> <span class="token function">tint</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">80</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> menuActiveColor <span class="token operator">=</span> <span class="token function">tint</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">95</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> tableHoverBgColor <span class="token operator">=</span> <span class="token function">tint</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">90</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> datePickerHoverBgColor <span class="token operator">=</span> <span class="token function">tint</span><span class="token punctuation">(</span>color<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">85</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> colors <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token string-property property">"--ivu-primary-color"</span><span class="token operator">:</span> themeColor<span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-link-hover-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>linkHoverColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-link-active-color-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>linkActiveColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-selected-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>selectedColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-input-shadow-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>inputShadowColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-tree-title-hover-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>treeTitleHoverColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-tree-title-selected-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>treeTitleSelectedColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-menu-active-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>menuActiveColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-table-hover-bg-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>tableHoverBgColor<span class="token punctuation">)</span><span class="token punctuation">,</span>
+    <span class="token string-property property">"--ivu-date-picker-hover-bg-color"</span><span class="token operator">:</span> <span class="token function">toRgb</span><span class="token punctuation">(</span>datePickerHoverBgColor<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 设置主题色 CSS 变量</span>
+  Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>colors<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">key</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    document<span class="token punctuation">.</span>body<span class="token punctuation">.</span>style<span class="token punctuation">.</span><span class="token function">setProperty</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> colors<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>也即，只需要提供一个主题色，其他延申色全由函数内部自动生成，并且把 <em>CSS</em> 变量设置在 <em>body</em> 上。看下效果如何：</p>
+<img src="/7362ccce6f09/result.gif" class>
+
+<p>😁，效果不错吧。最后，如果你也用的 <em>v4.7.0</em> ，我把对应的样式文件和主题色生成 <em>JS</em> 都放在了 <a target="_blank" rel="noopener" href="https://github.com/showlotus/view-design-theme">这里</a> ，可以直接下载使用。如果你用的其他版本，可以参考前文流程，去下载对应版本的样式文件，然后将各个颜色统一替换为 <em>CSS</em> 变量的格式。不同版本，基础主题的颜色值可能有差异，建议使用前确认一下。</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/381d7b020aea.html" title="当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;</span></a><a class="button is-default" href="/3a22b641e08c.html" title="开发一个 Prettier 插件：全局替换资源引入路径 &lt;W15&gt;"><span class="has-text-weight-semibold">下一页: 开发一个 Prettier 插件：全局替换资源引入路径 &lt;W15&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

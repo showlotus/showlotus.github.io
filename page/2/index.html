@@ -1,0 +1,206 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>showlotus's blog</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/60a0829a3666.html">Vue 中如何取消 ViewDesign 中组件内部的指令 &lt;W13&gt;</a></h2><header><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-25T12:27:02.000Z">2022/11/25 20:27</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近需要做这样一个功能：当展开下拉框或者日期选择器的浮层面板后，点击某个区域，不会让浮层消失。如果有了解过组件库内部源码的话，这种浮层的点击外部后隐藏，大多数组件内部都是通过一个 clickOutside 的指令来实现，而目标功能就是需要实现一块 “禁区”，当点击 “禁区” 时不会触发 clickOutside。本文就是基于该功能的实现对这个指令进行探索，记录自己实现这个功能的全过程 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/50542ea338ab.html">拦截网页请求并处理数据 &lt;W12&gt;</a></h2><header><a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E8%84%9A%E6%9C%AC"><i class="tag post-item-tag">浏览器脚本</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-20T07:07:56.000Z">2022/11/20 15:07</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+有时候需要拦截网页的某个请求，收集响应数据，单个请求直接操作就好了；如果是多个相同 API 的请求，如果有个批处理数据的工具岂不美哉。于是，它来了。本来打算弄成一个油猴插件，但是浏览器总是会把插件的打印日志给 “吞掉”，那就先直接在控制台运行脚本，更简单明了。
+
+介绍用到了一个插件 ajaxhook，官方是这样介绍的：
+在 XMLHttpRequest 对象发起请求之前、收到响应内容 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/fc7e022e1ff1.html">CSS实现曲线导航菜单 &lt;W11&gt;</a></h2><header><a href="/tags/CSS"><i class="tag post-item-tag">CSS</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-12T08:32:58.000Z">2022/11/12 16:32</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近看到一个这样的效果，挺有意思的，打算自己动手试一试。
+
+
+
+拆解首先，看到这个缺口，心里想，这玩意要怎么弄，一头雾水。不过，对于这种形状怪异的，大多数都可以通过多个图形组合做出来，对于这个，可以拆成由下面三部分组成。
+
+
+↓ ↓ ↓
+
+
+
+对于左右两边的，可以通过圆角半径实现，重点是中间部分：缺口是个半圆的图形。在脑海里迅速头脑风暴一下，CSS 中可以实现一个圆形缺口有关的方案。 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/912a2be9cfce.html">JS中的类型转换 &lt;W10&gt;</a></h2><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript-%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97"><i class="tag post-item-tag">JavaScript 权威指南</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-03T04:50:11.000Z">2022/11/03 12:50</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+JS 中的数据类型基础数据类型（又称为原始值）：null 、undefined 、boolean 、string 、number 。
+
+声明时：用栈存储，栈中存放的是对应的值；
+赋值时：生成一块相同值的栈，两个变量对应不同的地址。
+
+动态数据类型：Array 、Object 、Set 、Map 等。
+
+声明时：值存放在堆中，栈中存放指向堆的地址；
+赋值时：将栈中的地址赋给另一个变量，也 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/053d64e71789.html">如何实现状态的「伪更新」? &lt;W9&gt;</a></h2><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-29T04:41:45.000Z">2022/10/29 12:41</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近要做一个与颜色选择器有关功能：当用户在颜色面板里预选颜色时，需要同时更新当前画布的颜色；如果取消选择，则将画布背景重置为初始颜色；如果确定了颜色，则更新当前画布颜色。比较容易想到的方法是，用两个变量分别记录初始值 originValue 与当前值 value ：如果只是选择，那就用去更新 value ；如果取消选择，重置为 originValue ；如果选中，将 originVa ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/356c15bd4f32.html">Vue：beforeCreate -&gt; created &lt;W8&gt;</a></h2><header><a href="/tags/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-Vue-js"><i class="tag post-item-tag">深入浅出 Vue js</i></a><a href="/tags/%E6%BA%90%E7%A0%81"><i class="tag post-item-tag">源码</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-22T07:21:59.000Z">2022/10/22 15:21</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+如上图所示，Vue 在 beforeCreate -&amp;gt; created 阶段，按这个步骤进行初始化操作。按照这个顺序，也就意味着后者初始化的时候，可以使用前者已经初始化的变量。例如：在 data 中可以使用 methods 里定义的方法，也可以用 props 引入的属性进行初始化。
+
+initInjectionsinject 的使用请参考官方文档。
+
+先获取当前实例上注册的 i ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/ba04c9685d97.html">v-resize：监听 DOM 尺寸变化</a></h2><header><a href="/tags/Vue-%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue 指令</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-17T12:55:26.000Z">2022/10/17 20:55</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+前两天一个同事遇到一个问题：从当前子应用再切换到另一个子应用，然后再切回来，当前子应用里 echarts 图表的宽度发生了变化，整体都变宽了一些，而且这个问题只有在测试环境下才有，线下开发环境一切正常。试了试，只要触发一次 echarts 自带的 resize 方法，就能将图表样式调整为正常样式了。于是就想到了，之前看过一个 UI 库出的指令 v-resize：当前 DOM 宽高发生 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/a52cd5c85106.html">ivu-input-number-union &lt;W7&gt;</a></h2><header><a href="/tags/ivu-0extends"><i class="tag post-item-tag">ivu-extends</i></a><a href="/tags/ivu-0input-0number"><i class="tag post-item-tag">ivu-input-number</i></a><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-15T11:51:58.000Z">2022/10/15 19:51</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近朋友问我，多个数字输入框联动怎么做？他遇到一个需求，表格里的某一列是输入数字输入框，有多行，而最后一行是这些数字的总和。要达到的效果是，当输入框中的数字和超出总和时，清空所有输入框；如果未超出最大值，且还剩一个输入框未输入时，自动对最后一个输入框赋值。刚好前一段时间，做了一个下拉框联动的，两者的大体思路是相同的。首先是采用指令去实现，过程稍稍有点复杂，于是最后又实现了一个二次封装 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/3ed3a5c9f88d.html">ivu-select-union &lt;W6&gt;</a></h2><header><a href="/tags/ivu-0extends"><i class="tag post-item-tag">ivu-extends</i></a><a href="/tags/ivu-0select"><i class="tag post-item-tag">ivu-select</i></a><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-03T11:24:24.000Z">2022/10/03 19:24</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+有这样一个场景，多个下拉框共用同一个下拉列表，如果有一个下拉框选中了某一项，那么该项不能被其他下拉框选中，也就是选中项不能重复。同时每个下拉框的下拉列表也是动态的，会根据已选中的值的变化而变化（看下图）。
+
+
+
+方案一（外部实现）用一个「列表」记录当前所有下拉框已选中的值，每个下拉框的下拉列表都会根据已选中值和当前下拉框的值的变化而变化，前提是 Option 是采用 v-for 渲染 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/a970cecdfebd.html">v-set-title-attr &lt;W5&gt;</a></h2><header><a href="/tags/Vue-%E6%8C%87%E4%BB%A4"><i class="tag post-item-tag">Vue 指令</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-02T11:22:29.000Z">2022/10/02 19:22</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+有个需求，下拉框里的选项分组后，因为组名可能会很长，于是就想添加一个文本超出时显示省略号的样式，这个用 CSS 就能做到，小意思。不过，如果文本超出后，我还想有一个能展示当前文字所有信息的提示。因为本身就是一个浮层了，再添加一个浮层就感觉很怪（说实话也不好加 😂），于是就想用原生的 title 实现（先看效果，如下图所示）。
+
+
+
+思路首先可能会想到，把 OptionGroup 上 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><a class="extend prev" rel="prev" href="/"><i class="iconfont icon-prev has-text-grey"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/3/"><i class="iconfont icon-next has-text-grey"></i></a></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><style>.search-widget .search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--second-text-color);
+}
+.search-widget .search-content {
+    position: absolute;
+    left: 0;
+    top: calc(100% - 3px);
+    z-index: 2;
+
+    width: 100%;
+    height: 0;
+    max-height: 550px;
+
+    overflow: auto;
+    box-sizing: border-box;
+
+    background: var(--top-bar-bg-color);
+    backdrop-filter: blur(var(--backdropFilter));
+    -webkit-backdrop-filter: blur(var(--backdropFilter));
+
+    border-bottom-left-radius: var(--borderRadius);
+    border-bottom-right-radius: var(--borderRadius);
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.08);
+}
+
+.search-widget .search-content a:hover h5 {
+    color: #3273dc!important;
+}
+</style><main class="aside-card-container search-widget is-relative"><label for="searchInput"><div class="is-flex px-4" id="searchButton"><i class="iconfont icon--search1 mr-1"></i><input class="search-input is-flex-grow-1" id="searchInput" placeholder="搜索内容.."></div></label><section class="search-content content" id="searchContent"></section></main><script>var searchDatabase = []
+var searchInputEl = document.getElementById('searchInput')
+var searchButtonEl = document.getElementById('searchButton')
+var searchResultEl = document.getElementById('searchContent')
+
+searchInputEl.oninput = function (evt) {
+    var searchValue = evt.srcElement.value
+    var haveSearchValue = Boolean(searchValue.trim())
+    if (!haveSearchValue) {
+        searchResultEl.style.height = 0
+        searchResultEl.innerHTML = null
+        return
+    }
+
+    var searchResults = searching(searchValue)
+
+    if (searchResults.length > 0) {
+        renderSearchResults(searchResults)
+    }
+}
+
+function renderSearchResults(results) {
+    searchResultEl.innerHTML = null
+    var fragment = document.createDocumentFragment()
+
+    results.forEach(function (item) {
+        var link = document.createElement('a')
+        var title = document.createElement('h5')
+        var content = document.createElement('p')
+
+        title.className = 'mb-1'
+        title.innerText = item.title
+        content.innerText = item.content
+
+        link.href = item.link
+        link.appendChild(title)
+        link.appendChild(content)
+        link.className = 'p-4 is-block'
+
+        fragment.appendChild(link)
+    })
+
+    searchResultEl.appendChild(fragment)
+    searchResultEl.style.height = 'auto'
+}
+
+function searching(inputText) {
+    var inputTexts = inputText.split(' ')
+    var searchResults = []
+    inputTexts.forEach(function (searchKey) {
+        var haveSearchValue = Boolean(searchKey.trim())
+        if (!haveSearchValue) return
+
+        var key = searchKey.toLowerCase()
+
+        for (var entry of searchDatabase) {
+            var title = entry.getElementsByTagName('title')[0].textContent
+            var link = entry.getElementsByTagName('link')[0].getAttribute('href')
+            var contentWithTags = entry.getElementsByTagName('content')[0].textContent
+            var rawContent = contentWithTags.trim().replace(/<[^>]+>/g, '').toLowerCase()
+
+            var LENGTH = 80
+            var finalContent = ''
+            var contentLength = rawContent.length
+            var searchResultIdx = rawContent.indexOf(key)
+
+            var startIdx = searchResultIdx - 20,
+                endIdx = startIdx + LENGTH
+
+            if (startIdx < 0) {
+                startIdx = 0
+                endIdx = 100
+            }
+
+            endIdx > contentLength && (endIdx = contentLength)
+
+            finalContent = rawContent.substring(startIdx, endIdx)
+
+            if (title.indexOf(key) > -1 || searchResultIdx > -1) {
+                searchResults.push({
+                    link: link,
+                    title: title,
+                    content: finalContent
+                })
+            }
+        }
+    })
+    return searchResults
+}
+
+searchButtonEl.onclick = function () {
+    if (searchDatabase.length > 0) return;
+
+    fetch(window.location.href + '/search.xml').then(res => res.text()).then(res => {
+        var domparser = new DOMParser
+        var doc = domparser.parseFromString(res, 'application/xml')
+        searchDatabase = doc.getElementsByTagName('search')[0].children
+    })
+}</script><main class="aside-card-container profile-widget"><!-- todo: 使用取色工具动态阴影--><section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"><section class="is-flex is-justify-content-center avatar is-clipped skeleton"><!-- debug images "https://api.ixiaowai.cn/gqapi/gqapi.php"--><img class="js-img-fadeIn" src="/images/avatar.jpg" alt="user avatar"></section><h3 class="user-name">showlotus</h3><blockquote class="has-text-centered is-relative"><span style="margin-bottom: 5px; font-size: 15px; font-style: italic; font-family: sans-serif;">I hope one day, everyone is using my program.</span></blockquote></section><section class="sns-container is-flex is-justify-content-center is-align-items-center"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section></main><!-- TAG 隐藏最近发布--><main class="aside-card-container tag-widget"><h3>标签</h3><section><a href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="tag post-item-tag" style="margin-bottom: 5px;">环境搭建</span></a><a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E8%84%9A%E6%9C%AC"><span class="tag post-item-tag" style="margin-bottom: 5px;">浏览器脚本</span></a><a href="/tags/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-Vue-js"><span class="tag post-item-tag" style="margin-bottom: 5px;">深入浅出 Vue js</span></a><a href="/tags/%E6%89%8B%E5%86%99%E7%BB%84%E4%BB%B6"><span class="tag post-item-tag" style="margin-bottom: 5px;">手写组件</span></a><a href="/tags/%E6%BA%90%E7%A0%81"><span class="tag post-item-tag" style="margin-bottom: 5px;">源码</span></a><a href="/tags/%E6%8A%93%E5%8C%85"><span class="tag post-item-tag" style="margin-bottom: 5px;">抓包</span></a><a href="/tags/AST"><span class="tag post-item-tag" style="margin-bottom: 5px;">AST</span></a><a href="/tags/Babel"><span class="tag post-item-tag" style="margin-bottom: 5px;">Babel</span></a><a href="/tags/CSS"><span class="tag post-item-tag" style="margin-bottom: 5px;">CSS</span></a><a href="/tags/Dev-Tools"><span class="tag post-item-tag" style="margin-bottom: 5px;">Dev Tools</span></a><a href="/tags/ElementUI"><span class="tag post-item-tag" style="margin-bottom: 5px;">ElementUI</span></a><a href="/tags/Fiddler"><span class="tag post-item-tag" style="margin-bottom: 5px;">Fiddler</span></a><a href="/tags/ivu-0color-0picker"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-color-picker</span></a><a href="/tags/ivu-0extends"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-extends</span></a><a href="/tags/ivu-0input-0number"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-input-number</span></a><a href="/tags/ivu-0select"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-select</span></a><a href="/tags/JavaScript"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript</span></a><a href="/tags/JavaScript-%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 权威指南</span></a><a href="/tags/JavaScript-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 设计模式与开发实践</span></a><a href="/tags/JavaScript-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 正则表达式迷你书</span></a><a href="/tags/JSON"><span class="tag post-item-tag" style="margin-bottom: 5px;">JSON</span></a><a href="/tags/Loader"><span class="tag post-item-tag" style="margin-bottom: 5px;">Loader</span></a><a href="/tags/Mac"><span class="tag post-item-tag" style="margin-bottom: 5px;">Mac</span></a><a href="/tags/node"><span class="tag post-item-tag" style="margin-bottom: 5px;">node</span></a><a href="/tags/npm"><span class="tag post-item-tag" style="margin-bottom: 5px;">npm</span></a><a href="/tags/Prettier"><span class="tag post-item-tag" style="margin-bottom: 5px;">Prettier</span></a><a href="/tags/screensaver"><span class="tag post-item-tag" style="margin-bottom: 5px;">screensaver</span></a><a href="/tags/tgz"><span class="tag post-item-tag" style="margin-bottom: 5px;">tgz</span></a><a href="/tags/ViewDesign"><span class="tag post-item-tag" style="margin-bottom: 5px;">ViewDesign</span></a><a href="/tags/VS-Code-%E6%8F%92%E4%BB%B6"><span class="tag post-item-tag" style="margin-bottom: 5px;">VS Code 插件</span></a><a href="/tags/Vue"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue</span></a><a href="/tags/Vue-%E6%8C%87%E4%BB%A4"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue 指令</span></a><a href="/tags/Webpack"><span class="tag post-item-tag" style="margin-bottom: 5px;">Webpack</span></a><a href="/tags/Windows"><span class="tag post-item-tag" style="margin-bottom: 5px;">Windows</span></a></section></main></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>
