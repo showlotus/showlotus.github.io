@@ -47,10 +47,10 @@ https://showlotus.github.io/tags/ViewDesign/
 https://showlotus.github.io/tags/%E6%BA%90%E7%A0%81/
 https://showlotus.github.io/tags/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-Vue-js/
 https://showlotus.github.io/tags/ivu-0extends/
-https://showlotus.github.io/tags/ivu-0input-0number/
-https://showlotus.github.io/tags/ivu-0select/
 https://showlotus.github.io/tags/ivu-0color-0picker/
 https://showlotus.github.io/tags/Vue-%E6%8C%87%E4%BB%A4/
+https://showlotus.github.io/tags/ivu-0input-0number/
+https://showlotus.github.io/tags/ivu-0select/
 https://showlotus.github.io/tags/Webpack/
 https://showlotus.github.io/tags/Loader/
 https://showlotus.github.io/tags/Windows/

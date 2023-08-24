@@ -417,20 +417,6 @@
   </url>
   
   <url>
-    <loc>https://showlotus.github.io/tags/ivu-0input-0number/</loc>
-    <lastmod>2023-08-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://showlotus.github.io/tags/ivu-0select/</loc>
-    <lastmod>2023-08-24</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://showlotus.github.io/tags/ivu-0color-0picker/</loc>
     <lastmod>2023-08-24</lastmod>
     <changefreq>weekly</changefreq>
@@ -439,6 +425,20 @@
   
   <url>
     <loc>https://showlotus.github.io/tags/Vue-%E6%8C%87%E4%BB%A4/</loc>
+    <lastmod>2023-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://showlotus.github.io/tags/ivu-0input-0number/</loc>
+    <lastmod>2023-08-24</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://showlotus.github.io/tags/ivu-0select/</loc>
     <lastmod>2023-08-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
