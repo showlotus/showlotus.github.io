@@ -8,7 +8,7 @@
       <link href="/6a4ff21b85be.html"/>
       <url>/6a4ff21b85be.html</url>
       
-        <content type="html"><![CDATA[<p>最近在搭建 Mac 环境，然后翻到一个屏幕保护程序：<a href="https://github.com/pedrommcarrasco/Brooklyn/tree/master">Brooklyn</a>，用 18 年苹果征集的各种 logo 做为屏幕保护程序，看起来十分好看，于是乎就整了一个。</p><img src="/6a4ff21b85be/mac-logo.gif" class><p>平时在家用 Mac，公司电脑是 Windows，最近打算把公司电脑加点 Mac 的特色。比如：字体。字体比较好改，可以用一个工具：<a href="https://github.com/Tatsu-syo/noMeiryoUI">noMeiryoUI</a>，直接把系统字体都统一改了，贼方便。</p><p>而最近新入坑的屏幕保护程序，就想着能不能把这个也搬到 Windows 上。然后，就开始网上搜解决方案，甚至一度打算自己手搓一个。好在经过一番搜索后，发现了一个工具：<a href="https://github.com/OrangeJedi/Aerial/">Aerial</a>。这个工具会将 AppleTV 拍的一些高清视频用作屏幕保护程序，当然也支持自定义视频，重点是 “自定义” 这个很关键！</p><p>在 <a href="https://github.com/OrangeJedi/Aerial/releases">Releases</a> 页面找到这个，点击就能下载。</p><img src="/6a4ff21b85be/aerial-releases.png" class><p>下载完后，把下载后的文件挪到 <code>C:\Windows\SysWOW64</code> 目录下，然后右键点击【安装】。</p><img src="/6a4ff21b85be/aerial-install.png" class><p>安装完后，会打开一个配置面板。配置还挺多的，可以自己摸索摸索。</p><img src="/6a4ff21b85be/aerial-multi-screen.png" class><p>默认会去加载内部提供的视频，这里把它们都取消勾选。不然，自定义的视频可能显示不出来。</p><img src="/6a4ff21b85be/aerial-deselect.png" class><p><a href="https://github.com/pedrommcarrasco/Brooklyn/blob/master/Brooklyn/Resources/Animations/original.mp4">点击这里</a> 下载 logo 动画视频（翻人家仓库代码，突然翻出来一个视频，哈哈～），下载完成后，建议把这个视频单独放在一个文件夹下。</p><p>然后回到 Aerial 的配置面板，在 <em>Custom Videos</em> 一栏，添加视频文件的文件夹，选中刚才下载视频所在的文件夹。</p><img src="/6a4ff21b85be/aerial-custom-video.png" class><p>配置里会自动检测出视频文件。然后点击右上角的 <em>Preview</em> ，可以看下效果。</p><img src="/6a4ff21b85be/aerial-preview.png" class><p>如果后续还想更改配置，可以在 Windows 的 <em>开始</em> 处，搜索 “屏幕保护程序”，然后再进行配置。</p><img src="/6a4ff21b85be/aerial-update-config.png" class><p>配置完后，搭配公司两个 27 寸的显示屏，简直不要太好看啦！！！</p>]]></content>
+        <content type="html"><![CDATA[<p>最近在搭建 Mac 环境，然后翻到一个屏幕保护程序：<a href="https://github.com/pedrommcarrasco/Brooklyn/tree/master">Brooklyn</a>，用 18 年苹果征集的各种 logo 做为屏幕保护程序，看起来十分好看，于是乎就整了一个。</p><p><img src="/6a4ff21b85be/mac-logo.gif"></p><p>平时在家用 Mac，公司电脑是 Windows，最近打算把公司电脑加点 Mac 的特色。比如：字体。字体比较好改，可以用一个工具：<a href="https://github.com/Tatsu-syo/noMeiryoUI">noMeiryoUI</a>，直接把系统字体都统一改了，贼方便。</p><p>而最近新入坑的屏幕保护程序，就想着能不能把这个也搬到 Windows 上。然后，就开始网上搜解决方案，甚至一度打算自己手搓一个。好在经过一番搜索后，发现了一个工具：<a href="https://github.com/OrangeJedi/Aerial/">Aerial</a>。这个工具会将 AppleTV 拍的一些高清视频用作屏幕保护程序，当然也支持自定义视频，重点是 “自定义” 这个很关键！</p><p>在 <a href="https://github.com/OrangeJedi/Aerial/releases">Releases</a> 页面找到这个，点击就能下载。</p><img src="/6a4ff21b85be/aerial-releases.png" class><p>下载完后，把下载后的文件挪到 <code>C:\Windows\SysWOW64</code> 目录下，然后右键点击【安装】。</p><img src="/6a4ff21b85be/aerial-install.png" class><p>安装完后，会打开一个配置面板。配置还挺多的，可以自己摸索摸索。</p><img src="/6a4ff21b85be/aerial-multi-screen.png" class><p>默认会去加载内部提供的视频，这里把它们都取消勾选。不然，自定义的视频可能显示不出来。</p><img src="/6a4ff21b85be/aerial-deselect.png" class><p><a href="https://github.com/pedrommcarrasco/Brooklyn/blob/master/Brooklyn/Resources/Animations/original.mp4">点击这里</a> 下载 logo 动画视频（翻人家仓库代码，突然翻出来一个视频，哈哈～），下载完成后，建议把这个视频单独放在一个文件夹下。</p><p>然后回到 Aerial 的配置面板，在 <em>Custom Videos</em> 一栏，添加视频文件的文件夹，选中刚才下载视频所在的文件夹。</p><img src="/6a4ff21b85be/aerial-custom-video.png" class><p>配置里会自动检测出视频文件。然后点击右上角的 <em>Preview</em> ，可以看下效果。</p><img src="/6a4ff21b85be/aerial-preview.png" class><p>如果后续还想更改配置，可以在 Windows 的 <em>开始</em> 处，搜索 “屏幕保护程序”，然后再进行配置。</p><img src="/6a4ff21b85be/aerial-update-config.png" class><p>配置完后，搭配公司两个 27 寸的显示屏，简直不要太好看啦！！！</p>]]></content>
       
       
       
@@ -184,9 +184,9 @@
             
             <tag> CSS </tag>
             
-            <tag> JavaScript </tag>
-            
             <tag> Vue </tag>
+            
+            <tag> JavaScript </tag>
             
             <tag> JSON </tag>
             
@@ -426,9 +426,9 @@
       
         <tags>
             
-            <tag> JavaScript </tag>
-            
             <tag> Vue </tag>
+            
+            <tag> JavaScript </tag>
             
         </tags>
       
