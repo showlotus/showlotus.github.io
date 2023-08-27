@@ -1,0 +1,372 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>ivu-input-number-union &lt;W7&gt;</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+最近朋友问我，多个数字输入框联动怎么做？他遇到一个需求，表格里的某一列是输入数字输入框，有多行，而最后一行是这些数字的总和。要达到的效果是，当输入框中的数字和超出总和时，清空所有输入框；如果未超出最大值，且还剩一个输入框未输入时，自动对最后一个输入框赋值。刚好前一段时间，做了一个下拉框联动的，两者的大体思路是相同的。首先是采用指令去实现，过程稍稍有点复杂，于是最后又实现了一个二次封装组件的版本。（下面直接通过 iframe 引用了 codepen 上写好的一个案例，可以试一试）
+
+
+
+指令版本思路多个组件联动，首先想到的就是需要有一个【组】的概念，用来记录这些组件的信息。而要把多个绑定相同指令的组件联系起来，就需要通过它们的组件上下文实例进行联系，也即，要把【组】的信息挂在当前 Vue 实例上，这样绑.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">ivu-input-number-union &lt;W7&gt;</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8C%87%E4%BB%A4%E7%89%88%E6%9C%AC"><span class="toc-text">指令版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E4%BB%A3%E7%A0%81"><span class="toc-text">整体代码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%86%E8%8A%82%E6%96%B9%E9%9D%A2"><span class="toc-text">细节方面</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%84%E4%BB%B6%E7%89%88%E6%9C%AC"><span class="toc-text">组件版本</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%8E%E6%8C%87%E4%BB%A4%E7%89%88%E6%9C%AC%E7%9A%84%E5%B7%AE%E5%BC%82"><span class="toc-text">与指令版本的差异</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%9D%E5%A4%96%E9%81%87%E5%88%B0%E7%9A%84%E9%97%AE%E9%A2%98"><span class="toc-text">额外遇到的问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B4%E4%BD%93%E4%BB%A3%E7%A0%81-1"><span class="toc-text">整体代码</span></a></li></ol></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/ivu-0extends"><i class="tag post-item-tag">ivu-extends</i></a><a href="/tags/ivu-0input-0number"><i class="tag post-item-tag">ivu-input-number</i></a><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">ivu-input-number-union &lt;W7&gt;</h1><time class="has-text-grey custom-date-font" datetime="2022-10-15T11:51:58.000Z">2022/10/15 19:51</time><article class="mt-2 post-content"><img src="/86462a2f9e85/banner.jpg" class>
+
+<blockquote>
+<p>最近朋友问我，多个数字输入框联动怎么做？他遇到一个需求，表格里的某一列是输入数字输入框，有多行，而最后一行是这些数字的总和。要达到的效果是，当输入框中的数字和超出总和时，清空所有输入框；如果未超出最大值，且还剩一个输入框未输入时，自动对最后一个输入框赋值。刚好前一段时间，做了一个下拉框联动的，两者的大体思路是相同的。首先是采用指令去实现，过程稍稍有点复杂，于是最后又实现了一个二次封装组件的版本。（下面直接通过 iframe 引用了 codepen 上写好的一个案例，可以试一试）</p>
+</blockquote>
+<div class="iframe-codepen" src="https://codepen.io/olderk/full/eYrQBVm" width="100%" height="500"></div>
+
+<h2 id="指令版本"><a href="#指令版本" class="headerlink" title="指令版本"></a>指令版本</h2><h3 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h3><p>多个组件联动，首先想到的就是需要有一个【组】的概念，用来记录这些组件的信息。而要把多个绑定相同指令的组件联系起来，就需要通过它们的组件上下文实例进行联系，也即，要把【组】的信息挂在当前 Vue 实例上，这样绑定在同一个组下的每个组件都能访问到这个【组】里的信息了。为了方便分组，需要在指令里传入一个组名，这里通过指令的 <code>arg</code> 参数传入组名。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>InputNumber v<span class="token operator">-</span>input<span class="token operator">-</span>number<span class="token operator">-</span>union<span class="token operator">:</span>group1<span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>InputNumber<span class="token operator">></span></code></pre>
+
+<p>在指令的 <code>bind</code> 阶段，进行初始化操作：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">bind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding<span class="token punctuation">,</span> vnode</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> arg <span class="token punctuation">&#125;</span> <span class="token operator">=</span> binding
+    <span class="token keyword">const</span> groupName <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">_ivu-input-number-union-group-</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>arg<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span>
+    <span class="token keyword">const</span> that <span class="token operator">=</span> vnode<span class="token punctuation">.</span>context
+    <span class="token keyword">const</span> group <span class="token operator">=</span> <span class="token punctuation">(</span>that<span class="token punctuation">[</span>groupName<span class="token punctuation">]</span> <span class="token operator">=</span> that<span class="token punctuation">[</span>groupName<span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>光挂载还不行，还要把当前组件的实时信息同步到【组】中，也即，需要监听每个输入框的值变化，将变化同步到【组】中。只监听也不行，如果当前组件被卸载了，那么监听还存在，可能会产生一些 <em>SideEffect</em> 。所以，还要在指令的解绑阶段，移除监听。在指令中监听属性，采用的是 <em>Vue</em> 的 <code>$watch</code> 方法。这个方法执行完后会返回一个卸载的方法，执行这个方法就会将监听从监听对象的依赖中移除。因此，还需要保存这些监听返回的方法。与 <code>group</code> 类似，也要挂在当前组件上下文中。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">bind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding<span class="token punctuation">,</span> vnode</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/* ... */</span>
+    <span class="token keyword">const</span> watcherName <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>groupName<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">-watch</span><span class="token template-punctuation string">`</span></span>
+    <span class="token keyword">const</span> that <span class="token operator">=</span> vnode<span class="token punctuation">.</span>context
+    <span class="token keyword">const</span> watcher <span class="token operator">=</span> <span class="token punctuation">(</span>that<span class="token punctuation">[</span>watcherName<span class="token punctuation">]</span> <span class="token operator">=</span> that<span class="token punctuation">[</span>watcherName<span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>这个监听对象，可能是一个普通属性，也可能是某个对象下的属性。例如，它可以是 <code>value</code>，也可以是 <code>obj.value</code>。这两种形式，<code>$watch</code> 都可以监听得到，前提是需要在指令中提供这个属性的链式字符串。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>InputNumber v<span class="token operator">-</span>input<span class="token operator">-</span>number<span class="token operator">-</span>union<span class="token operator">:</span>group1<span class="token operator">=</span><span class="token string">"&#123; value: 'value' &#125;"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>InputNumber<span class="token operator">></span>
+<span class="token comment">// 或者</span>
+<span class="token operator">&lt;</span>InputNumber v<span class="token operator">-</span>input<span class="token operator">-</span>number<span class="token operator">-</span>union<span class="token operator">:</span>group1<span class="token operator">=</span><span class="token string">"&#123; value: 'obj.value' &#125;"</span><span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>InputNumber<span class="token operator">></span></code></pre>
+
+<p>知道这个需要监听的属性后，就可以收集监听了。同样在 <code>unbind</code> 阶段，卸载对应的监听。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">bind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding<span class="token punctuation">,</span> vnode</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/* ... */</span>
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> key <span class="token punctuation">&#125;</span> <span class="token operator">=</span> binding<span class="token punctuation">.</span>value
+    <span class="token comment">// 收集监听</span>
+    watcher<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> that<span class="token punctuation">.</span><span class="token function">$watch</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      group<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> newVal
+      <span class="token comment">/* ... */</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">unbind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding<span class="token punctuation">,</span> vnode</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">value</span><span class="token operator">:</span> key <span class="token punctuation">&#125;</span> <span class="token operator">=</span> binding<span class="token punctuation">.</span>value
+    <span class="token keyword">const</span> that <span class="token operator">=</span> vnode<span class="token punctuation">.</span>context
+    <span class="token comment">// 解绑指令时，卸载监听，移除 watcher 中的属性</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>watcher<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      watcher<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">delete</span> watcher<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>接下来就是监听函数内部的逻辑（重中之重），列一下整体步骤：</p>
+<ul>
+<li>将最新的值更新到【组】中；</li>
+<li>特殊情况处理：<ul>
+<li>如果新值为 <code>null</code>，说明是赋空操作，直接 <code>return</code>；</li>
+<li>如果组中只有一个元素，直接提前 <code>return</code>；</li>
+<li>如果组中有两个元素，当前值变化时，直接更新另一个值；</li>
+<li>如果旧值为 <code>null</code>，并且未填写的输入框数量为 0，说明是对最后一个输入框自动赋值，直接 <code>return</code>；</li>
+</ul>
+</li>
+<li>如果当前已填写值的和大于最大值，则全部赋空，然后 <code>return</code>；</li>
+<li>如果当前未填写值的输入框个数为 1，则对最后一个输入框自动赋值（最大值 - 当前和）。</li>
+</ul>
+<h3 id="整体代码"><a href="#整体代码" class="headerlink" title="整体代码"></a>整体代码</h3><blockquote>
+<p>在 <a target="_blank" rel="noopener" href="https://codepen.io/olderk/pen/eYrQBVm">codepen.io</a> 中运行。</p>
+</blockquote>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// input-number-union.js</span>
+<span class="token keyword">const</span> <span class="token function-variable function">noop</span> <span class="token operator">=</span> <span class="token parameter">v</span> <span class="token operator">=></span> v
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">bind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding<span class="token punctuation">,</span> vnode</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> arg<span class="token punctuation">,</span> value <span class="token punctuation">&#125;</span> <span class="token operator">=</span> binding
+    <span class="token keyword">const</span> groupName <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">_ivu-input-number-union-group-</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>arg<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span>
+    <span class="token keyword">const</span> watcherName <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>groupName<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">-watch</span><span class="token template-punctuation string">`</span></span>
+    el<span class="token punctuation">.</span>_group <span class="token operator">=</span> groupName
+    el<span class="token punctuation">.</span>_watcher <span class="token operator">=</span> watcherName
+    <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> max<span class="token punctuation">,</span> <span class="token literal-property property">value</span><span class="token operator">:</span> key <span class="token punctuation">&#125;</span> <span class="token operator">=</span> value
+    el<span class="token punctuation">.</span>_key <span class="token operator">=</span> key
+    <span class="token keyword">const</span> that <span class="token operator">=</span> vnode<span class="token punctuation">.</span>context
+    <span class="token keyword">const</span> group <span class="token operator">=</span> <span class="token punctuation">(</span>that<span class="token punctuation">[</span>groupName<span class="token punctuation">]</span> <span class="token operator">=</span> that<span class="token punctuation">[</span>groupName<span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> watcher <span class="token operator">=</span> <span class="token punctuation">(</span>that<span class="token punctuation">[</span>watcherName<span class="token punctuation">]</span> <span class="token operator">=</span> that<span class="token punctuation">[</span>watcherName<span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    group<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">getVal</span><span class="token punctuation">(</span>that<span class="token punctuation">,</span> key<span class="token punctuation">)</span>
+
+    <span class="token comment">// 收集监听</span>
+    watcher<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> that<span class="token punctuation">.</span><span class="token function">$watch</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      group<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> newVal
+      <span class="token comment">// 如果新值为 null 说明是清空操作，不需要走下面的逻辑</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>newVal <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token keyword">return</span>
+
+      <span class="token keyword">const</span> groupLen <span class="token operator">=</span> <span class="token function">getGroupLen</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>groupLen <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>groupLen <span class="token operator">===</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">// 如果只有两个输入框时，特别处理</span>
+        <span class="token comment">// 一个输入框改变，直接更新另一个框的值</span>
+        <span class="token function">updateOtherKey</span><span class="token punctuation">(</span>key<span class="token punctuation">,</span> newVal<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token keyword">const</span> currSum <span class="token operator">=</span> <span class="token function">getCurrSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token comment">// 求和后，大于最大值时，赋空所有值</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>currSum <span class="token operator">></span> max<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">clearAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token keyword">const</span> noEditKeys <span class="token operator">=</span> <span class="token function">hasNoEditKeys</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">const</span> noEditKeysLen <span class="token operator">=</span> noEditKeys<span class="token punctuation">.</span>length
+      <span class="token comment">// 对最后一个输入框自动赋值</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>noEditKeysLen <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">setVal</span><span class="token punctuation">(</span>that<span class="token punctuation">,</span> noEditKeys<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> max <span class="token operator">-</span> currSum<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+    <span class="token keyword">function</span> <span class="token function">getGroupLen</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>group<span class="token punctuation">)</span><span class="token punctuation">.</span>length
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">function</span> <span class="token function">hasNoEditKeys</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>group<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">key</span> <span class="token operator">=></span> group<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">function</span> <span class="token function">getCurrSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span>group<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">sum<span class="token punctuation">,</span> curr</span><span class="token punctuation">)</span> <span class="token operator">=></span> sum <span class="token operator">+</span> curr<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">function</span> <span class="token function">clearAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>group<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">key</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token function">setVal</span><span class="token punctuation">(</span>that<span class="token punctuation">,</span> key<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">function</span> <span class="token function">updateOtherKey</span><span class="token punctuation">(</span><span class="token parameter">currKey<span class="token punctuation">,</span> currVal</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>currVal <span class="token operator">></span> max<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">const</span> otherKey <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>group<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token parameter">v</span> <span class="token operator">=></span> v <span class="token operator">!==</span> currKey<span class="token punctuation">)</span>
+      <span class="token function">setVal</span><span class="token punctuation">(</span>that<span class="token punctuation">,</span> otherKey<span class="token punctuation">,</span> max <span class="token operator">-</span> currVal<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">function</span> <span class="token function">getVal</span><span class="token punctuation">(</span><span class="token parameter">obj<span class="token punctuation">,</span> keys</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> seqs <span class="token operator">=</span> keys<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span> seqs<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">o<span class="token punctuation">,</span> key</span><span class="token punctuation">)</span> <span class="token operator">=></span> o<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">,</span> obj<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">function</span> <span class="token function">setVal</span><span class="token punctuation">(</span><span class="token parameter">obj<span class="token punctuation">,</span> keys<span class="token punctuation">,</span> val</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> seqs <span class="token operator">=</span> keys<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>seqs<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        obj<span class="token punctuation">[</span>keys<span class="token punctuation">]</span> <span class="token operator">=</span> val
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> seqs<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">const</span> key <span class="token operator">=</span> seqs<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">!==</span> seqs<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            obj <span class="token operator">=</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+          <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> val
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">unbind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding<span class="token punctuation">,</span> vnode</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> <span class="token punctuation">[</span>watcher<span class="token punctuation">,</span> groupName<span class="token punctuation">,</span> key<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span>el<span class="token punctuation">.</span>_watcher<span class="token punctuation">,</span> el<span class="token punctuation">.</span>_group<span class="token punctuation">,</span> el<span class="token punctuation">.</span>_key<span class="token punctuation">]</span>
+    <span class="token keyword">const</span> that <span class="token operator">=</span> vnode<span class="token punctuation">.</span>context
+
+    <span class="token comment">// 组件卸载时，卸载监听，移除 group 中的属性</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>that<span class="token punctuation">[</span>watcher<span class="token punctuation">]</span><span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      that<span class="token punctuation">[</span>watcher<span class="token punctuation">]</span><span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">delete</span> that<span class="token punctuation">[</span>watcher<span class="token punctuation">]</span><span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+      <span class="token keyword">delete</span> that<span class="token punctuation">[</span>groupName<span class="token punctuation">]</span><span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">delete</span> el<span class="token punctuation">.</span>_watcher
+    <span class="token keyword">delete</span> el<span class="token punctuation">.</span>_group
+    <span class="token keyword">delete</span> el<span class="token punctuation">.</span>_key
+
+    <span class="token comment">// 当该组下的输入框都清空后，移除挂载的属性</span>
+    <span class="token function">tryRemoveKey</span><span class="token punctuation">(</span>watcher<span class="token punctuation">)</span>
+    <span class="token function">tryRemoveKey</span><span class="token punctuation">(</span>groupName<span class="token punctuation">)</span>
+
+    <span class="token keyword">function</span> <span class="token function">tryRemoveKey</span><span class="token punctuation">(</span><span class="token parameter">key</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>that<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span> <span class="token operator">!</span>Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>that<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">delete</span> that<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h3 id="细节方面"><a href="#细节方面" class="headerlink" title="细节方面"></a>细节方面</h3><ul>
+<li>比如一些在 <code>unbind</code> 和 <code>bind</code> 阶段都用到的变量，可以直接在 <code>bind</code> 阶段挂载在当前的 <code>Element</code> 对象上。这样的好处是，不需要在 <code>unbind</code> 阶段再写一遍获取值的逻辑，注意在指令解绑时，把注册的属性删除，以防内存泄漏；</li>
+<li>在当前组件上下文添加一个新属性，为了防止变量名重复，这里没有采用 <code>Symbol</code> 类型。因为要在确保同组下的组件都能访问到同一个组，而每个组件都是独立的，所以就没有使用 <code>Symbol</code> 类型。一般就是以一个几乎不会重复的名称当作前缀，确保唯一即可；</li>
+<li>为了确保用户操作时不会有一些额外的影响，开启了输入框失焦时才去更新当前值。</li>
+</ul>
+<h2 id="组件版本"><a href="#组件版本" class="headerlink" title="组件版本"></a>组件版本</h2><h3 id="与指令版本的差异"><a href="#与指令版本的差异" class="headerlink" title="与指令版本的差异"></a>与指令版本的差异</h3><ul>
+<li>关于 <code>group</code> 和 <code>key</code> 的传参都通过 <code>props</code> 传入。由于 <em>Vue</em> 内部不允许使用 <code>key</code> 关键字作为属性名，就换成了 <code>iKey</code>；</li>
+<li>不需要考虑依赖的卸载。因为是在组件内部监听，卸载会随着组件生命周期的结束而自行移除监听。</li>
+</ul>
+<h3 id="额外遇到的问题"><a href="#额外遇到的问题" class="headerlink" title="额外遇到的问题"></a>额外遇到的问题</h3><p>在对所有值赋空时，出现了一点小问题。当总和超出最大值时，不会对当前编辑的最后一个输入框赋空？</p>
+<img src="/86462a2f9e85/problem.gif" class>
+
+<p>监听的内部逻辑和指令版本的内部逻辑一模一样，怎么到组件这里就不行了？试了在各种组件实例上使用 <code>$forceUpdate</code> 都不行，最后误打误撞试出来的解决办法是，用 <code>$nextTick</code> 把 <code>clearAll</code> 方法包起来。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">/* ... */</span>
+<span class="token keyword">const</span> currSum <span class="token operator">=</span> <span class="token function">getCurrSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// 求和后，大于最大值时，赋空所有值</span>
+<span class="token keyword">if</span> <span class="token punctuation">(</span>currSum <span class="token operator">></span> max<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">$nextTick</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token function">clearAll</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">/* ... */</span></code></pre>
+
+<p>仔细思考了一下，新增的输入框初始值为 <code>null</code>，然后当它输入了一个值（它的值由 <code>null -&gt; newVal</code>），导致当前和大于最大值，然后就会执行 <code>clearAll</code> 方法，将所有输入框赋空，它的值又从 <code>newVal -&gt; null</code>，也即 <code>null -&gt; newVal -&gt; null</code>。这一系列操作都是在一轮事件循环里，而 <em>Vue</em> 内部会对同一轮事件循环中多次触发的回调，进行优化，只会执行一次。也即虽然输入框的值改变了两次，最后也只会调用一次回调。</p>
+<p>在 <code>watch</code> 里打印了一下，然而结果是它执行了两次回调：</p>
+<ol>
+<li><code>null -&gt; newVal</code>；</li>
+<li><code>newVal -&gt; null</code>。</li>
+</ol>
+<p>理解错了吗？其实也不完全错，思路是对的，因为值变化了两次，<code>watch</code> 里的打印也很合理。不过这个【只执行一次的回调】在这里就不是 <code>watch</code> 中的监听函数，而是触发 <code>render</code> 的回调。在 <code>updated</code> 里打印日志，发现只会打印一次。<em>Vue</em> 会将同一轮事件循环中的回调全部执行完之后，才会调用 <code>render</code> 去更新视图，防止频繁更新视图，造成一些没必要的效率问题。然而在使用 <code>$nextTick</code> 后，<code>updated</code> 里的日志就会打印两次，也即 <code>render</code> 函数触发了两次。为什么添加了 <code>$nextTick</code> 后就能更新视图了呢？</p>
+<p>未使用 <code>$nextTick</code> 前，由于它的值在这一系列操作下来，还是和初始值相同，在 <em>diff</em> 时，就认为这两个节点是相同的，也就没有更新节点，直接复用，从而导致视图没有更新。而在使用 <code>$nextTick</code> 后，对于触发的两次 <code>render</code> 先命名一下：这里将 <code>null -&gt; newVal</code> 阶段的渲染命名为 <code>renderA</code>，<code>newVal -&gt; null</code> 阶段的渲染命名为 <code>renderB</code>。</p>
+<ul>
+<li>在 <code>renderA</code> 阶段，值由 <code>null -&gt; newVal</code>，在 <em>diff</em> 时，由于绑定的值不同，于是就用新值去更新节点，然后重新渲染。</li>
+<li>在 <code>renderB</code> 阶段，值由 <code>newVal -&gt; null</code>，同样在 <em>diff</em> 时，新老节点还是不同的，依然用新值去更新节点，然后重新渲染。</li>
+</ul>
+<p>这也就解释得通：为什么使用 <code>$nextTick</code> 后就能更新视图了（又对 <em>Vue</em> 底层加深了理解）。</p>
+<p>那么为什么在指令里就能直接更新呢？😑</p>
+<p>怀疑是因为给 <em>InputNumber</em> 包裹了一层导致的，而且是以 <code>&#123; props: $attrs &#125;</code> 的形式传递的参数，<code>$attrs</code> 还不是响应式的，当内部的 <code>$attrs.value</code> 发生变换时不会触发 <code>render</code>。二次封装第三方的组件，感觉坑还很多，以后估计有得踩。。。</p>
+<h3 id="整体代码-1"><a href="#整体代码-1" class="headerlink" title="整体代码"></a>整体代码</h3><blockquote>
+<p>在 <a target="_blank" rel="noopener" href="https://codepen.io/olderk/pen/Baxbdpg">codepen.io</a> 中运行。</p>
+</blockquote>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// input-number-union.vue</span>
+<span class="token operator">&lt;</span>script<span class="token operator">></span>
+<span class="token keyword">const</span> name <span class="token operator">=</span> <span class="token string">'input-number-union'</span>
+<span class="token keyword">function</span> <span class="token function">setVal</span><span class="token punctuation">(</span><span class="token parameter">obj<span class="token punctuation">,</span> keys<span class="token punctuation">,</span> val</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> seqs <span class="token operator">=</span> keys<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'.'</span><span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>seqs<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    obj<span class="token punctuation">[</span>keys<span class="token punctuation">]</span> <span class="token operator">=</span> val
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> seqs<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> key <span class="token operator">=</span> seqs<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">!==</span> seqs<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        obj <span class="token operator">=</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> val
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  name<span class="token punctuation">,</span>
+  <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">group</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> String<span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">'default'</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">iKey</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> String<span class="token punctuation">,</span>
+      <span class="token literal-property property">required</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">computed</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">currVal</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$attrs<span class="token punctuation">.</span>value
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">currMax</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$attrs<span class="token punctuation">.</span>max
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">inputNumber</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$children<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">groupName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">_</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>name<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">-group-</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token keyword">this</span><span class="token punctuation">.</span>group<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">watcherName</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupName<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">-watch</span><span class="token template-punctuation string">`</span></span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">groupList</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupName<span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">watch</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">currVal</span><span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>groupList<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>iKey<span class="token punctuation">]</span> <span class="token operator">=</span> newVal
+      <span class="token keyword">const</span> groupListLen <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getGroupListLen</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>groupListLen <span class="token operator">&lt;=</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>groupListLen <span class="token operator">===</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">updateOtherKey</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>iKey<span class="token punctuation">,</span> newVal<span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token keyword">const</span> noEditKeys <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getNoEditKeys</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">const</span> noEditKeysLen <span class="token operator">=</span> noEditKeys<span class="token punctuation">.</span>length
+      <span class="token comment">// 如果新值为 null 说明是清空操作，不需要走下面的逻辑</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>newVal <span class="token operator">==</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token keyword">return</span>
+      <span class="token keyword">const</span> currSum <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">getCurrSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+      <span class="token comment">// 求和后，大于最大值时，赋空所有值</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>currSum <span class="token operator">></span> <span class="token keyword">this</span><span class="token punctuation">.</span>currMax<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">clearOther</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+
+      <span class="token comment">// 对最后一个输入框自动赋值</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>noEditKeysLen <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">setVal</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">,</span> noEditKeys<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>currMax <span class="token operator">-</span> currSum<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">mounted</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">beforeDestroy</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">delete</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupName<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>iKey<span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">methods</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">init</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupName<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupName<span class="token punctuation">]</span> <span class="token operator">||</span> Object<span class="token punctuation">.</span><span class="token function">create</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupName<span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>iKey<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>currVal
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">getCurrSum</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> Object<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupList<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">sum<span class="token punctuation">,</span> curr</span><span class="token punctuation">)</span> <span class="token operator">=></span> sum <span class="token operator">+</span> curr<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">getGroupListLen</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupList<span class="token punctuation">)</span><span class="token punctuation">.</span>length
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">getNoEditKeys</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupList<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">key</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token keyword">this</span><span class="token punctuation">.</span>groupList<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">===</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">updateOtherKey</span><span class="token punctuation">(</span><span class="token parameter">key<span class="token punctuation">,</span> val</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>val <span class="token operator">></span> <span class="token keyword">this</span><span class="token punctuation">.</span>currMax<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">const</span> otherKey <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupList<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">v</span><span class="token punctuation">)</span> <span class="token operator">=></span> v <span class="token operator">!==</span> key<span class="token punctuation">)</span>
+      <span class="token function">setVal</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">,</span> otherKey<span class="token punctuation">,</span> <span class="token keyword">this</span><span class="token punctuation">.</span>currMax <span class="token operator">-</span> val<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">clearOther</span><span class="token punctuation">(</span><span class="token parameter">currKey</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>groupList<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">key</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>key <span class="token operator">!==</span> currKey<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          <span class="token function">setVal</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>$parent<span class="token punctuation">,</span> key<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">render</span><span class="token punctuation">(</span><span class="token parameter">h</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token function">h</span><span class="token punctuation">(</span><span class="token string">'InputNumber'</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token operator">...</span><span class="token keyword">this</span><span class="token punctuation">.</span>$attrs<span class="token punctuation">,</span>
+        <span class="token literal-property property">activeChange</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">on</span><span class="token operator">:</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$listeners<span class="token punctuation">,</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/3adce128609c.html" title="v-resize：监听 DOM 尺寸变化"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: v-resize：监听 DOM 尺寸变化</span></a><a class="button is-default" href="/47befa1adf6d.html" title="ivu-select-union &lt;W6&gt;"><span class="has-text-weight-semibold">下一页: ivu-select-union &lt;W6&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><a title="gitee" target="_blank" rel="noopener nofollow" href="//gitee.com/showlotus"><i class="iconfont icon-gitee"></i></a><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2023</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>
