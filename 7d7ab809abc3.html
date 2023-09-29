@@ -20,7 +20,7 @@
 <span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
 
 <p>不过会有一个问题，它影响每一个之后创建的 <em>Vue</em> 实例，就是当前项目下所有的 <em>Vue</em> 实例都会被混入。而我们只需要对组件库中的所有组件混入就行，这种做法的影响范围有些广，有点不可取。同时，组件库和原项目之间耦合性又增加了，不建议。</p>
-<h4 id="为什么要用-Loader-去实现？"><a href="#为什么要用-Loader-去实现？" class="headerlink" title="为什么要用 Loader 去实现？"></a>为什么要用 <em>Loader</em> 去实现？</h4><p>因为之前写一个 <a href="#">Post not found: 开发一个prettier插件全局替换资源引入路径 Prettier Plugin</a>，最开始也打算故技重施，再用 <em>Prettier</em> 写一个插件，对组件库中的所有 <em>Vue</em> 文件，添加一个 <em>Mixin</em> 。这种方案其实就是代替人工去给每一个 <em>Vue</em> 组件手动添加 <em>Mixin</em> 了。如果后续有更改，或者要把这个 <em>Mixin</em> 丢掉，有得重新写一个 <em>Plugin</em> ，emm，已经感到有点麻烦了。如果能通过外部插入的方式，添加 <em>Mixin</em> ，可随时注入或撤销，同时不对原文件做更改，那最好不过了。</p>
+<h4 id="为什么要用-Loader-去实现？"><a href="#为什么要用-Loader-去实现？" class="headerlink" title="为什么要用 Loader 去实现？"></a>为什么要用 <em>Loader</em> 去实现？</h4><p>因为之前写一个 <a href="https://showlotus.github.io/70ab28ff8c6d.html">Prettier Plugin</a> ，最开始也打算故技重施，再用 <em>Prettier</em> 写一个插件，对组件库中的所有 <em>Vue</em> 文件，添加一个 <em>Mixin</em> 。这种方案其实就是代替人工去给每一个 <em>Vue</em> 组件手动添加 <em>Mixin</em> 了。如果后续有更改，或者要把这个 <em>Mixin</em> 丢掉，有得重新写一个 <em>Plugin</em> ，emm，已经感到有点麻烦了。如果能通过外部插入的方式，添加 <em>Mixin</em> ，可随时注入或撤销，同时不对原文件做更改，那最好不过了。</p>
 <p><em>Webpack Loader 了 ~ 解 ~ 一 ~ 下 ~~~（画外音）</em></p>
 <p>关于 <em>Loader</em> ，<em>Webpack</em> 官网是这样介绍的：</p>
 <blockquote>
