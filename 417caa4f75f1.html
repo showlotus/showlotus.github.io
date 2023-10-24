@@ -71,7 +71,7 @@
 <span class="token punctuation">&#125;</span></code></pre>
 
 <ul>
-<li>首先, <code>cacheRequest</code> 新增一个入参 <code>cacheTime</code>，用于设置过期时间，默认为 <em>1</em> 秒。</li>
+<li>首先，<code>cacheRequest</code> 新增一个入参 <code>cacheTime</code>，用于设置过期时间，默认为 <em>1</em> 秒。</li>
 <li>其次，在原型对象上新增了一个 <code>lastTime</code> 属性，用来记录最后一次调用的时间。</li>
 <li>当缓存为空，或者当前时间距离上一次调用时间超过缓存过期时间时，更新 <code>cache</code> 和 <code>lastTime</code> 。</li>
 </ul>
