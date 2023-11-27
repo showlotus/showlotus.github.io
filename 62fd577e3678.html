@@ -7,7 +7,7 @@
 <p>再设想几个场景，如果组件 A 与 组件 B 不是兄弟组件呢？如果组件 A 需要在另一个组件中复用呢？这种通过在祖先组件内调用接口，获取数据后再传递给对应后代组件的方式，是不是就不太合适了。所以还是尽可能地将某个组件的内部逻辑与其他组件进行解耦，减少它们之间的关联，这样才能方便后续的复用。</p>
 <p>这时候，你可能在想，那每个组件各自调用接口不就好了。但是呢，明明是同一个接口，只是入参中的某个参数不一样，却调用了多次，而且明明是可以同时传入多种类型参数的，嘶，总感觉不是很优雅。<span style="border-bottom: 1px dashed">如果能把这些调用的接口合并成一个接口，获取数据后按照类型进行拆分，然后根据每个调用所需的类型返回对应类型的数据</span>，那该多好呀。那么这能实现吗？当然可以！</p>
 <p><img src="/62fd577e3678/idea.excalidraw.png" alt="idea"></p>
-<h4 id="收集类型"><a href="#收集类型" class="headerlink" title="收集类型"></a>收集类型</h4><p>首先，先思考一个问题，如果一个函数如果同时调用了多次，那么如何只执行一次呢？比如，对于下面这段代码：</p>
+<h4 id="收集类型"><a href="#收集类型" class="headerlink" title="收集类型"></a>收集类型</h4><p>首先，先思考一个问题，如果一个函数同步调用了多次，那么如何只执行一次呢？比如，对于下面这段代码：</p>
 <pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"print"</span><span class="token punctuation">)</span>
 <span class="token punctuation">&#125;</span>
@@ -17,7 +17,7 @@
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>毫无疑问会打印 <code>10</code> 次 <code>print</code>。如果只想打印 <code>1</code> 次 <code>print</code>，该如何实现？</p>
-<p>先来了解一下 <em>Vue</em> 中响应式数据更新的优化策略：<span style="border-bottom: 1px dashed">把需要触发的回调函数放进一个任务队列中，同时过滤掉相同的回调，并在下一次事件循环中执行队列中的所有回调。</span>（下面的代码源自：《Vue.js 设计与实现》P63）</p>
+<p>不妨先了解一个小知识点：<em>Vue</em> 中响应式数据更新的优化策略，它的主体思想就是：<span style="border-bottom: 1px dashed">把需要触发的回调函数放进一个任务队列中，同时过滤掉相同的回调，并在下一次事件循环中执行队列中的所有回调。</span>（下面的代码源自：《Vue.js 设计与实现》P63）</p>
 <pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 定义一个任务队列</span>
 <span class="token keyword">const</span> jobQueue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
 <span class="token comment">// 使用 Promise.resolve() 创建一个 promise 实例，我们用它将一个任务添加到微任务队列</span>
@@ -40,16 +40,18 @@
 <span class="token punctuation">&#125;</span></code></pre>
 
 <p>按照这个思路把 <code>print</code> 改造一下，如下：</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">originPrint</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
-  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"print"</span><span class="token punctuation">)</span>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">transform</span><span class="token punctuation">(</span><span class="token parameter">callback</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 每次调用时，将回调函数添加到 jobQueue 队列中</span>
+    jobQueue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>callback<span class="token punctuation">)</span>
+    <span class="token comment">// 调用 flushJob 刷新队列</span>
+    <span class="token function">flushJob</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
 <span class="token punctuation">&#125;</span>
 
-<span class="token keyword">const</span> <span class="token function-variable function">print</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
-  <span class="token comment">// 每次调用时，将回调函数添加到 jobQueue 队列中</span>
-  jobQueue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>originPrint<span class="token punctuation">)</span>
-  <span class="token comment">// 调用 flushJob 刷新队列</span>
-  <span class="token function">flushJob</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> print <span class="token operator">=</span> <span class="token function">transform</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"print"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
 
 <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
   <span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
@@ -98,11 +100,9 @@
 <li>在 <code>promise</code> 实例 <code>p</code> 的 <code>then</code> 方法中处理最终结果，执行 <code>callback</code> 并将收集到的所有类型传入，同时在 <code>finally</code> 方法中清空 <code>types</code>。</li>
 </ul>
 <p>用法如下：</p>
-<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">originPrint</span><span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> print <span class="token operator">=</span> <span class="token function">collectTypes</span><span class="token punctuation">(</span><span class="token parameter">type</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
   console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span>
-<span class="token punctuation">&#125;</span>
-
-<span class="token keyword">const</span> print <span class="token operator">=</span> <span class="token function">collectTypes</span><span class="token punctuation">(</span>originPrint<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
 
 <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span>
 <span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span>
@@ -139,7 +139,7 @@
 <span class="token punctuation">&#125;</span></code></pre>
 
 <ul>
-<li>改了一个更合适的名称 <code>mergeSimilarRequest</code>，高 ～ 大 ～ 上 ～。</li>
+<li>换一个更符合气质的名字：<code>mergeSimilarRequest</code> —— <em>合并相似请求</em> 。</li>
 <li>入参调整为 <code>request</code>（发起请求的方法），在最后处理阶段，将所有的类型传给 <code>request</code>，把获取数据的过程交给 <code>request</code>，只需要它的返回结果即可。</li>
 <li>刷新队列时，对 <code>p</code> 进行重新赋值，<code>p</code> 的结果即为 <code>request</code> 的执行结果（请求的所有数据）。</li>
 <li>返回的函数 <code>fetchData</code> 的执行结果：返回当前的 <code>p</code> 实例。</li>

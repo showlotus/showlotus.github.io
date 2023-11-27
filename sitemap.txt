@@ -50,12 +50,12 @@ https://showlotus.github.io/tags/npm/
 https://showlotus.github.io/tags/Fiddler/
 https://showlotus.github.io/tags/%E6%8A%93%E5%8C%85/
 https://showlotus.github.io/tags/Dev-Tools/
+https://showlotus.github.io/tags/JavaScript-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6/
 https://showlotus.github.io/tags/ViewDesign/
 https://showlotus.github.io/tags/ivu-0extends/
 https://showlotus.github.io/tags/ivu-0color-0picker/
 https://showlotus.github.io/tags/Vue-%E6%8C%87%E4%BB%A4/
 https://showlotus.github.io/tags/ivu-0input-0number/
-https://showlotus.github.io/tags/JavaScript-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6/
 https://showlotus.github.io/tags/%E6%BA%90%E7%A0%81/
 https://showlotus.github.io/tags/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-Vue-js/
 https://showlotus.github.io/tags/ivu-0select/
