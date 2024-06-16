@@ -60,9 +60,9 @@
             
             <tag> AST </tag>
             
-            <tag> Babel </tag>
-            
             <tag> Webpack </tag>
+            
+            <tag> Babel </tag>
             
         </tags>
       
@@ -299,9 +299,9 @@
       
         <tags>
             
-            <tag> Dev-Tools </tag>
-            
             <tag> VS-Code-插件 </tag>
+            
+            <tag> Dev-Tools </tag>
             
         </tags>
       
@@ -330,9 +330,9 @@
             
             <tag> AST </tag>
             
-            <tag> Babel </tag>
-            
             <tag> Webpack </tag>
+            
+            <tag> Babel </tag>
             
         </tags>
       
@@ -425,9 +425,9 @@
             
             <tag> AST </tag>
             
-            <tag> Prettier </tag>
-            
             <tag> Babel </tag>
+            
+            <tag> Prettier </tag>
             
         </tags>
       
@@ -885,9 +885,9 @@
             
             <tag> ivu-0extends </tag>
             
-            <tag> ivu-0color-0picker </tag>
-            
             <tag> Vue-指令 </tag>
+            
+            <tag> ivu-0color-0picker </tag>
             
         </tags>
       
