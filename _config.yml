@@ -1,0 +1,176 @@
+# Hexo Configuration
+## Docs: https://hexo.io/docs/configuration.html
+## Source: https://github.com/hexojs/hexo/
+
+# Site
+title: showlotus
+subtitle: ""
+description: ""
+keywords:
+author: showlotus
+language: zh-CN
+timezone: ""
+
+# URL
+## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
+url: https://showlotus.github.io
+# permalink: :year/:month/:day/:id.html
+permalink: :hash.html # 哈希值由文章标题和日期生成，两者其一发生变化hash值都会重新生成
+# permalink: :abbrlink.html
+permalink_defaults:
+  lang: en
+pretty_urls:
+  trailing_index: true # Set to false to remove trailing 'index.html' from permalinks
+  trailing_html: true # Set to false to remove trailing '.html' from permalinks
+
+# Directory
+source_dir: source
+public_dir: docs
+tag_dir: tags
+archive_dir: archives
+category_dir: categories
+code_dir: downloads/code
+i18n_dir: :lang
+
+# Writing
+new_post_name: :title.md # File name of new posts
+default_layout: post
+titlecase: false # Transform title into titlecase
+external_link:
+  enable: true # Open external links in new tab
+  field: site # Apply to the whole site
+  exclude: ""
+filename_case: 0
+render_drafts: false # 开启后，发布时也会把草稿中的文章发布
+post_asset_folder: true # 创建新文章时自动创建一个文件夹
+marked:
+  prependRoot: true
+  postAsset: true
+relative_link: false
+future: true
+highlight:
+  enable: true
+  line_number: false
+  auto_detect: true
+  tab_replace: ""
+  wrap: true
+  hljs:
+    code_block:
+      languages: { diff: "diff" }
+
+prismjs:
+  enable: true
+  preprocess: true
+  line_number: false
+  tab_replace: ""
+
+# Home page setting
+# path: Root path for your blogs index page. (default = '')
+# per_page: Posts displayed per page. (0 = disable pagination)
+# order_by: Posts order. (Order by date descending by default)
+# index_generator:
+#   path: ""
+#   per_page: 5
+#   order_by: -date
+
+# Category & Tag
+default_category: uncategorized
+category_map:
+  日常: daily
+  书籍: book
+  笔记: note
+  每周一篇: weekly
+tag_map:
+  # 每周一篇: weekly
+
+# Metadata elements
+## https://developer.mozilla.org/en-US/docs/Web/HTML/Element/meta
+meta_generator: true
+
+# Date / Time format
+## Hexo uses Moment.js to parse and display date
+## You can customize the date format as defined in
+## http://momentjs.com/docs/#/displaying/format/
+date_format: YYYY/MM/DD HH:mm
+time_format: HH:mm:ss
+## updated_option supports 'mtime', 'date', 'empty'
+updated_option: "mtime"
+
+# Pagination
+## Set per_page to 0 to disable pagination
+# TODO 开启分页，修改后记得重启
+per_page: 10
+# pagination_dir: _post
+
+# Include / Exclude file(s)
+## include:/exclude: options only apply to the 'source/' folder
+include:
+exclude:
+ignore:
+
+# url: https://showlotus.gitee.io/showlotus
+# root: /showlotus
+
+# Extensions
+# plugins: https://hexo.io/plugins/
+## Themes: https://hexo.io/themes/
+# theme: landscape
+theme: claudia
+# Deployment
+## Docs: https://hexo.io/docs/one-command-deployment
+deploy:
+  type: "git"
+  repo:
+    - git@github.com:showlotus/showlotus.github.io.git
+    # - https://gitee.com/showlotus/showlotus.git
+  branch: master
+  # TAG 提交日志
+  # message: "chore: 开启归档"
+  # - type: baidu_url_submitter
+
+# # 百度主动推送插件
+# baidu_url_submit:
+#   count: 80 # 提交最新的一个链接
+#   host: showlotus.github.io # 你的域名
+#   token: KeO5mJ6ZAYgLbnSP # 请勿泄漏
+#   path: baidu_urls.txt # 文本文档的地址，新链接会保存在此文本文档里
+
+# 自动生成sitemap
+# sitemap:
+#   path: sitemap.xml
+
+# baidusitemap:
+#   path: baidusitemap.xml
+
+font:
+  codes:
+    external: true
+    family: Roboto Mono
+
+mathjax:
+  tags: none # or 'ams' or 'all'
+  single_dollars: true # enable single dollar signs as in-line math delimiters
+  cjk_width: 0.9 # relative CJK char width
+  normal_width: 0.6 # relative normal (monospace) width
+  append_css: true # add CSS to pages rendered by MathJax
+  every_page: false # if true, every page will be rendered by MathJax regardless the `mathjax` setting in Front-matter
+  packages: # extra packages to load
+  extension_options:
+    {}
+    # you can put your extension options here
+    # see http://docs.mathjax.org/en/latest/options/input/tex.html#tex-extension-options for more detail
+
+# 添加字数统计功能
+symbols_count_time:
+  symbols: true # 文章字数统计
+  time: true # 文章阅读时长
+  total_symbols: true # 站点总字数统计
+  total_time: true # 站点总阅读时长
+  exclude_codeblock: false # 排除代码字数统计
+
+#
+# static_dir:
+#   - public
+#   - source/_drafts
+
+escape_filename: false

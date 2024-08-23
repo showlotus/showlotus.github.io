@@ -1,0 +1,514 @@
+---
+title: 【掘金小册·Vue组件精讲-7】实战 2：组合多选框组件——CheckboxGroup & Checkbox
+date: 2022-03-01 14:59:07
+categories:
+  - [掘金小册·Vue组件精讲]
+tags:
+  - Vue
+  - IView
+  - 转载
+---
+
+<div class="markdown-body">
+  <p>
+    在第 5 节，我们完成了具有数据校验功能的组件
+    Form，本小节继续开发一个新的组件——组合多选框
+    Checkbox。它作为基础组件，也能集成在 Form 内并应用其验证规则。
+  </p>
+  <h2 data-id="heading-1">Checkbox 组件概览</h2>
+  <p>
+    多选框组件也是由两个组件组成：CheckboxGroup 和
+    Checkbox。单独使用时，只需要一个
+    Checkbox，组合使用时，两者都要用到。效果如下图所示：
+  </p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/2/166d39853b7facd8~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    单独使用，常见的场景有注册时勾选以同意注册条款，它只有一个独立的 Checkbox
+    组件，并且绑定一个布尔值，示例如下：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>i-checkbox</span> <span>v-model</span>=<span>"single"</span>&gt;</span>单独选项<span>&lt;/<span>i-checkbox</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    data () {
+      <span>return</span> {
+        <span>single</span>: <span>false</span>
+      }
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>而组合使用的场景就很多了，填写表单时会经常用到，它的结构如下：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>i-checkbox-group</span> <span>v-model</span>=<span>"multiple"</span>&gt;</span>
+    <span>&lt;<span>i-checkbox</span> <span>label</span>=<span>"option1"</span>&gt;</span>选项 1<span>&lt;/<span>i-checkbox</span>&gt;</span>
+    <span>&lt;<span>i-checkbox</span> <span>label</span>=<span>"option2"</span>&gt;</span>选项 2<span>&lt;/<span>i-checkbox</span>&gt;</span>
+    <span>&lt;<span>i-checkbox</span> <span>label</span>=<span>"option3"</span>&gt;</span>选项 3<span>&lt;/<span>i-checkbox</span>&gt;</span>
+    <span>&lt;<span>i-checkbox</span> <span>label</span>=<span>"option4"</span>&gt;</span>选项 4<span>&lt;/<span>i-checkbox</span>&gt;</span>
+  <span>&lt;/<span>i-checkbox-group</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    data () {
+      <span>return</span> {
+        <span>multiple</span>: [<span>'option1'</span>, <span>'option3'</span>]
+      }
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    <code>v-model</code> 用在了 CheckboxGroup
+    上，绑定的值为一个数组，数组的值就是内部 Checkbox 绑定的 label。
+  </p>
+  <p>用法看起来比 Form 要简单多，不过也有两个个技术难点：</p>
+  <ul>
+    <li>Checkbox 要同时支持单独使用和组合使用的场景；</li>
+    <li>CheckboxGroup 和 Checkbox 内可能嵌套其它的布局组件。</li>
+  </ul>
+  <p>
+    对于第一点，要在 Checkbox 初始化时判断是否父级有
+    CheckboxGroup，如果有就是组合使用的，否则就是单独使用。而第二点，正好可以用上一节的通信方法，很容易就能解决。
+  </p>
+  <p>
+    两个组件并行开发，会容易理不清逻辑，不妨我们先开发独立的 Checkbox 组件。
+  </p>
+  <h2 data-id="heading-2">单独使用的 Checkbox</h2>
+  <p>设计一个组件时，还是要从它的 3 个 API 入手：prop、event、slot。</p>
+  <p>
+    因为要在 Checkbox 组件上直接使用
+    <code>v-model</code> 来双向绑定数据，那必不可少的一个 prop 就是
+    <code>value</code>，还有 event <code>input</code>，因为 v-model
+    本质上是一个语法糖（如果你还不清楚这种用法，可以阅读最后的扩展阅读 1）。
+  </p>
+  <p>
+    理论上，我们只需要给 <code>value</code> 设置为布尔值即可，也就是 true /
+    false，不过为了扩展性，我们再定义两个 props：<code>trueValue</code> 和
+    <code>falseValue</code>，它们允许用户指定
+    <code>value</code>
+    用什么值来判断是否选中。因为实际开发中，数据库中并不直接保存 true /
+    false，而是 1 / 0 或其它字符串，如果强制使用
+    Boolean，使用者就要再额外转换一次，这样的 API 设计不太友好。
+  </p>
+  <p>除此之外，还需要一个 <code>disabled</code> 属性来表示是否禁用。</p>
+  <p>
+    自定义事件 events 上文已经说了一个 <code>input</code>，用于实现 v-model
+    语法糖；另一个就是 <code>on-change</code>，当选中 /
+    取消选中时触发，用于通知父级状态发生了变化。
+  </p>
+  <p>slot 使用默认的就好，显示辅助文本。</p>
+  <p>
+    理清楚了 API，先来写一个基础的
+    <code>v-model</code> 功能，这在大部分组件中都类似。
+  </p>
+  <p>
+    在 <code>src/components</code> 下新建目录
+    <code>checkbox</code>，并新建两个文件 <code>checkbox.vue</code> 和
+    <code>checkbox-group.vue</code>。我们先来看 Checkbox：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- checkbox.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>label</span>&gt;</span>
+    <span>&lt;<span>span</span>&gt;</span>
+      <span>&lt;<span>input</span>
+             <span>type</span>=<span>"checkbox"</span>
+             <span>:disabled</span>=<span>"disabled"</span>
+             <span>:checked</span>=<span>"currentValue"</span>
+             @<span>change</span>=<span>"change"</span>&gt;</span>
+    <span>&lt;/<span>span</span>&gt;</span>
+    <span>&lt;<span>slot</span>&gt;</span><span>&lt;/<span>slot</span>&gt;</span>
+  <span>&lt;/<span>label</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    <span>name</span>: <span>'iCheckbox'</span>,
+    <span>props</span>: {
+      <span>disabled</span>: {
+        <span>type</span>: <span>Boolean</span>,
+        <span>default</span>: <span>false</span>
+      },
+      <span>value</span>: {
+        <span>type</span>: [<span>String</span>, <span>Number</span>, <span>Boolean</span>],
+        <span>default</span>: <span>false</span>
+      },
+      <span>trueValue</span>: {
+        <span>type</span>: [<span>String</span>, <span>Number</span>, <span>Boolean</span>],
+        <span>default</span>: <span>true</span>
+      },
+      <span>falseValue</span>: {
+        <span>type</span>: [<span>String</span>, <span>Number</span>, <span>Boolean</span>],
+        <span>default</span>: <span>false</span>
+      }
+    },
+    data () {
+      <span>return</span> {
+        <span>currentValue</span>: <span>this</span>.value
+      };
+    },
+    <span>methods</span>: {
+      change (event) {
+        <span>if</span> (<span>this</span>.disabled) {
+          <span>return</span> <span>false</span>;
+        }
+
+        <span>const</span> checked = event.target.checked;
+        <span>this</span>.currentValue = checked;
+
+        <span>const</span> value = checked ? <span>this</span>.trueValue : <span>this</span>.falseValue;
+        <span>this</span>.$emit(<span>'input'</span>, value);
+        <span>this</span>.$emit(<span>'on-change'</span>, value);
+      }
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    因为 <code>value</code> 被定义为
+    prop，它只能由父级修改，本身是不能修改的，在 <code>&lt;input&gt;</code> 触发
+    change 事件，也就是点击选择时，不能由 Checkbox 来修改这个 value，所以我们在
+    data 里定义了一个 <code>currentValue</code>，并把它绑定在
+    <code>&lt;input :checked="currentValue"&gt;</code>，这样就可以在 Checkbox
+    内修改 <code>currentValue</code>。这是自定义组件使用
+    <code>v-model</code> 的“惯用伎俩”。
+  </p>
+  <p>代码看起来都很简单，但有三个细节需要额外说明：</p>
+  <ol>
+    <li>
+      选中的控件，直接使用了
+      <code>&lt;input type="checkbox"&gt;</code>，而没有用 div + css
+      来自己实现选择的逻辑和样式，这样的好处是，使用 input
+      元素，你的自定义组件仍然为 html
+      内置的基础组件，可以使用浏览器默认的行为和快捷键，也就是说，浏览器知道这是一个选择框，而换成
+      div + css，浏览器可不知道这是个什么鬼。如果你觉得原生的 input
+      丑，没关系，是可以用 css 美化的，不过这不是本小册的重点，在此就不介绍了。
+    </li>
+    <li>
+      <code>&lt;input&gt;</code>、<code>&lt;slot&gt;</code> 都是包裹在一个
+      <code>&lt;label&gt;</code> 元素内的，这样做的好处是，当点击
+      <code>&lt;slot&gt;</code> 里的文字时，<code>&lt;input&gt;</code>
+      选框也会被触发，否则只有点击那个小框才会触发，那样不太容易选中，影响用户体验。
+    </li>
+    <li>
+      <code>currentValue</code> 仍然是布尔值（true / false），因为它是组件
+      Checkbox 自己使用的，对于使用者无需关心，而 value 可以是 String、Number 或
+      Boolean，这取决于 <code>trueValue</code> 和
+      <code>falseValue</code> 的定义。
+    </li>
+  </ol>
+  <p>
+    现在实现的 <code>v-model</code>，只是由内而外的，也就是说，通过点击
+    <code>&lt;input&gt;</code>选择，会通知到使用者，而使用者手动修改了 prop
+    <code>value</code> ，Checkbox 是没有做响应的，那继续补充代码：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- checkbox.vue，部分代码省略 --&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    <span>watch</span>: {
+      value (val) {
+        <span>if</span> (val === <span>this</span>.trueValue || val === <span>this</span>.falseValue) {
+          <span>this</span>.updateModel();
+        } <span>else</span> {
+          <span>throw</span> <span>'Value should be trueValue or falseValue.'</span>;
+        }
+      }
+    },
+    <span>methods</span>: {
+      updateModel () {
+        <span>this</span>.currentValue = <span>this</span>.value === <span>this</span>.trueValue;
+      }
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    我们对 prop <code>value</code> 使用 watch 进行了监听，当父级修改它时，会调用
+    <code>updateModel</code> 方法，同步修改内部的
+    <code>currentValue</code> 。不过，不是所有的值父级都能修改的，所以用 if
+    条件判断了父级修改的值是否符合 trueValue / falseValue 所设置的，否则会抛错。
+  </p>
+  <p>
+    Checkbox 也是一个基础的表单类组件，它完全可以集成到 Form 里，所以，我们使用
+    Emitter 在 change 事件触发时，向 Form 派发一个事件，这样你就可以用第 5 节的
+    Form 组件来做数据校验了：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- checkbox.vue，部分代码省略 --&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> Emitter <span>from</span> <span>'../../mixins/emitter.js'</span>;
+
+  <span>export</span> <span>default</span> {
+    <span>mixins</span>: [ Emitter ],
+    <span>methods</span>: {
+      change (event) {
+        <span>// ... </span>
+        <span>this</span>.$emit(<span>'input'</span>, value);
+        <span>this</span>.$emit(<span>'on-change'</span>, value);
+        <span>this</span>.dispatch(<span>'iFormItem'</span>, <span>'on-form-change'</span>, value);
+      }
+    },
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    至此，Checkbox 已经可以单独使用了，并支持 Form
+    的数据校验。下面来看组合使用。
+  </p>
+  <h3 data-id="heading-3">组合使用的 CheckboxGroup</h3>
+  <blockquote>
+    <p>
+      友情提示：请先阅读 Vue.js 文档的
+      <a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fguide%2Fforms.html%23%25E5%25A4%258D%25E9%2580%2589%25E6%25A1%2586"
+        title="https://cn.vuejs.org/v2/guide/forms.html#%E5%A4%8D%E9%80%89%E6%A1%86"
+        ref="nofollow noopener noreferrer"
+        >cn.vuejs.org/v2/guide/fo…</a
+      >
+      内容。
+    </p>
+  </blockquote>
+  <p>CheckboxGroup 的 API 很简单：</p>
+  <ul>
+    <li>
+      props：<code>value</code>，与 Checkbox 的类似，用于 v-model
+      双向绑定数据，格式为数组；
+    </li>
+    <li>events：<code>on-change</code>，同 Checkbox；</li>
+    <li>slots：默认，用于放置 Checkbox。</li>
+  </ul>
+  <p>
+    如果写了
+    CheckboxGroup，那就代表你要组合使用多选框，而非单独使用，两种模式，只能用其一，而判断的依据，就是是否用了
+    CheckboxGroup 组件。所以在 Checkbox 组件内，我们用上一节的
+    <code>findComponentUpward</code> 方法判断父组件是否有
+    <code>CheckboxGroup</code>：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- checkbox.vue，部分代码省略 --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>label</span>&gt;</span>
+    <span>&lt;<span>span</span>&gt;</span>
+      <span>&lt;<span>input</span>
+             <span>v-if</span>=<span>"group"</span>
+             <span>type</span>=<span>"checkbox"</span>
+             <span>:disabled</span>=<span>"disabled"</span>
+             <span>:value</span>=<span>"label"</span>
+             <span>v-model</span>=<span>"model"</span>
+             @<span>change</span>=<span>"change"</span>&gt;</span>
+      <span>&lt;<span>input</span>
+             <span>v-else</span>
+             <span>type</span>=<span>"checkbox"</span>
+             <span>:disabled</span>=<span>"disabled"</span>
+             <span>:checked</span>=<span>"currentValue"</span>
+             @<span>change</span>=<span>"change"</span>&gt;</span>
+    <span>&lt;/<span>span</span>&gt;</span>
+    <span>&lt;<span>slot</span>&gt;</span><span>&lt;/<span>slot</span>&gt;</span>
+  <span>&lt;/<span>label</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> { findComponentUpward } <span>from</span> <span>'../../utils/assist.js'</span>;
+
+  <span>export</span> <span>default</span> {
+    <span>name</span>: <span>'iCheckbox'</span>,
+    <span>props</span>: {
+      <span>label</span>: {
+        <span>type</span>: [<span>String</span>, <span>Number</span>, <span>Boolean</span>]
+      }
+    },
+    data () {
+      <span>return</span> {
+        <span>model</span>: [],
+        <span>group</span>: <span>false</span>,
+        <span>parent</span>: <span>null</span>
+      };
+    },
+    mounted () {
+      <span>this</span>.parent = findComponentUpward(<span>this</span>, <span>'iCheckboxGroup'</span>);
+
+      <span>if</span> (<span>this</span>.parent) {
+        <span>this</span>.group = <span>true</span>;
+      }
+
+      <span>if</span> (<span>this</span>.group) {
+        <span>this</span>.parent.updateModel(<span>true</span>);
+      } <span>else</span> {
+        <span>this</span>.updateModel();
+      }
+    },
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    在 mounted 时，通过 findComponentUpward 方法，来判断父级是否有 CheckboxGroup
+    组件，如果有，就将
+    <code>group</code> 置为 true，并触发 CheckboxGroup 的
+    <code>updateModel</code> 方法，下文会介绍它的作用。
+  </p>
+  <p>
+    在 template 里，我们又写了一个 <code>&lt;input&gt;</code> 来区分是否是 group
+    模式。Checkbox 的 data 里新增加的 <code>model</code> 数据，其实就是父级
+    CheckboxGroup 的 <code>value</code>，会在下文的
+    <code>updateModel</code> 方法里给 Checkbox 赋值。
+  </p>
+  <p>
+    Checkbox 新增的 prop： <code>label</code> 只会在组合使用时有效，结合
+    <code>model</code> 来使用，用法已在 Vue.js 文档中介绍了
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fguide%2Fforms.html%23%25E5%25A4%258D%25E9%2580%2589%25E6%25A1%2586"
+      title="https://cn.vuejs.org/v2/guide/forms.html#%E5%A4%8D%E9%80%89%E6%A1%86"
+      ref="nofollow noopener noreferrer"
+      >cn.vuejs.org/v2/guide/fo…</a
+    >。
+  </p>
+  <p>
+    在组合模式下，Checkbox 选中，就不用对 Form 派发事件了，应该在 CheckboxGroup
+    中派发，所以对 Checkbox 做最后的修改：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- checkbox.vue，部分代码省略 --&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    <span>methods</span>: {
+      change (event) {
+        <span>if</span> (<span>this</span>.disabled) {
+          <span>return</span> <span>false</span>;
+        }
+
+        <span>const</span> checked = event.target.checked;
+        <span>this</span>.currentValue = checked;
+
+        <span>const</span> value = checked ? <span>this</span>.trueValue : <span>this</span>.falseValue;
+        <span>this</span>.$emit(<span>'input'</span>, value);
+
+        <span>if</span> (<span>this</span>.group) {
+          <span>this</span>.parent.change(<span>this</span>.model);
+        } <span>else</span> {
+          <span>this</span>.$emit(<span>'on-change'</span>, value);
+          <span>this</span>.dispatch(<span>'iFormItem'</span>, <span>'on-form-change'</span>, value);
+        }
+      },
+      updateModel () {
+        <span>this</span>.currentValue = <span>this</span>.value === <span>this</span>.trueValue;
+      },
+    },
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>剩余的工作，就是完成 checkbox-gourp.vue 文件：</p>
+  <pre><code lang="html" class=""><span>&lt;!-- checkbox-group.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>slot</span>&gt;</span><span>&lt;/<span>slot</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> { findComponentsDownward } <span>from</span> <span>'../../utils/assist.js'</span>;
+  <span>import</span> Emitter <span>from</span> <span>'../../mixins/emitter.js'</span>;
+
+  <span>export</span> <span>default</span> {
+    <span>name</span>: <span>'iCheckboxGroup'</span>,
+    <span>mixins</span>: [ Emitter ],
+    <span>props</span>: {
+      <span>value</span>: {
+        <span>type</span>: <span>Array</span>,
+        <span>default</span> () {
+          <span>return</span> [];
+        }
+      }
+    },
+    data () {
+      <span>return</span> {
+        <span>currentValue</span>: <span>this</span>.value,
+        <span>childrens</span>: []
+      };
+    },
+    <span>methods</span>: {
+      updateModel (update) {
+        <span>this</span>.childrens = findComponentsDownward(<span>this</span>, <span>'iCheckbox'</span>);
+        <span>if</span> (<span>this</span>.childrens) {
+          <span>const</span> { value } = <span>this</span>;
+          <span>this</span>.childrens.forEach(<span><span>child</span> =&gt;</span> {
+            child.model = value;
+
+            <span>if</span> (update) {
+              child.currentValue = value.indexOf(child.label) &gt;= <span>0</span>;
+              child.group = <span>true</span>;
+            }
+          });
+        }
+      },
+      change (data) {
+        <span>this</span>.currentValue = data;
+        <span>this</span>.$emit(<span>'input'</span>, data);
+        <span>this</span>.$emit(<span>'on-change'</span>, data);
+        <span>this</span>.dispatch(<span>'iFormItem'</span>, <span>'on-form-change'</span>, data);
+      }
+    },
+    mounted () {
+      <span>this</span>.updateModel(<span>true</span>);
+    },
+    <span>watch</span>: {
+      value () {
+        <span>this</span>.updateModel(<span>true</span>);
+      }
+    }
+  };
+</span><span>&lt;/<span>script</span>&gt;</span>
+
+</code></pre>
+  <p>
+    代码很容易理解，需要介绍的就是
+    <code>updateModel</code> 方法。可以看到，一共有 3 个地方调用了
+    <code>updateModel</code>，其中两个是 CheckboxGroup 的 mounted 初始化和 watch
+    监听的 value 变化时调用；另一个是在 Checkbox 里的 mounted
+    初始化时调用。这个方法的作用就是在 CheckboxGroup 里通过
+    <code>findComponentsDownward</code> 方法找到所有的 Checkbox，然后把
+    CheckboxGroup 的 <code>value</code>，赋值给 Checkbox 的
+    <code>model</code>，并根据 Checkbox 的 <code>label</code>，设置一次当前
+    Checkbox
+    的选中状态。这样无论是由内而外选择，或由外向内修改数据，都是双向绑定的，而且支持动态增加
+    Checkbox 的数量。
+  </p>
+  <p>
+    以上就是组合多选组件——CheckboxGroup &amp; Checkbox 的全部内容，不知道你是否
+    get 到了呢！
+  </p>
+  <p>留两个小作业：</p>
+  <ol>
+    <li>
+      将 CheckboxGroup 和 Checkbox 组件集成在 Form 里完成一个数据校验的示例；
+    </li>
+    <li>参考本节的代码，实现一个单选组件 Radio 和 RadioGroup。</li>
+  </ol>
+  <h2 data-id="heading-4">结语</h2>
+  <p>你看到的简单组件，其实都不简单。</p>
+  <h2 data-id="heading-5">扩展阅读</h2>
+  <ul>
+    <li>
+      <a
+        target="_blank"
+        href="https://juejin.cn/post/6844903490653782029"
+        title="https://juejin.cn/post/6844903490653782029"
+        >v-model 指令在组件中怎么玩</a
+      >
+    </li>
+  </ul>
+  <p>
+    注：本节部分代码参考
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fiview%2Fiview%2Ftree%2F2.0%2Fsrc%2Fcomponents%2Fcheckbox"
+      title="https://github.com/iview/iview/tree/2.0/src/components/checkbox"
+      ref="nofollow noopener noreferrer"
+      >iView</a
+    >。
+  </p>
+</div>

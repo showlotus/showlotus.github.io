@@ -1,0 +1,343 @@
+---
+title: 【掘金小册·Vue组件精讲-14】递归组件与动态组件
+date: 2022-03-01 14:59:14
+categories:
+  - [掘金小册·Vue组件精讲]
+tags:
+  - Vue
+  - IView
+  - 转载
+---
+
+<div class="markdown-body">
+  <h2 data-id="heading-1">递归组件</h2>
+  <p>
+    递归组件就是指组件在模板中调用自己，开启递归组件的必要条件，就是在组件中设置一个
+    <code>name</code> 选项。比如下面的示例：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>my-component</span>&gt;</span><span>&lt;/<span>my-component</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    <span>name</span>: <span>'my-component'</span>
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    在 Webpack 中导入一个 Vue.js 组件，一般是通过
+    <code>import myComponent from 'xxx'</code>
+    这样的语法，然后在当前组件（页面）的
+    <code>components: { myComponent }</code> 里注册组件。这种组件是不强制设置
+    <code>name</code> 字段的，组件的名字都是使用者在 import
+    进来后自定义的，但递归组件的使用者是组件自身，它得知道这个组件叫什么，因为没有用
+    <code>components</code> 注册，所以
+    <code>name</code> 字段就是必须的了。除了递归组件用
+    <code>name</code
+    >，我们在之前的小节也介绍过，用一些特殊的方法，通过遍历匹配组件的 name
+    选项来寻找组件实例。
+  </p>
+  <p>
+    不过呢，上面的示例是有问题的，如果直接运行，会抛出
+    <code>max stack size exceeded</code>
+    的错误，因为组件会无限递归下去，死循环。解决这个问题，就要给递归组件一个限制条件，一般会在递归组件上用
+    <code>v-if</code> 在某个地方设置为
+    <code>false</code> 来终结。比如我们给上面的示例加一个属性 count，当大于 5
+    时就不再递归：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>my-component</span> <span>:count</span>=<span>"count + 1"</span> <span>v-if</span>=<span>"count &lt;= 5"</span>&gt;</span><span>&lt;/<span>my-component</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    <span>name</span>: <span>'my-component'</span>,
+    <span>props</span>: {
+      <span>count</span>: {
+        <span>type</span>: <span>Number</span>,
+        <span>default</span>: <span>1</span>
+      }
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>所以，总结下来，实现一个递归组件的必要条件是：</p>
+  <ul>
+    <li>要给组件设置 <strong>name</strong>；</li>
+    <li>要有一个明确的结束条件</li>
+  </ul>
+  <p>
+    递归组件常用来开发具有未知层级关系的独立组件，在业务开发中很少使用。比如常见的有级联选择器和树形控件：
+  </p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/22/167398b8f5a828b1~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    这类组件一般都是数据驱动型的，父级有一个字段
+    children，然后递归。下一节的实战，会开发一个树形控件 Tree。
+  </p>
+  <h2 data-id="heading-2">动态组件</h2>
+  <p>
+    有的时候，我们希望根据一些条件，动态地切换某个组件，或动态地选择渲染某个组件。在之前小节介绍函数式组件
+    Functional Render
+    时，已经说过，它是一个没有上下文的函数，常用于程序化地在多个组件中选择一个。使用
+    Render 或 Functional Render 可以解决动态切换组件的需求，不过那是基于一个 JS
+    对象（Render 函数），而 Vue.js 提供了另外一个内置的组件
+    <code>&lt;component&gt;</code> 和
+    <code>is</code> 特性，可以更好地实现动态组件。
+  </p>
+  <p>
+    先来看一个 <code>&lt;component&gt;</code> 和
+    <code>is</code> 的基本示例，首先定义三个普通组件：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- a.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 A
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <pre><code lang="html" class=""><span>&lt;!-- b.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 B
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <pre><code lang="html" class=""><span>&lt;!-- c.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 C
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>然后在父组件中导入这 3 个组件，并动态切换：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleChange('A')"</span>&gt;</span>显示 A 组件<span>&lt;/<span>button</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleChange('B')"</span>&gt;</span>显示 B 组件<span>&lt;/<span>button</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleChange('C')"</span>&gt;</span>显示 C 组件<span>&lt;/<span>button</span>&gt;</span>
+
+    <span>&lt;<span>component</span> <span>:is</span>=<span>"component"</span>&gt;</span><span>&lt;/<span>component</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> componentA <span>from</span> <span>'../components/a.vue'</span>;
+  <span>import</span> componentB <span>from</span> <span>'../components/b.vue'</span>;
+  <span>import</span> componentC <span>from</span> <span>'../components/c.vue'</span>;
+
+  <span>export</span> <span>default</span> {
+    data () {
+      <span>return</span> {
+        <span>component</span>: componentA
+      }
+    },
+    <span>methods</span>: {
+      handleChange (component) {
+        <span>if</span> (component === <span>'A'</span>) {
+          <span>this</span>.component = componentA;
+        } <span>else</span> <span>if</span> (component === <span>'B'</span>) {
+          <span>this</span>.component = componentB;
+        } <span>else</span> <span>if</span> (component === <span>'C'</span>) {
+          <span>this</span>.component = componentC;
+        }
+      }
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    这里的 <code>is</code> 动态绑定的是一个组件对象（Object），它直接指向 a / b
+    / c 三个组件中的一个。除了直接绑定一个 Object，还可以是一个
+    String，比如标签名、组件名。下面的这个组件，将原生的按钮 button
+    进行了封装，如果传入了 <code>prop: to</code>，那它会渲染为一个
+    <code>&lt;a&gt;</code> 标签，用于打开这个链接地址，如果没有传入
+    <code>to</code>，就当作普通 button 使用。来看下面的示例：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- button.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>component</span> <span>:is</span>=<span>"tagName"</span> <span>v-bind</span>=<span>"tagProps"</span>&gt;</span>
+    <span>&lt;<span>slot</span>&gt;</span><span>&lt;/<span>slot</span>&gt;</span>
+  <span>&lt;/<span>component</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    <span>props</span>: {
+      <span>// 链接地址</span>
+      to: {
+        <span>type</span>: <span>String</span>,
+        <span>default</span>: <span>''</span>
+      },
+      <span>// 链接打开方式，如 _blank</span>
+      target: {
+        <span>type</span>: <span>String</span>,
+        <span>default</span>: <span>'_self'</span>
+      }
+    },
+    <span>computed</span>: {
+      <span>// 动态渲染不同的标签</span>
+      tagName () {
+        <span>return</span> <span>this</span>.to === <span>''</span> ? <span>'button'</span> : <span>'a'</span>;
+      },
+      <span>// 如果是链接，把这些属性都绑定在 component 上</span>
+      tagProps () {
+        <span>let</span> props = {};
+
+        <span>if</span> (<span>this</span>.to) {
+          props = {
+            <span>target</span>: <span>this</span>.target,
+            <span>href</span>: <span>this</span>.to
+          }
+        }
+
+        <span>return</span> props;
+      }
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>使用组件：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>i-button</span>&gt;</span>普通按钮<span>&lt;/<span>i-button</span>&gt;</span>
+    <span>&lt;<span>br</span>&gt;</span>
+    <span>&lt;<span>i-button</span> <span>to</span>=<span>"https://juejin.cn"</span>&gt;</span>链接按钮<span>&lt;/<span>i-button</span>&gt;</span>
+    <span>&lt;<span>br</span>&gt;</span>
+    <span>&lt;<span>i-button</span> <span>to</span>=<span>"https://juejin.cn"</span> <span>target</span>=<span>"_blank"</span>&gt;</span>新窗口打开链接按钮<span>&lt;/<span>i-button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> iButton <span>from</span> <span>'../components/a.vue'</span>;
+
+  <span>export</span> <span>default</span> {
+    <span>components</span>: { iButton }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    最终会渲染出一个原生的 <code>&lt;button&gt;</code> 按钮和两个原生的链接
+    <code>&lt;a&gt;</code>，且第二个点击会在新窗口中打开链接，如图：
+  </p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/22/167398c004dc0c60~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    i-button 组件中的 <code>&lt;component&gt;</code>
+    <code>is</code> 绑定的就是一个标签名称 button / a，并且通过
+    <code>v-bind</code> 将一些额外的属性全部绑定到了
+    <code>&lt;component&gt;</code> 上。
+  </p>
+  <p>
+    再回到第一个 a / b / c
+    组件切换的示例，如果这类的组件，频繁切换，事实上组件是会重新渲染的，比如我们在组件
+    A 里加两个生命周期：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- a.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 A
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> {
+    mounted () {
+      <span>console</span>.log(<span>'组件创建了'</span>);
+    },
+    beforeDestroy () {
+      <span>console</span>.log(<span>'组件销毁了'</span>);
+    }
+  }
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    只要切换到 A 组件，<code>mounted</code> 就会触发一次，切换到其它组件，<code
+      >beforeDestroy</code
+    >
+    也会触发一次，说明组件再重新渲染，这样有可能导致性能问题。为了避免组件的重复渲染，可以在
+    <code>&lt;component&gt;</code> 外层套一个 Vue.js 内置的
+    <code>&lt;keep-alive&gt;</code> 组件，这样，组件就会被缓存起来：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>keep-alive</span>&gt;</span>
+  <span>&lt;<span>component</span> <span>:is</span>=<span>"component"</span>&gt;</span><span>&lt;/<span>component</span>&gt;</span>
+<span>&lt;/<span>keep-alive</span>&gt;</span>
+</code></pre>
+  <p>
+    这时，只有
+    <code>mounted</code> 触发了，如果不离开当前页面，切换到其它组件，<code
+      >beforeDestroy</code
+    >
+    不会被触发，说明组件已经被缓存了。
+  </p>
+  <p>keep-alive 还有一些额外的 props 可以配置：</p>
+  <ul>
+    <li>
+      <code>include</code>：字符串或正则表达式。只有名称匹配的组件会被缓存。
+    </li>
+    <li>
+      <code>exclude</code>：字符串或正则表达式。任何名称匹配的组件都不会被缓存。
+    </li>
+    <li><code>max</code>：数字。最多可以缓存多少组件实例。</li>
+  </ul>
+  <h2 data-id="heading-3">结语</h2>
+  <p>
+    还有一类是异步组件，Vue.js 文档已经介绍的很清楚了，可以阅读文末的扩展阅读
+    1。事实上异步组件我们用的很多，比如 router
+    的配置列表，一般都是用的异步组件形式：
+  </p>
+  <pre><code lang="js" class="">{
+  <span>path</span>: <span>'/form'</span>,
+  <span>component</span>: <span><span>()</span> =&gt;</span> <span>import</span>(<span>'./views/form.vue'</span>)
+}
+</code></pre>
+  <p>
+    这样每个页面才会在路由到时才加载对应的 JS 文件，否则入口文件会非常庞大。
+  </p>
+  <p>
+    递归组件、动态组件和异步组件是 Vue.js 中相对冷门的 3
+    种组件模式，不过在封装复杂的独立组件时，前两者会经常使用。
+  </p>
+  <h2 data-id="heading-4">扩展阅读</h2>
+  <ul>
+    <li>
+      <a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fguide%2Fcomponents-dynamic-async.html%23%25E5%25BC%2582%25E6%25AD%25A5%25E7%25BB%2584%25E4%25BB%25B6"
+        title="https://cn.vuejs.org/v2/guide/components-dynamic-async.html#%E5%BC%82%E6%AD%A5%E7%BB%84%E4%BB%B6"
+        ref="nofollow noopener noreferrer"
+        >异步组件</a
+      >
+    </li>
+  </ul>
+</div>

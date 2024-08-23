@@ -1,0 +1,93 @@
+# main menu navigation
+menu:
+  home: /
+  # daily: /categories/daily
+  # weekly: /categories/weekly
+  # book: /categories/book
+  # note: /categories/note
+  Archive: /archives
+  About: /about
+  # TODO 菜单配置
+
+widgets:
+  - tag
+  # - archive
+  # - category
+  # - recent_posts
+  - profile
+
+# social config
+social:
+  zhihu:
+  twitter:
+  facebook:
+  linkedin:
+  instagram:
+  github: showlotus
+  # juejin: showlotus
+  # gitee: showlotus
+
+user:
+  name: showlotus
+  avatar: images/avatar.jpg
+  # location: 中国河南
+  description: I hope one day, everyone is using my program.
+  footnotes: # footnotes
+
+# documents: https://github.com/utterance/utterances
+# API config: https://utteranc.es/
+comment_utteranc:
+  enable: true # 是否开启评论
+  repo: showlotus/showlotus # your blog repo
+
+# documents: https://valine.js.org/quickstart.html
+comment_valine:
+  enable: false
+  appId:
+  appKey:
+
+comment_disqus:
+  enable: false
+  url: # the url of your website main domain like this https://xxx.xxx/
+  name: # the short name in disqus
+
+# dark
+# light
+# user-can-set
+appearance: light # Default value is auto
+
+# Miscellaneous
+favicon: /images/favicon.png
+
+# Google Analytics
+ga_track_id:
+ga_domain:
+
+# Baidu Analytics
+ba_track_id:
+
+# picture of about page
+about_pic: about.png
+
+symbols_count_time:
+  separated_meta: true # 是否另起一行（true的话不和发表时间等同一行）
+  item_text_post: true # 首页文章统计数量前是否显示文字描述（本文字数、阅读时长）
+  item_text_total: false # 页面底部统计数量前是否显示文字描述（站点总字数、站点阅读时长）
+  awl: 4 # Average Word Length
+  wpm: 275 # Words Per Minute（每分钟阅读词数）
+  suffix: mins.
+
+post_wordcount: # 字数统计
+  item_text: true # 是否显示文字
+  wordcount: true # 显示字数
+  min2read: true # 显示阅读时间
+  totalcount: true # 显示总数
+  separated_meta: true # 是否分开
+
+archive_generator:
+  per_page: 10 # 每页显示的文章数量
+  yearly: true # 启用按年份归档
+  monthly: true # 禁用按月份归档
+  daily: false # 禁用按日期归档
+  order_by: -date # 归档的排序方式
+

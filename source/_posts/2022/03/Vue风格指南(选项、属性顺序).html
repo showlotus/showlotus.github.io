@@ -1,0 +1,446 @@
+---
+title: Vue风格指南（选项、属性顺序）
+date: 2022-03-16 14:18:20
+tags:
+  - Vue
+---
+
+<img
+  alt="扶着树干的大熊猫，四川卧龙国家级自然保护区 (© Katherine Feng/Minden Pictures)"
+  src="https://cn.bing.com/th?id=OHR.PandaDay_ZH-CN6584061291_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp"
+  loading="lazy"
+/>
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Markmap</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+      }
+      #mindmap {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.2.0/dist/style.css"
+    />
+  </head>
+  <body>
+    <svg id="mindmap" style="transform: translateX(-25%)"></svg>
+    <script src="https://cdn.jsdelivr.net/npm/d3@6.7.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.2.7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.2.0/dist/index.umd.min.js"></script>
+    <script>
+      ;(r => {
+        setTimeout(r)
+      })(() => {
+        const { markmap, mm } = window
+        const toolbar = new markmap.Toolbar()
+        toolbar.attach(mm)
+        const el = toolbar.render()
+        el.setAttribute("style", "position:absolute;bottom:20px;right:20px")
+        document.body.append(el)
+      })
+    </script>
+    <script>
+      ;((getMarkmap, getOptions, data) => {
+        const { Markmap } = getMarkmap()
+        window.mm = Markmap.create("svg#mindmap", getOptions == null ? void 0 : getOptions(), data)
+      })(() => window.markmap, null, {
+        t: "root",
+        d: 0,
+        v: "",
+        c: [
+          {
+            t: "heading",
+            d: 1,
+            p: { lines: [0, 1] },
+            v: "组件/实例选项的顺序",
+            c: [
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [2, 3] },
+                v: "副作用（<em>触发组件外的影响</em>）",
+                c: [{ t: "list_item", d: 4, p: { lines: [4, 5] }, v: "<em>el</em> ：" }],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [6, 7] },
+                v: "全局感知（<em>要求组件以外的知识</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [8, 9] },
+                    v: "<em><strong>name：</strong></em>",
+                  },
+                  { t: "list_item", d: 4, p: { lines: [9, 10] }, v: "<em>parent：</em>" },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [11, 12] },
+                v: "组件类型（<em>更改组件类型</em>）",
+                c: [{ t: "list_item", d: 4, p: { lines: [13, 14] }, v: "<em>functional：</em>" }],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [15, 16] },
+                v: "模板修改器（<em>改变模板的编译方式</em>）",
+                c: [
+                  { t: "list_item", d: 4, p: { lines: [17, 18] }, v: "<em>delimiters：</em>" },
+                  { t: "list_item", d: 4, p: { lines: [18, 19] }, v: "<em>comments：</em>" },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [20, 21] },
+                v: "模板依赖（<em>模板内使用的资源</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [22, 23] },
+                    v: "<em><strong>components：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [23, 24] },
+                    v: "<em><strong>directives：</strong></em>",
+                  },
+                  { t: "list_item", d: 4, p: { lines: [24, 25] }, v: "<em>filters：</em>" },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [26, 27] },
+                v: "组合（<em>向选项里合并的 property</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [28, 29] },
+                    v: "<em><strong>extends：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [29, 30] },
+                    v: "<em><strong>mixins：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [31, 32] },
+                v: "接口（<em>组件的接口</em>）",
+                c: [
+                  { t: "list_item", d: 4, p: { lines: [33, 34] }, v: "<em>inheritAttrs：</em>" },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [34, 35] },
+                    v: "<em><strong>model：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [35, 36] },
+                    v: "<em><strong>props/propsData：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [37, 38] },
+                v: "本地状态（<em>本地的响应式 property</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [39, 40] },
+                    v: "<em><strong>data：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [40, 41] },
+                    v: "<em><strong>computed：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [42, 43] },
+                v: "事件（<em>通过响应式事件触发的回调</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [44, 45] },
+                    v: "<em><strong>watch：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [45, 46] },
+                    v: "生命周期钩子（<em>按执行顺序</em>）",
+                    c: [
+                      {
+                        t: "list_item",
+                        d: 6,
+                        p: { lines: [46, 47] },
+                        v: "<em><strong>beforeCreate：</strong></em>",
+                      },
+                      {
+                        t: "list_item",
+                        d: 6,
+                        p: { lines: [47, 48] },
+                        v: "<em><strong>created：</strong></em>",
+                      },
+                      {
+                        t: "list_item",
+                        d: 6,
+                        p: { lines: [48, 49] },
+                        v: "<em><strong>beforeMount：</strong></em>",
+                      },
+                      {
+                        t: "list_item",
+                        d: 6,
+                        p: { lines: [49, 50] },
+                        v: "<em><strong>mounted：</strong></em>",
+                      },
+                      {
+                        t: "list_item",
+                        d: 6,
+                        p: { lines: [50, 51] },
+                        v: "<em>beforeUpdate：</em>",
+                      },
+                      { t: "list_item", d: 6, p: { lines: [51, 52] }, v: "<em>updated：</em>" },
+                      { t: "list_item", d: 6, p: { lines: [52, 53] }, v: "<em>activated：</em>" },
+                      { t: "list_item", d: 6, p: { lines: [53, 54] }, v: "<em>deactivated：</em>" },
+                      {
+                        t: "list_item",
+                        d: 6,
+                        p: { lines: [54, 55] },
+                        v: "<em><strong>beforeDestroy：</strong></em>",
+                      },
+                      { t: "list_item", d: 6, p: { lines: [55, 56] }, v: "<em>destroyed：</em>" },
+                    ],
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [57, 58] },
+                v: "非响应式的 property（<em>不依赖响应系统的实例 property</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [59, 60] },
+                    v: "<em><strong>methods：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [61, 62] },
+                v: "渲染（<em>组件输出的声明式描述</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [63, 64] },
+                    v: "<em><strong>template/render：</strong></em>",
+                  },
+                  { t: "list_item", d: 4, p: { lines: [64, 65] }, v: "<em>renderError</em>" },
+                ],
+              },
+            ],
+          },
+          {
+            t: "heading",
+            d: 1,
+            p: { lines: [66, 67] },
+            v: "元素 attribute 的顺序",
+            c: [
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [68, 69] },
+                v: "定义（<em>提供组件的选项</em>）",
+                c: [{ t: "list_item", d: 4, p: { lines: [70, 71] }, v: "<em>is：</em>" }],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [72, 73] },
+                v: "列表渲染（<em>创建多个变化相同的元素</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [74, 75] },
+                    v: "<em><strong>v-for：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [76, 77] },
+                v: "条件渲染（<em>元素是否渲染/显示</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [78, 79] },
+                    v: "<em><strong>v-if：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [79, 80] },
+                    v: "<em><strong>v-else-if：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [80, 81] },
+                    v: "<em><strong>v-else：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [81, 82] },
+                    v: "<em><strong>v-show：</strong></em>",
+                  },
+                  { t: "list_item", d: 4, p: { lines: [82, 83] }, v: "<em>v-cloak：</em>" },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [84, 85] },
+                v: "渲染方式（<em>改变元素渲染方式</em>）",
+                c: [
+                  { t: "list_item", d: 4, p: { lines: [86, 87] }, v: "<em>v-pre：</em>" },
+                  { t: "list_item", d: 4, p: { lines: [87, 88] }, v: "<em>v-once：</em>" },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [89, 90] },
+                v: "全局感知",
+                c: [{ t: "list_item", d: 4, p: { lines: [91, 92] }, v: "<em>id：</em>" }],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [93, 94] },
+                v: "唯一的 attribute",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [95, 96] },
+                    v: "<em><strong>ref：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [96, 97] },
+                    v: "<em><strong>key：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [98, 99] },
+                v: "双向绑定",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [100, 101] },
+                    v: "<em><strong>v-model：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [102, 103] },
+                v: "其他 attribute（<em>静态</em>）",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [104, 105] },
+                    v: "<em><strong>class：</strong></em>",
+                  },
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [105, 106] },
+                    v: "<em><strong>style：</strong></em>",
+                  },
+                  { t: "list_item", d: 4, p: { lines: [106, 107] }, v: "<em>......</em>" },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [108, 109] },
+                v: "事件",
+                c: [
+                  {
+                    t: "list_item",
+                    d: 4,
+                    p: { lines: [110, 111] },
+                    v: "<em><strong>v-on：</strong></em>",
+                  },
+                ],
+              },
+              {
+                t: "heading",
+                d: 2,
+                p: { lines: [112, 113] },
+                v: "内容",
+                c: [
+                  { t: "list_item", d: 4, p: { lines: [114, 115] }, v: "<em>v-html：</em>" },
+                  { t: "list_item", d: 4, p: { lines: [115, 116] }, v: "<em>v-text：</em>" },
+                ],
+              },
+            ],
+          },
+        ],
+        p: {},
+      })
+    </script>
+  </body>
+</html>
