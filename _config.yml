@@ -132,7 +132,7 @@ deploy:
 # baidu_url_submit:
 #   count: 80 # 提交最新的一个链接
 #   host: showlotus.github.io # 你的域名
-#   token: KeO5mJ6ZAYgLbnSP # 请勿泄漏
+#   token: # 请勿泄漏
 #   path: baidu_urls.txt # 文本文档的地址，新链接会保存在此文本文档里
 
 # 自动生成sitemap
