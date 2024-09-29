@@ -14,6 +14,7 @@
     "reserve": "hexo clean && hexo g && hexo s",
     "p": "hexo p",
     "new": "hexo new",
+    "create-draft": "hexo new draft",
     "refresh": "rm -rf **/node_modules && pnpm i --offline"
   },
   "hexo": {
