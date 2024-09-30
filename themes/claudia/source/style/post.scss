@@ -73,8 +73,6 @@ $lineColor: var(--border-line-color);
     .link-btn {
       display: inline-block;
       cursor: pointer;
-      background-color: #eee;
-      background: red;
       background-image: linear-gradient(#fcfcfc, #eee);
       border: 1px solid #d5d5d5;
       border-radius: 3px;
@@ -95,6 +93,23 @@ $lineColor: var(--border-line-color);
       right: 5px;
       top: 5px;
       opacity: 1;
+    }
+
+    .btn-copy {
+      width: 24px;
+      height: 24px;
+      padding: 0;
+      background-color: transparent;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' height='20' width='20' stroke='rgba(128,128,128,1)' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: center;
+      border: none;
+      box-sizing: border-box;
+    }
+
+    .btn-copy:hover {
+      background-color: #e3e3e3;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' height='20' width='20' stroke='rgba(128,128,128,1)' stroke-width='2' viewBox='0 0 24 24'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2'/%3E%3C/svg%3E");
     }
 
     .link-btn {

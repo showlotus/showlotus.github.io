@@ -1,16 +1,16 @@
 ;(function (e, t, a) {
   /* TAG 页面载入完成后，创建复制按钮*/
-  var initCopyCode = function () {
-    var copyHtml = ""
+  let initCopyCode = function () {
+    let copyHtml = ""
     copyHtml += '<button class="btn-copy" data-clipboard-snippet="">'
-    copyHtml += "<span>复制</span>"
+    copyHtml += ""
     copyHtml += "</button>"
     $("code.hljs").before(copyHtml)
     $(".btn-copy").click(function (e) {
       if ($(".copyMessage").length) return (e.returnValue = false)
       let div = document.createElement("div")
       div.className = "copyMessage"
-      div.innerHTML = "复制成功"
+      div.innerHTML = "Copied"
       div.style = `
         position: fixed;
         left: 50%;
