@@ -10,7 +10,12 @@ async function init() {
     const draftDir = path.join(cwd, "source/_drafts")
     const postDir = path.join(cwd, "source/_posts")
     const response = await fsPromises.readdir(draftDir)
-    const drafts = response.filter(dir => !dir.endsWith(".md")).map((v, i) => `${String(i + 1).padStart(2, "0")}. ${v}`)
+    const drafts = response
+      .filter(dir => dir.endsWith(".md"))
+      .map(
+        (v, i) => `${String(i + 1).padStart(2, "0")}. ${v.replace(/\.md$/, "")}`
+      )
+    console.log(drafts)
     const { name } = await inquirer.prompt([
       {
         name: "name",
@@ -46,13 +51,25 @@ async function init() {
     const newFolder = path.join(targetFolder, articleName)
     const newArticle = newFolder + ".md"
 
-    await fsPromises.rename(folder, newFolder)
-    await fsPromises.rename(article, newArticle)
+    if (await checkPathIsExist(folder)) {
+      await fsPromises.rename(folder, newFolder)
+    }
+    if (await checkPathIsExist(article)) {
+      await fsPromises.rename(article, newArticle)
+    }
 
     console.log(`✔︎ 草稿 ${articleName} 已发布 🎉🎉🎉`)
   } catch (e) {
     console.log(e)
   }
+}
+
+async function checkPathIsExist(path) {
+  try {
+    await fsPromises.access(path)
+    return true
+  } catch (e) {}
+  return false
 }
 
 init()
