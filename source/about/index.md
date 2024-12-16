@@ -8,7 +8,10 @@ layout: about
 - <div style="display: flex; justify-content: space-between"><span>华为技术有限公司</span> <span>2023/05 - now</span></div>
 
   - 参与公司产品 Meta SaaS ERP 订单模块开发，以及供应一站式底座产品开发与建设。
-  - 负责底座的 AUI 框架升级，制定升级方案及回退策略，并推进其他产品逐步升级。
+  - 负责一站式底座的前端框架升级，制定升级方案及回退策略，并推进其他产品逐步升级。
+  - 参与不可信 UI 框架迁移（由 Webix 迁移到 AUI），开发代码迁移效能工具，提升迁移效率。
+  - xx
+  - yy
 
   <p></p>
 
@@ -18,7 +21,7 @@ layout: about
   - 负责组内低代码编程模块的开发，需求方案的设计，以及后续迭代和维护工作；
   - 使用 Prettier + ESLint 制定组内代码规范以及 Git Commit 规范，推行组内执行和遵守；
   - 基于使用的 UI 库，二次封装了多个通用组件和常用工具函数，提高了日常开发效率；
-  - 开发了一个周报模板生成工具，富文本转 Word 文档，并搭配邮件服务可以直接发送周报邮件。
+  <!-- - 开发了一个周报模板生成工具，富文本转 Word 文档，并搭配邮件服务可以直接发送周报邮件。 -->
 
 #### 项目经历
 
@@ -69,10 +72,10 @@ layout: about
 
 #### 开源项目
 
-- NeedClipboard：由 Electron + Vite + Vue3 + Node Addon 开发的在 Windows 系统上运行的剪贴板小工具。
-- Ti18n：
+- NeedClipboard：由 Electron + Vue + Node Addon 开发的在 Windows 系统上运行的剪贴板小工具。
+- Ti18n：VS Code 国际化提示插件，支持多种国际化配置，便携展示国际化，并快速定位到原配置文件。
 - wordcloud-online：由 React + Ant Design + ECharts 搭建的在线词云生成网站，支持多种形状和主题色，可自定义上传文本。
-- ivu-extends：
+- ivu-extends：基于 View Design 组件库进行扩展，对表单、表格等组件进行功能扩展，及动态主题切换。
 
 #### 专业技能
 
