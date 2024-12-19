@@ -4,7 +4,7 @@ tags:
   - Rollup
   - Vue
 mathjax: false
-date: 2024-12-19 13:56:18
+date: 2024-12-19 15:27:18
 categories:
 ---
 
@@ -27,15 +27,17 @@ categories:
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@babel/preset-env": "^7.26.0",
     "@rollup/plugin-babel": "^6.0.4",
     "@rollup/plugin-commonjs": "^28.0.2",
     "@rollup/plugin-image": "^3.0.3",
     "@rollup/plugin-node-resolve": "^16.0.0",
     "@rollup/plugin-replace": "^6.0.2",
     "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-url": "^8.0.2",
     "rollup": "^4.28.1",
     "rollup-plugin-postcss": "^4.0.2",
-    "rollup-plugin-url": "^3.0.1",
+    "rollup-plugin-progress": "^1.1.2",
     "rollup-plugin-vue": "^6.0.0"
   }
 }
@@ -64,10 +66,11 @@ import babel from '@rollup/plugin-babel'
 import image from '@rollup/plugin-image'
 import replace from '@rollup/plugin-replace'
 import terser from '@rollup/plugin-terser'
+import url from '@rollup/plugin-url'
 
 import vue from 'rollup-plugin-vue'
 import postcss from 'rollup-plugin-postcss'
-import url from 'rollup-plugin-url'
+import progress from 'rollup-plugin-progress'
 
 export default {
   input: './index.js',
@@ -76,11 +79,11 @@ export default {
     format: 'umd'
   },
   plugins: [
+    commonjs(),
     babel({
       babelHelpers: 'bundled',
       presets: ['@babel/preset-env']
     }),
-    commonjs(),
     image(),
     resolve(),
     terser(),
@@ -89,6 +92,9 @@ export default {
     url(),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production')
+    }),
+    progress({
+      clearLine: true
     })
   ],
   external: ['vue']
