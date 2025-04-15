@@ -80,6 +80,9 @@ https://zhuanlan.zhihu.com/p/135948430
 
       ```shell
       sh -c "$(curl -fsSL https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh)"
+
+      # 国内镜像
+      sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/install.sh)"
       ```
 
     - 方式二：
