@@ -3,3 +3,7 @@ node_modules
 public
 db.json
 **/.DS_Store
+
+vitepress/node_modules
+vitepress/.vitepress/cache
+vitepress/.vitepress/temp
