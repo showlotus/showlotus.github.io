@@ -29,6 +29,7 @@ export default defineConfig({
     search: {
       provider: "local",
     },
+    lastUpdated: true,
     posts: await getPosts(),
     pageSize: 5,
     postLength: await getPostLength(),

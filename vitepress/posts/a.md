@@ -1,5 +1,5 @@
 ---
-# date: 2021-06-30
+date: 2021-06-30
 title: 2025一直想找一个系统架构和设计都足够干净的系统
 category: 主题
 tags:
@@ -81,7 +81,7 @@ This is a dangerous warning
 
 ```js
 export default {
-  name: 'MyComponent'
+  name: 'MyComponent',
   // ...
 }
 ```
