@@ -1,7 +1,6 @@
 ---
 title: 搭配el-cascader实现一个级联选择日期组件
 date: 2021-10-17 12:10:56
-lastUpdated: true
 tags:
   - Vue
   - ElementUI
@@ -257,5 +256,3 @@ export default {
 ####
 
 最后，当我兴高采烈地找到经理，准备邀功时，经理：能不能做成之前其他页面那样，拆成两个框。我：可以！（辛辛苦苦搞了俩小时，等于白干...）
-
-<LastUpdated />

@@ -4,6 +4,7 @@ import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import Tags from './components/Tags.vue'
 import Archives from './components/Archives.vue'
+import Home from './components/Home.vue'
 import './style.css'
 import './tailwind.css'
 
@@ -17,5 +18,6 @@ export default {
   enhanceApp({ app, router, siteData }) {
     app.component('Tags', Tags)
     app.component('Archives', Archives)
+    app.component('Home', Home)
   }
 } satisfies Theme
