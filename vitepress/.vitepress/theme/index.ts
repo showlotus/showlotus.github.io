@@ -3,6 +3,7 @@ import { h } from 'vue'
 import type { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import Tags from './components/Tags.vue'
+import Archives from './components/Archives.vue'
 import './style.css'
 
 export default {
@@ -14,5 +15,6 @@ export default {
   },
   enhanceApp({ app, router, siteData }) {
     app.component('Tags', Tags)
+    app.component('Archives', Archives)
   }
 } satisfies Theme

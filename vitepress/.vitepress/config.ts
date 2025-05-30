@@ -10,18 +10,11 @@ export default defineConfig({
     nav: [
       { text: 'Home', link: '/' },
       { text: 'Examples', link: '/markdown-examples' },
-      { text: 'Tags', link: '/tags' },
+      { text: 'Archives', link: '/pages/Archives' },
+      { text: 'Tags', link: '/pages/Tags' },
     ],
 
-    sidebar: [
-      {
-        text: 'Examples',
-        items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
-        ]
-      }
-    ],
+    sidebar: [],
 
     socialLinks: [
       { icon: 'github', link: 'https://github.com/vuejs/vitepress' }

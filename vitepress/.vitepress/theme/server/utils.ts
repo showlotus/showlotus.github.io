@@ -19,7 +19,7 @@ export async function getPosts() {
     paths.map(async (item) => {
       const content = await fs.readFile(item, 'utf-8')
       const { data } = matter(content)
-      data.date = _convertDate(data.date)
+      data.date = convertDate(data.date)
       return {
         frontMatter: data,
         regularPath: `/${item.replace('.md', '.html')}`,
@@ -30,12 +30,12 @@ export async function getPosts() {
   return posts
 }
 
-function _convertDate(date = new Date().toString()) {
+function convertDate(date = new Date().toString()) {
   const json_date = new Date(date).toJSON()
   return json_date.split('T')[0]
 }
 
-async function getPostMDFilePaths() {
+async function getPostMDFilePaths(): Promise<string[]> {
   const paths = await globby(['**.md'], {
     ignore: ['node_modules', 'README.md'],
   })
@@ -43,6 +43,5 @@ async function getPostMDFilePaths() {
 }
 
 export async function getPostLength() {
-  // getPostMDFilePath return type is object not array
   return [...(await getPostMDFilePaths())].length
 }
