@@ -1,6 +1,8 @@
 <template>
   <div v-for="yearList in data">
-    <div class="year">
+    <div
+      class="py-7 pt-0 text-[1.375rem] font-semibold text-[var(--bt-theme-title)] font-[var(--date-font-family),serif]"
+    >
       {{ yearList[0].frontMatter.date.split('-')[0] }}
     </div>
     <a
@@ -48,13 +50,3 @@ const useYearSort = (post: Post[]) => {
 const { theme } = useData()
 const data = computed(() => useYearSort(theme.value.posts))
 </script>
-
-<style scoped>
-.year {
-  padding: 28px 0 10px 0;
-  font-size: 1.375rem;
-  font-weight: 600;
-  color: var(--bt-theme-title);
-  font-family: var(--date-font-family), serif;
-}
-</style>

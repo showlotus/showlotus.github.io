@@ -5,6 +5,7 @@ import DefaultTheme from 'vitepress/theme'
 import Tags from './components/Tags.vue'
 import Archives from './components/Archives.vue'
 import './style.css'
+import './tailwind.css'
 
 export default {
   extends: DefaultTheme,

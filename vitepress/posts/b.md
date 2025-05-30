@@ -10,3 +10,7 @@ description: xxxxxxxlorem
 ---
 
 bbbbbb
+
+This is black.
+
+<span class="text-red-400">This is red</span>.

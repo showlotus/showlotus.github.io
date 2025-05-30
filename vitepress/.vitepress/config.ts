@@ -5,6 +5,10 @@ import { getPostLength, getPosts } from './theme/server/utils'
 export default defineConfig({
   title: "My Awesome Project",
   description: "A VitePress Site",
+  // 添加 Tailwind CSS 样式
+  head: [
+    // ['link', { rel: 'stylesheet', href: '/tailwind.css' }]
+  ],
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
