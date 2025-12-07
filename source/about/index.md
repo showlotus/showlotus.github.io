@@ -1,13 +1,13 @@
 ---
-title: 关于﹒showlotus
+title: 关于 - showlotus
 layout: about
 ---
 
-<!-- ### <center>姚旭</center>
+### <center>showlotus</center>
 
-<center>电话：15188583872 ｜ 邮箱：yaoxuu@qq.com</center>
+<center>电话：151******** ｜ 邮箱：showlotus2000@gmail.com</center>
 <center>个人网站：https://github.com/showlotus</center>
-<center>年龄：26 岁 ｜ 性别：男</center> -->
+<center>年龄：26 岁 ｜ 性别：男</center>
 
 #### 专业技能
 

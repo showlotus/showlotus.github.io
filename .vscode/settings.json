@@ -1,10 +1,4 @@
 {
-  "cSpell.words": [
-    "hljs",
-    "mathjax",
-    "proto",
-    "Webix",
-    "wordcloud"
-  ],
+  "cSpell.words": ["ahooks", "hljs", "mathjax", "proto", "Webix", "wordcloud"],
   "editor.formatOnSave": true
 }
