@@ -1,4 +1,7 @@
 {
   "cSpell.words": ["ahooks", "hljs", "mathjax", "proto", "Webix", "wordcloud"],
-  "editor.formatOnSave": true
+  "editor.formatOnSave": true,
+  "markdown-pdf.displayHeaderFooter": false,
+  "markdown-pdf.headerTemplate": "",
+  "markdown-pdf.footerTemplate": ""
 }
