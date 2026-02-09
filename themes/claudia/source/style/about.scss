@@ -29,7 +29,7 @@
   --second-text-color: #000 !important;
   --base-font-size: 12px !important;
   --border-width: 2px !important;
-  --border-color: #000 !important;
+  --border-color: #333 !important;
 }
 
 article {
@@ -51,8 +51,8 @@ ul li {
 }
 
 li::marker {
-  font-size: 1.25em;
-  font-weight: 700;
+  // font-size: 1.25em;
+  // font-weight: 700;
   line-height: 1.25em;
 }
 
@@ -107,14 +107,14 @@ li::marker {
   display: flex;
   justify-content: space-between;
   font-size: var(--base-font-size);
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
 .exp-row-no-margin {
   display: flex;
   justify-content: space-between;
   font-size: var(--base-font-size);
-  margin: 10px 0;
+  margin: 10px 0 4px 0;
 }
 
 .font-bold {
@@ -126,7 +126,7 @@ li::marker {
   justify-content: space-between;
   font-size: var(--base-font-size);
   font-weight: 700;
-  margin: 10px 0;
+  margin: 10px 0 4px 0;
 }
 
 @page {
@@ -153,12 +153,12 @@ li::marker {
     visibility: visible;
   }
 
-  // :root ul {
-  //   margin: 0 !important;
-  //   padding: 0 !important;
-  //   list-style: none !important;
-  //   padding-left: 16px !important;
-  // }
+  :root ul {
+    margin: 0 !important;
+    padding: 0 !important;
+    list-style: none !important;
+    padding-left: 16px !important;
+  }
 
   // :root ul li {
   //   list-style: disc !important;
@@ -166,8 +166,8 @@ li::marker {
   // }
 
   :root li::marker {
-    font-size: 1.25em;
-    font-weight: 700;
+    // font-size: 1.25em;
+    // font-weight: 700;
     line-height: 1.25em;
   }
 

@@ -11,9 +11,9 @@ layout: about
   <center class="center-flex">年龄：26 岁<span class="separator"></span>性别：男</center>
 </div>
 
-<div class="section-title">专业技能</div>
+<div class="section-title"><span>专业技能</span></div>
 
-- 扎实的前端基础，深入理解 JavaScript 核心原理（闭包、原型链、异步编程等），熟悉 ES6+ 规范及 W3C 标准。
+- 深入理解 JavaScript 核心原理（闭包、原型链、异步编程等），具备扎实的前端基础，熟悉 ES6+ 规范及 W3C 标准。
 - 熟练掌握 React 技术栈，熟悉 Hooks、虚拟 DOM 及 ahooks 等生态工具，具备组件设计与性能优化经验。
 - 熟练掌握 Vue 全家桶，深入理解响应式原理、组件通信及生命周期，熟悉 Composition API 的实践应用。
 - 具备丰富的工程化实践经验，熟练使用 Vite、Webpack、Babel 等构建工具，具备从零搭建脚手架及自定义插件开发能力。
