@@ -3,114 +3,6 @@ title: 关于 - showlotus
 layout: about
 ---
 
-<style>
-:root {
-  --primary-text-color: #000 !important;
-  --second-text-color: #000 !important;
-  --base-font-size: 12px !important;
-  --border-width: 2px !important;
-}
-
-body {
-  background-color: #fff !important;
-}
-
-* {
-  color: #000;
-}
-
-article {
-  margin: 0 auto;
-  /* width: 800px !important; */
-  /* padding: 45px 50px; */
-}
-
-ul {
-  margin: 0 !important;
-  padding: 0 !important;
-  list-style: none !important;
-  padding-left: 20px !important;
-}
-
-ul li {
-  list-style: disc !important;
-  font-size: var(--base-font-size) !important;
-}
-
-li::marker {
-  font-size: 1.25em;
-  line-height: 1.25;
-}
-
-.page-title {
-  font-size: 20px;
-  margin-bottom: 10px;
-  font-weight: 700;
-}
-
-.info-container {
-  font-size: var(--base-font-size);
-  line-height: 19px;
-  margin-bottom: 30px;
-}
-
-.center-flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.separator {
-  margin-left: 6px;
-  margin-right: 6px;
-  border-left: 1px solid #000;
-  height: 12px;
-  display: inline-block;
-}
-
-.section-title {
-  font-size: 14px;
-  font-weight: 700;
-  border-bottom: var(--border-width) solid #000;
-  padding-bottom: 4px;
-  margin: 10px 0;
-}
-
-.section-title-alt {
-  font-size: 14px;
-  font-weight: 700;
-  border-bottom: var(--border-width) solid #000;
-  padding-bottom: 4px;
-  margin: 12px 0 10px 0;
-}
-
-.exp-row {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--base-font-size);
-  margin-bottom: 10px;
-}
-
-.exp-row-no-margin {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--base-font-size);
-  margin: 10px 0;
-}
-
-.font-bold {
-  font-weight: 700;
-}
-
-.project-title {
-  display: flex;
-  justify-content: space-between;
-  font-size: var(--base-font-size);
-  font-weight: 700;
-  margin: 10px 0;
-}
-</style>
-
 <center class="page-title">姚旭</center>
 
 <div class="info-container">
@@ -165,6 +57,8 @@ li::marker {
 - 解决依赖升级导致 Babel 语法转换失败及低版本浏览器兼容性问题，开发自动化语法检测脚本并制定规范化解决方案。
 - 接入 TailwindCSS 原子化框架，通过原子类实现样式复用，有效规避样式冲突并提升开发效率。
 
+<div class="section">
+
 <div class="project-title">Meta SaaS ERP</div>
 
 - 基于配置式开发方式实现逻辑层与 UI 层分离，支持租户侧灵活扩展与二次开发。
@@ -172,6 +66,8 @@ li::marker {
 - 针对 SaaS 框架缺乏源码定位的问题，开发 Webpack 插件，实现点击页面元素快速定位源码，提升开发效率。
 - 针对配置式写法代码冗长问题，开发 Babel 插件扩展 JSX 支持，提升可读性并减少约一半代码量。
 - 针对国际化字段难以识别的问题，开发 VS Code 插件，便捷展示国际化字段并定位源配置文件，提升开发体验。
+
+</div>
 
 <div class="project-title">供应一站式底座</div>
 
