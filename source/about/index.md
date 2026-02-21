@@ -7,7 +7,7 @@ layout: about
 
 <div class="info-container">
   <center class="center-flex">电话：15188583872<span class="separator"></span>邮箱：yaoxuu@qq.com</center>
-  <center>个人主页：https://github.com/showlotus</center>
+  <center>主页：https://github.com/showlotus</center>
   <center class="center-flex">年龄：26 岁<span class="separator"></span>性别：男</center>
 </div>
 
@@ -59,6 +59,13 @@ layout: about
 
 <div class="section">
 
+<div class="project-title">供应一站式底座</div>
+
+- 承接整个供应领域前端门户桌面建设，负责底座日常维稳及协助其他产品解决开发问题。
+- 负责 Webix 框架向 AUI 框架的迁移工作，开发框架转换工具，将 Webix 代码转换成 AUI 风格，大幅提升迁移效率。
+- 设计并搭建 AUI Playground 在线预览平台，支持多版本切换，方便司内环境组件演示与代码分享。
+- 针对页面切换卡顿问题，借助开发者工具定位根因，解决内存泄漏，并优化页面逻辑，缩短交互响应时间，提升用户体验。
+
 <div class="project-title">Meta SaaS ERP</div>
 
 - 基于配置式开发方式实现逻辑层与 UI 层分离，支持租户侧灵活扩展与二次开发。
@@ -68,13 +75,6 @@ layout: about
 - 针对国际化字段难以识别的问题，开发 VS Code 插件，便捷展示国际化字段并定位源配置文件，提升开发体验。
 
 </div>
-
-<div class="project-title">供应一站式底座</div>
-
-- 承接整个供应领域前端门户桌面建设，负责底座日常维稳及协助其他产品解决开发问题。
-- 负责 Webix 框架向 AUI 框架的迁移工作，开发框架转换工具，将 Webix 代码转换成 AUI 风格，大幅提升迁移效率。
-- 设计并搭建 AUI Playground 在线预览平台，支持多版本切换，方便司内环境组件演示与代码分享。
-- 针对页面切换卡顿问题，借助开发者工具定位根因，解决内存泄漏，并优化页面逻辑，缩短交互响应时间，提升用户体验。
 
 <div class="project-title">低代码大屏</div>
 

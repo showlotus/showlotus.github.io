@@ -174,7 +174,8 @@ li::marker {
   .section {
     // margin-top: 20mm !important;
     // break-before: page;
-    break-inside: avoid;
-    page-break-inside: avoid;
+    // ---
+    // break-inside: avoid;
+    // page-break-inside: avoid;
   }
 }
