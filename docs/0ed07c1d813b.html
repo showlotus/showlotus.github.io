@@ -1,0 +1,355 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+为了便于用户能直观地看到配置项的一些属性，于是把整个配置以一个 JSON 串的形式展示。本来打算以一个表格或者列表的形式展示，不过配置项中某些属性是 Object 类型，思来想去，还是 JSON 串更直观一点。但是当某个配置改变时，JSON 里的变动不是很明显（如下图所示）。当这个 JSON 里的属性太多时，就不容易能注意到是哪个配置变了。于是，就想能不能做一个属性变化的提示，当某个配置改变时，显示一个高亮的动画什么的，提示用户这个配置改变了 🤔。想法有了，准备冻手！
+
+
+
+思路将 JSON 串分行，根据当前改变的属性去找到该属性对应的行区间，然后高亮显示这些行。整个流程如下：
+
+
+Step.One：更改属性考虑到这个对象的属性太多，专门写个表单去更改，实在太麻烦了。于是，就想了一个方法：随机去更改.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%B7%AF"><span class="toc-text">思路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Step-One%EF%BC%9A%E6%9B%B4%E6%94%B9%E5%B1%9E%E6%80%A7"><span class="toc-text">Step.One：更改属性</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Step-Two%EF%BC%9A%E7%94%9F%E6%88%90-JSON-%E4%B8%B2%EF%BC%8C%E5%B9%B6%E5%88%86%E8%A1%8C"><span class="toc-text">Step.Two：生成 JSON 串，并分行</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Step-Three%EF%BC%9A%E8%AE%A1%E7%AE%97%E8%A1%8C%E5%8C%BA%E9%97%B4"><span class="toc-text">Step.Three：计算行区间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Step-Four%EF%BC%9A%E9%AB%98%E4%BA%AE%E6%98%BE%E7%A4%BA%E8%A1%8C%E5%8C%BA%E9%97%B4"><span class="toc-text">Step.Four：高亮显示行区间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%80%E7%BB%88%E6%95%88%E6%9E%9C"><span class="toc-text">最终效果</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-text">总结</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="toc-text">工具函数</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#getType"><span class="toc-text">getType</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#isObject"><span class="toc-text">isObject</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#flattenObj"><span class="toc-text">flattenObj</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#updateValByChainKey"><span class="toc-text">updateValByChainKey</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#genOtherTypeValue"><span class="toc-text">genOtherTypeValue</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#getPropRowsFromJSON"><span class="toc-text">getPropRowsFromJSON</span></a></li></ol></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/CSS"><i class="tag post-item-tag">CSS</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JSON"><i class="tag post-item-tag">JSON</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;</h1><time class="has-text-grey custom-date-font" datetime="2023-01-18T12:19:53.000Z">2023/01/18 12:19</time><article class="mt-2 post-content"><img src="/0ed07c1d813b/banner.jpg" class="">
+
+<blockquote>
+<p>为了便于用户能直观地看到配置项的一些属性，于是把整个配置以一个 <em>JSON</em> 串的形式展示。本来打算以一个表格或者列表的形式展示，不过配置项中某些属性是 <em>Object</em> 类型，思来想去，还是 <em>JSON</em> 串更直观一点。但是当某个配置改变时，<em>JSON</em> 里的变动不是很明显（如下图所示）。当这个 <em>JSON</em> 里的属性太多时，就不容易能注意到是哪个配置变了。于是，就想能不能做一个属性变化的提示，当某个配置改变时，显示一个高亮的动画什么的，提示用户这个配置改变了 🤔。想法有了，准备冻手！</p>
+</blockquote>
+<img src="/0ed07c1d813b/problem.gif" class="">
+
+<h4 id="思路"><a href="#思路" class="headerlink" title="思路"></a>思路</h4><p>将 <em>JSON</em> 串分行，根据当前改变的属性去找到该属性对应的行区间，然后高亮显示这些行。整个流程如下：</p>
+<img src="/0ed07c1d813b/0.png" class="">
+
+<h4 id="Step-One：更改属性"><a href="#Step-One：更改属性" class="headerlink" title="Step.One：更改属性"></a>Step.One：更改属性</h4><p>考虑到这个对象的属性太多，专门写个表单去更改，实在太麻烦了。于是，就想了一个方法：随机去更改某个属性。</p>
+<p>这里只对最底层的子属性做修改，例如，对于下方的 <em>obj</em> 对象：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> obj <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"Tom"</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">address</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">province</span><span class="token operator">:</span> <span class="token string">"A"</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">city</span><span class="token operator">:</span> <span class="token string">"B"</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">county</span><span class="token operator">:</span> <span class="token string">"C"</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>可以修改的属性有：</p>
+<ul>
+<li><code>obj.name</code></li>
+<li><code>obj.age</code></li>
+<li><code>obj.address.province</code></li>
+<li><code>obj.address.city</code></li>
+<li><code>obj.address.county</code></li>
+</ul>
+<p>没有对 <code>obj.address</code> 做更改哦！！！</p>
+<p>按照上方罗列的属性，想必你也猜到了，需要对源对象进行「 扁平化 」处理，也即把上述的 <em>obj</em> 对象转成下面这种格式：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> flattenObj <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token string-property property">"obj.name"</span><span class="token operator">:</span> <span class="token string">"Tom"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"obj.age"</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"obj.address.province"</span><span class="token operator">:</span> <span class="token string">"A"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"obj.address.city"</span><span class="token operator">:</span> <span class="token string">"B"</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"obj.address.county"</span><span class="token operator">:</span> <span class="token string">"C"</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>「 扁平化 」的具体实现，可以参考文末的工具函数 <a href="#flattenObj"><big><em>flattenObj</em></big></a>。</p>
+</blockquote>
+<p>已知当前对象可更改的属性有 <em>5</em> 个，随机取一个属性，那么就可以写出下面这段代码：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> newObj <span class="token operator">=</span> <span class="token function">flattenObj</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span>
+<span class="token keyword">const</span> keys <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>newObj<span class="token punctuation">)</span>
+<span class="token keyword">const</span> key <span class="token operator">=</span> keys<span class="token punctuation">[</span>Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> keys<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">]</span></code></pre>
+
+<p>拿到这个 <em>key</em> 后，就可以去做修改了。为了让这个属性更改后的值更具有差异性，可以让更改后的值类型不同于源类型。于是制定了一些更改规则，如下：</p>
+<ul>
+<li><code>Array</code> -&gt; <code>Boolean</code>，即 <code>Array</code> 类型更改后为 <code>Boolean</code> 类型，下面以此类推。</li>
+<li><code>Boolean</code> -&gt; <code>Number</code></li>
+<li><code>Number</code> -&gt; <code>String</code></li>
+<li><code>String</code> -&gt; <code>Array</code></li>
+</ul>
+<p>例如，对于下方的 <em>obj</em> 对象：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> obj <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"Tom"</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">age</span><span class="token operator">:</span> <span class="token number">20</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">student</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">likes</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"apple"</span><span class="token punctuation">,</span> <span class="token string">"banana"</span><span class="token punctuation">,</span> <span class="token string">"pear"</span><span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>按照上述规则，更改后的值可能为：</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff">const obj = &#123;
+<span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> name: "Tom",
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> name: [1, 2],
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> age: 20,
+</span><span class="token prefix unchanged"> </span><span class="token line"> student: true,
+</span><span class="token prefix unchanged"> </span><span class="token line"> likes: ["apple", "banana", "pear"]
+</span></span>&#125;</code></pre>
+
+<p>也可能为：</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff">const obj = &#123;
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> name: "Tom",
+</span></span><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> age: 20,
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> age: "asx",
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> student: true,
+</span><span class="token prefix unchanged"> </span><span class="token line"> likes: ["apple", "banana", "pear"]
+</span></span>&#125;</code></pre>
+
+<p>也可能为：</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff">const obj = &#123;
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> name: "Tom",
+</span><span class="token prefix unchanged"> </span><span class="token line"> age: 20,
+</span></span><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> student: true,
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> student: 239,
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> likes: ["apple", "banana", "pear"]
+</span></span>&#125;</code></pre>
+
+<p>也可能为：</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff">const obj = &#123;
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> name: "Tom",
+</span><span class="token prefix unchanged"> </span><span class="token line"> age: 20,
+</span><span class="token prefix unchanged"> </span><span class="token line"> student: true,
+</span></span><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> likes: ["apple", "banana", "pear"]
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> likes: true
+</span></span>&#125;</code></pre>
+
+<blockquote>
+<p>具体实现可以参考文末的工具函数 <a href="#genOtherTypeValue"><big><em>genOtherTypeValue</em></big></a>。</p>
+</blockquote>
+<p>已知需要更新的 <em>key</em> 和需要更改的值了，就可以去对源对象做修改了。</p>
+<p>因为拿到这个 <em>key</em> 是「 扁平化 」后的，也即是链式的。如果想用这个 <em>key</em> 去更改源对象 <em>obj</em> 中对应的属性，需要做一些处理。用一个工具函数 <a href="#updateValByChainKey"><big><em>updateValByChainKey</em></big></a> 根据链式的 <em>key</em> 去更新对象中的值，以及 <a href="#getType"><big><em>getType</em></big></a> 去获取当前的值类型。</p>
+<p>完善上面的代码后，如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> newObj <span class="token operator">=</span> <span class="token function">flattenObj</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span>
+<span class="token keyword">const</span> keys <span class="token operator">=</span> Object<span class="token punctuation">.</span><span class="token function">keys</span><span class="token punctuation">(</span>newObj<span class="token punctuation">)</span>
+<span class="token keyword">const</span> key <span class="token operator">=</span> keys<span class="token punctuation">[</span>Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> keys<span class="token punctuation">.</span>length<span class="token punctuation">)</span><span class="token punctuation">]</span>
+<span class="token comment">// 新增</span>
+<span class="token keyword">const</span> type <span class="token operator">=</span> <span class="token function">getType</span><span class="token punctuation">(</span>newObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> newVal <span class="token operator">=</span> <span class="token function">genOtherTypeValue</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span>
+<span class="token function">updateValByChainKey</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> key<span class="token punctuation">,</span> newVal<span class="token punctuation">)</span></code></pre>
+
+<p>源对象已经更新了，接下来就是生成新的 <em>JSON</em> 串，然后分行。</p>
+<h4 id="Step-Two：生成-JSON-串，并分行"><a href="#Step-Two：生成-JSON-串，并分行" class="headerlink" title="Step.Two：生成 JSON 串，并分行"></a>Step.Two：生成 JSON 串，并分行</h4><p>通过 <code>JSON.stringify(obj, null, 2)</code> 生成 <em>JSON</em> 串。因为要根据行号来添加高亮效果，直接操作整个 <em>JSON</em> 串肯定不行，所以需要对整个 <em>JSON</em> 串进行分行，直接调用 <code>String.split(&quot;\n&quot;)</code> 就行，展示时，起始行号设为 <em>1</em> （如下图所示）。</p>
+<img src="/0ed07c1d813b/1.png" class="">
+
+<h4 id="Step-Three：计算行区间"><a href="#Step-Three：计算行区间" class="headerlink" title="Step.Three：计算行区间"></a>Step.Three：计算行区间</h4><p>举个例子，<code>colorMultiType</code> 的行区间就是 <code>[3, 13]</code>、<code>colorMultiType.start</code> 的行区间就是 <code>[4, 7]</code>、<code>colorMultiType.start.color</code> 的行区间就是 <code>[5, 5]</code> 或者 <code>[5]</code>。</p>
+<img src="/0ed07c1d813b/2.png" class="">
+
+<p>同样，为了方便记录行区间，也需要进行「 扁平化 」处理，用这个「 扁平化 」后的对象去记录每个属性对应的行区间，获取到各个属性的行区间后的对象 <em>rowObj</em> 如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> rowObj <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">colorCommon</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">colorMultiType</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">13</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorMultiType.start"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">7</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorMultiType.start.color"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">5</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorMultiType.start.offset"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorMultiType.end"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">11</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorMultiType.end.color"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">9</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorMultiType.end.offset"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">10</span><span class="token punctuation">,</span> <span class="token number">10</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorMultiType.direction"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">12</span><span class="token punctuation">,</span> <span class="token number">12</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">colorGradient</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">14</span><span class="token punctuation">,</span> <span class="token number">19</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorGradient.show"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">15</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorGradient.fromColor"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">16</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorGradient.toColor"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">17</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorGradient.angle"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">18</span><span class="token punctuation">,</span> <span class="token number">18</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">colorTextShadow</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">20</span><span class="token punctuation">,</span> <span class="token number">24</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorTextShadow.size"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">21</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorTextShadow.color"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">22</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token string-property property">"colorTextShadow.show"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">23</span><span class="token punctuation">,</span> <span class="token number">23</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">colorGroup</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">25</span><span class="token punctuation">,</span> <span class="token number">29</span><span class="token punctuation">]</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>获取行区间的具体实现，可以参考文末的工具函数 <a href="#getPropRowsFromJSON"><big><em>getPropRowsFromJSON</em></big></a>。</p>
+</blockquote>
+<h4 id="Step-Four：高亮显示行区间"><a href="#Step-Four：高亮显示行区间" class="headerlink" title="Step.Four：高亮显示行区间"></a>Step.Four：高亮显示行区间</h4><p>在 <em>Step.One</em> 中，拿到了更改的属性 <em>key</em> ，在 <em>Step.Three</em> 中拿到了每个属性对应的行区间对象 <em>rowObj</em> ，那么需要高亮的行区间 <code>highLightRows = rowObj[key]</code>。区间行的高亮通过 <em>CSS</em> 添加一个高亮 <em>Class</em> 来实现。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>template<span class="token operator">></span>
+  <span class="token operator">&lt;</span>div<span class="token operator">></span>
+    <span class="token operator">&lt;</span>div v<span class="token operator">-</span><span class="token keyword">for</span><span class="token operator">=</span><span class="token string">"(item, i) in strList"</span> <span class="token operator">:</span>key<span class="token operator">=</span><span class="token string">"i"</span><span class="token operator">></span>
+      <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"line-wrap"</span><span class="token operator">></span>
+        <span class="token operator">&lt;</span>span <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"line-num"</span><span class="token operator">></span><span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> i <span class="token operator">+</span> <span class="token number">1</span> <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>span<span class="token operator">></span>
+        <span class="token operator">&lt;</span>pre <span class="token operator">:</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"isHighLight(i + 1)"</span><span class="token operator">></span><span class="token punctuation">&#123;</span><span class="token punctuation">&#123;</span> item<span class="token punctuation">.</span>text <span class="token punctuation">&#125;</span><span class="token punctuation">&#125;</span><span class="token operator">&lt;</span><span class="token operator">/</span>pre<span class="token operator">></span>
+      <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+    <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span></code></pre>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script<span class="token operator">></span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">strList</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// 按 "\n" 分割后的 JSON 串数组</span>
+      <span class="token literal-property property">highLightRows</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token comment">// 高亮行区间</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">methods</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">isHighLight</span><span class="token punctuation">(</span><span class="token parameter">idx</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span><span class="token keyword">this</span><span class="token punctuation">.</span>highLightRows<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token keyword">return</span> <span class="token string">''</span><span class="token punctuation">;</span>
+      <span class="token comment">// 因为有些行区间，可能为一个元素或者两个元素</span>
+      <span class="token comment">// 这里判断索引大于等于第一个元素</span>
+      <span class="token comment">// 并且小于等于最后一个元素</span>
+      <span class="token comment">// 这样就都能满足啦</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>
+        idx <span class="token operator">>=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>highLightRows<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">&amp;&amp;</span>
+        idx <span class="token operator">&lt;=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>highLightRows<span class="token punctuation">[</span><span class="token keyword">this</span><span class="token punctuation">.</span>highLightRows<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span>
+      <span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token string">'tip'</span><span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">return</span> <span class="token string">''</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre>
+
+<pre class="language-css" data-language="css"><code class="language-css"><span class="token comment">/* 动画函数 */</span>
+<span class="token atrule"><span class="token rule">@keyframes</span> blingbling</span> <span class="token punctuation">&#123;</span>
+  <span class="token selector">0%,
+  50%,
+  100%</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">background-color</span><span class="token punctuation">:</span> transparent<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token selector">25%,
+  75%</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">background-color</span><span class="token punctuation">:</span> orange<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token selector">.tip</span> <span class="token punctuation">&#123;</span>
+  <span class="token property">animation</span><span class="token punctuation">:</span> blingbling ease 1s<span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="最终效果"><a href="#最终效果" class="headerlink" title="最终效果"></a>最终效果</h4><div class="iframe-codepen" src="https://codepen.io/showlotus/full/vYaeQLW" width="100%" height="850"></div>
+
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><ul>
+<li>这里没有考虑数组元素中有对象的情况，默认数组里都是基础数据类型。</li>
+<li><a href="#getPropRowsFromJSON"><big><em>getPropRowsFromJSON</em></big></a> 这个方法，感觉写的不是很好（虽然写的时候快自闭了），应该有更好的方法 🤔。</li>
+<li>已知当前更改的属性了，没有必要把整个对象的所有属性都生成行区间，算是一个可以优化的点。</li>
+</ul>
+<h4 id="工具函数"><a href="#工具函数" class="headerlink" title="工具函数"></a>工具函数</h4><h5 id="getType"><a href="#getType" class="headerlink" title="getType"></a>getType</h5><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 获取类型</span>
+<span class="token keyword">function</span> <span class="token function">getType</span><span class="token punctuation">(</span><span class="token parameter">obj</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token class-name">Object</span><span class="token punctuation">.</span>prototype<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">8</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h5 id="isObject"><a href="#isObject" class="headerlink" title="isObject"></a>isObject</h5><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 判断是否是 Object 类型</span>
+<span class="token keyword">function</span> <span class="token function">isObject</span><span class="token punctuation">(</span><span class="token parameter">obj</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token function">getType</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token string">"Object"</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h5 id="flattenObj"><a href="#flattenObj" class="headerlink" title="flattenObj"></a>flattenObj</h5><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 扁平化对象</span>
+<span class="token keyword">function</span> <span class="token function">flattenObj</span><span class="token punctuation">(</span><span class="token parameter">obj</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> res <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+  <span class="token keyword">const</span> handler <span class="token operator">=</span> <span class="token punctuation">(</span>obj<span class="token punctuation">,</span> prefix <span class="token operator">=</span> <span class="token string">""</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>prefix<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      prefix <span class="token operator">+=</span> <span class="token string">"."</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> key <span class="token keyword">in</span> obj<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> newKey <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>prefix<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>key<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token function">isObject</span><span class="token punctuation">(</span>obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">handler</span><span class="token punctuation">(</span>obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">,</span> newKey<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        res<span class="token punctuation">[</span>newKey<span class="token punctuation">]</span> <span class="token operator">=</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token function">handler</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> res
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h5 id="updateValByChainKey"><a href="#updateValByChainKey" class="headerlink" title="updateValByChainKey"></a>updateValByChainKey</h5><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 根据链式的 key，更新对象中对应属性的值</span>
+<span class="token keyword">function</span> <span class="token function">updateValByChainKey</span><span class="token punctuation">(</span><span class="token parameter">obj<span class="token punctuation">,</span> keys<span class="token punctuation">,</span> val</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> seqs <span class="token operator">=</span> keys<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>seqs<span class="token punctuation">.</span>length <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    obj<span class="token punctuation">[</span>keys<span class="token punctuation">]</span> <span class="token operator">=</span> val
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> seqs<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> key <span class="token operator">=</span> seqs<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>i <span class="token operator">!==</span> seqs<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        obj <span class="token operator">=</span> obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        obj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> val
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h5 id="genOtherTypeValue"><a href="#genOtherTypeValue" class="headerlink" title="genOtherTypeValue"></a>genOtherTypeValue</h5><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 根据当前类型生成其他类型的值</span>
+<span class="token keyword">function</span> <span class="token function">genOtherTypeValue</span><span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">genRandomInteger</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">max<span class="token punctuation">,</span> min <span class="token operator">=</span> <span class="token number">0</span></span><span class="token punctuation">)</span> <span class="token operator">=></span> Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">*</span> max<span class="token punctuation">)</span> <span class="token operator">+</span> min
+  <span class="token keyword">const</span> ops <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">Array</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> Math<span class="token punctuation">.</span><span class="token function">random</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">&lt;</span> <span class="token number">0.5</span> <span class="token operator">?</span> <span class="token boolean">true</span> <span class="token operator">:</span> <span class="token boolean">false</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">Boolean</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token function">genRandomInteger</span><span class="token punctuation">(</span><span class="token number">1000</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">Number</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> len <span class="token operator">=</span> <span class="token function">genRandomInteger</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span>
+      <span class="token keyword">const</span> res <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Array</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> String<span class="token punctuation">.</span><span class="token function">fromCharCode</span><span class="token punctuation">(</span><span class="token function">genRandomInteger</span><span class="token punctuation">(</span><span class="token number">26</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">97</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">String</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> len <span class="token operator">=</span> <span class="token function">genRandomInteger</span><span class="token punctuation">(</span><span class="token number">5</span><span class="token punctuation">)</span>
+      <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Array</span><span class="token punctuation">(</span>len<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">fill</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token function">genRandomInteger</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> ops<span class="token punctuation">[</span>type<span class="token punctuation">]</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h5 id="getPropRowsFromJSON"><a href="#getPropRowsFromJSON" class="headerlink" title="getPropRowsFromJSON"></a>getPropRowsFromJSON</h5><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 获取对象转成 JSON 串后，各个属性对应的行区间</span>
+<span class="token keyword">function</span> <span class="token function">getPropRowsFromJSON</span><span class="token punctuation">(</span>obj<span class="token punctuation">,</span> <span class="token function-variable function">stringify</span> <span class="token operator">=</span> <span class="token parameter">v</span> <span class="token operator">=></span> <span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>v<span class="token punctuation">,</span> <span class="token keyword">null</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> flattenedObj <span class="token operator">=</span> <span class="token function">flattenObj</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span>
+  <span class="token keyword">const</span> objJson <span class="token operator">=</span> <span class="token function">stringify</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span>
+  <span class="token keyword">const</span> objJsonArr <span class="token operator">=</span> objJson<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"\n"</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> propStack <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">const</span> spaceStack <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+  <span class="token keyword">const</span> rowObj <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> objJsonArr<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> text <span class="token operator">=</span> objJsonArr<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+    <span class="token keyword">const</span> propName <span class="token operator">=</span> <span class="token function">getPropName</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+    <span class="token keyword">const</span> countSpace <span class="token operator">=</span> <span class="token function">countOfStartSpace</span><span class="token punctuation">(</span>text<span class="token punctuation">)</span>
+    <span class="token comment">// 下钻层级</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>countSpace <span class="token operator">></span> spaceStack<span class="token punctuation">[</span>spaceStack<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      spaceStack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>countSpace<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>propName<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token comment">// 上一层级结束</span>
+      <span class="token keyword">while</span> <span class="token punctuation">(</span>spaceStack<span class="token punctuation">.</span>length <span class="token operator">&amp;&amp;</span> spaceStack<span class="token punctuation">[</span>spaceStack<span class="token punctuation">.</span>length <span class="token operator">-</span> <span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">>=</span> countSpace<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        spaceStack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        propStack<span class="token punctuation">.</span><span class="token function">pop</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      spaceStack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>countSpace<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+      rowObj<span class="token punctuation">[</span>propStack<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> i
+      <span class="token keyword">const</span> key <span class="token operator">=</span> propStack<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> <span class="token operator">-</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>key<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        rowObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        rowObj<span class="token punctuation">[</span>propStack<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">""</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> i <span class="token operator">+</span> <span class="token number">1</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>propName<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      propStack<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>propName<span class="token punctuation">)</span>
+      <span class="token keyword">const</span> key <span class="token operator">=</span> propStack<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">"."</span><span class="token punctuation">)</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>Array<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span>flattenedObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">if</span> <span class="token punctuation">(</span>flattenedObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+          rowObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">,</span> i <span class="token operator">+</span> <span class="token number">1</span> <span class="token operator">+</span> flattenedObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>length <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span>
+          i <span class="token operator">+=</span> flattenedObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token punctuation">.</span>length <span class="token operator">+</span> <span class="token number">1</span>
+        <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+          rowObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+        rowObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> rowObj<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">||</span> <span class="token punctuation">[</span>i <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">return</span> rowObj
+
+  <span class="token comment">// 字符串开头空格的数量</span>
+  <span class="token keyword">function</span> <span class="token function">countOfStartSpace</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> str<span class="token punctuation">.</span>length <span class="token operator">-</span> str<span class="token punctuation">.</span><span class="token function">trimStart</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>length
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 获取属性名</span>
+  <span class="token keyword">function</span> <span class="token function">getPropName</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> res <span class="token operator">=</span> str<span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^\s+\"([^"]+)":</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> res <span class="token operator">?</span> res<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">:</span> <span class="token string">""</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/2f85891a5103.html" title="VueMixinsLoader：类似 Mixin 功能的 Loader🦉"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: VueMixinsLoader：类似 Mixin 功能的 Loader🦉</span></a><a class="button is-default" href="/95404f938c1c.html" title="给 ViewDesign 加个主题换肤💖 &lt;W16&gt;"><span class="has-text-weight-semibold">下一页: 给 ViewDesign 加个主题换肤💖 &lt;W16&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

@@ -1,0 +1,370 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>JS中的类型转换 &lt;W10&gt;</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+JS 中的数据类型基础数据类型（又称为原始值）：null 、undefined 、boolean 、string 、number 。
+
+声明时：用栈存储，栈中存放的是对应的值；
+赋值时：生成一块相同值的栈，两个变量对应不同的地址。
+
+动态数据类型：Array 、Object 、Set 、Map 等。
+
+声明时：值存放在堆中，栈中存放指向堆的地址；
+赋值时：将栈中的地址赋给另一个变量，也就是两个变量指向堆中的同一个对象。
+
+
+动态数据类型，可以理解为：长度不固定的数据类型，可以新增或者删除元素。
+
+转换为原始值值得一提的是，无论是基础数据类型还是动态数据类型都能转换为原始值。这一点很重要，为变量间的隐式类型转换提供了有力的支持。
+转为 boolean 类型
+如果是隐式转换，则内部采用 Boolean() .."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">JS中的类型转换 &lt;W10&gt;</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#JS-%E4%B8%AD%E7%9A%84%E6%95%B0%E6%8D%AE%E7%B1%BB%E5%9E%8B"><span class="toc-text">JS 中的数据类型</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BD%AC%E6%8D%A2%E4%B8%BA%E5%8E%9F%E5%A7%8B%E5%80%BC"><span class="toc-text">转换为原始值</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AC%E4%B8%BA-boolean-%E7%B1%BB%E5%9E%8B"><span class="toc-text">转为 boolean 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AC%E4%B8%BA-string-%E7%B1%BB%E5%9E%8B"><span class="toc-text">转为 string 类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BD%AC%E4%B8%BA-number-%E7%B1%BB%E5%9E%8B"><span class="toc-text">转为 number 类型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#valueOf-%E4%B8%8E-toString"><span class="toc-text">valueOf() 与 toString()</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%9A%90%E5%BC%8F%E7%B1%BB%E5%9E%8B%E8%BD%AC%E6%8D%A2"><span class="toc-text">隐式类型转换</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">+ 操作符</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E6%93%8D%E4%BD%9C%E6%95%B0"><span class="toc-text">一个操作数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%A4%E4%B8%AA%E6%93%8D%E4%BD%9C%E6%95%B0"><span class="toc-text">两个操作数</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AF%94%E8%BE%83%E6%93%8D%E4%BD%9C%E7%AC%A6"><span class="toc-text">比较操作符</span></a></li></ol></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript-%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97"><i class="tag post-item-tag">JavaScript 权威指南</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">JS中的类型转换 &lt;W10&gt;</h1><time class="has-text-grey custom-date-font" datetime="2022-11-03T12:50:11.000Z">2022/11/03 12:50</time><article class="mt-2 post-content"><img src="/73e1f0916820/banner.jpg" class="">
+
+<h2 id="JS-中的数据类型"><a href="#JS-中的数据类型" class="headerlink" title="JS 中的数据类型"></a>JS 中的数据类型</h2><p>基础数据类型（又称为原始值）：<em>null</em> 、<em>undefined</em> 、<em>boolean</em> 、<em>string</em> 、<em>number</em> 。</p>
+<ul>
+<li>声明时：用栈存储，栈中存放的是对应的值；</li>
+<li>赋值时：生成一块相同值的栈，两个变量对应不同的地址。</li>
+</ul>
+<p>动态数据类型：<em>Array</em> 、<em>Object</em> 、<em>Set</em> 、<em>Map</em> 等。</p>
+<ul>
+<li>声明时：值存放在堆中，栈中存放指向堆的地址；</li>
+<li>赋值时：将栈中的地址赋给另一个变量，也就是两个变量指向堆中的同一个对象。</li>
+</ul>
+<blockquote>
+<p>动态数据类型，可以理解为：长度不固定的数据类型，可以新增或者删除元素。</p>
+</blockquote>
+<h2 id="转换为原始值"><a href="#转换为原始值" class="headerlink" title="转换为原始值"></a>转换为原始值</h2><p>值得一提的是，无论是基础数据类型还是动态数据类型都能转换为原始值。这一点很重要，为变量间的隐式类型转换提供了有力的支持。</p>
+<h3 id="转为-boolean-类型"><a href="#转为-boolean-类型" class="headerlink" title="转为 boolean 类型"></a>转为 <em>boolean</em> 类型</h3><blockquote>
+<p>如果是隐式转换，则内部采用 <code>Boolean()</code> 方法。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">值</th>
+<th align="center">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>undefined</code></td>
+<td align="center"><code>false</code></td>
+</tr>
+<tr>
+<td align="center"><code>null</code></td>
+<td align="center"><code>false</code></td>
+</tr>
+<tr>
+<td align="center"><code>0</code></td>
+<td align="center"><code>false</code></td>
+</tr>
+<tr>
+<td align="center"><code>NaN</code></td>
+<td align="center"><code>false</code></td>
+</tr>
+<tr>
+<td align="center"><code>&quot;&quot;</code>(空字符串)</td>
+<td align="center"><code>false</code></td>
+</tr>
+<tr>
+<td align="center">任何非零数字</td>
+<td align="center"><code>true</code></td>
+</tr>
+<tr>
+<td align="center">任何非空字符串</td>
+<td align="center"><code>true</code></td>
+</tr>
+<tr>
+<td align="center">任何对象类型</td>
+<td align="center"><code>true</code></td>
+</tr>
+</tbody></table>
+<h3 id="转为-string-类型"><a href="#转为-string-类型" class="headerlink" title="转为 string 类型"></a>转为 <em>string</em> 类型</h3><blockquote>
+<p>如果是隐式转换，则内部采用 <code>String()</code> 方法。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">值</th>
+<th align="center">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>undefined</code></td>
+<td align="center"><code>&quot;undefined&quot;</code></td>
+</tr>
+<tr>
+<td align="center"><code>null</code></td>
+<td align="center"><code>&quot;null&quot;</code></td>
+</tr>
+<tr>
+<td align="center"><code>true</code></td>
+<td align="center"><code>&quot;true&quot;</code></td>
+</tr>
+<tr>
+<td align="center"><code>false</code></td>
+<td align="center"><code>&quot;false&quot;</code></td>
+</tr>
+<tr>
+<td align="center">任何数字</td>
+<td align="center">调用 <code>String()</code> 方法</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p><em>Date</em> 转 <em>String</em> ，返回一个描述当前日期的字符串。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> d <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+d<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "Sat Nov 05 2022 14:46:39 GMT+0800 (中国标准时间)"</span></code></pre>
+</li>
+<li><p><em>Array</em> 转 <em>String</em> ，内部调用 <code>toString()</code> 方法，等同于 <code>Array.prototype.join()</code>。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> arr <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span>
+arr<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "1,2"</span>
+arr<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "1,2"</span></code></pre>
+</li>
+<li><p><em>Function</em> 转 <em>String</em> ，内部调用 <code>toString()</code> 方法，返回定义的函数源码字符串。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">f</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token number">1</span>
+f<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "() => 1"</span></code></pre>
+</li>
+<li><p><em>RegExp</em> 转 <em>String</em> ，转成一个 <em>RegExp</em> 字面量字符串。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> reg <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">hello</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">)</span>
+reg<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "/hello/"</span></code></pre>
+</li>
+<li><p>其余对象 转 <em>String</em> ，内部调用 <code>toString()</code> 方法，返回一个 <code>&quot;[object 当前类型]&quot;</code> 的字符串。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> obj <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> set <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> map <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Map</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+obj<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "[object Object]"</span>
+set<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "[object Set]"</span>
+map<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token comment">// "[object Map]"</span></code></pre></li>
+</ul>
+<blockquote>
+<p>以上转换规则，仅适用于在不改变原型对象上 <code>valueOf()</code> 与 <code>toSting()</code> 这两个方法的前提下。</p>
+</blockquote>
+<h3 id="转为-number-类型"><a href="#转为-number-类型" class="headerlink" title="转为 number 类型"></a>转为 <em>number</em> 类型</h3><blockquote>
+<p>如果是隐式转换，则内部采用 <code>Number()</code> 方法。</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th align="center">值</th>
+<th align="center">结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>undefined</code></td>
+<td align="center"><code>NaN</code></td>
+</tr>
+<tr>
+<td align="center"><code>null</code></td>
+<td align="center"><code>0</code></td>
+</tr>
+<tr>
+<td align="center"><code>true</code></td>
+<td align="center"><code>1</code></td>
+</tr>
+<tr>
+<td align="center"><code>false</code></td>
+<td align="center"><code>0</code></td>
+</tr>
+<tr>
+<td align="center"><code>&quot;&quot;</code>(空字符串或全为空格)</td>
+<td align="center"><code>0</code></td>
+</tr>
+<tr>
+<td align="center">其余字符串</td>
+<td align="center">调用 <code>Number()</code> 方法</td>
+</tr>
+</tbody></table>
+<ul>
+<li><em>Date</em> 转 <em>Number</em> ，返回一个毫秒级时间戳，等同于 <code>Date.prototype.getTime()</code>。</li>
+</ul>
+<blockquote>
+<p>以上转换规则，仅适用于在不改变原型对象上 <code>valueOf()</code> 与 <code>toSting()</code> 这两个方法的前提下。</p>
+</blockquote>
+<h2 id="valueOf-与-toString"><a href="#valueOf-与-toString" class="headerlink" title="valueOf() 与 toString()"></a><code>valueOf()</code> 与 <code>toString()</code></h2><p>JS 中所有类型都会继承这两个方法，而且在隐式类型转换阶段，转换结果完全取决于这两个方法的返回值。</p>
+<ul>
+<li><code>valueOf()</code> 把对象转换为原始值（如果存在这样一个原始值），对于大多数对象而言都无法通过原始值表示，所以直接返回当前对象本身。而对于原始值类型，<code>valueOf()</code> 返回的也是原始值本身。</li>
+<li><code>toSting()</code> 返回对象的字符串表示（前文已经介绍过了，这里不再赘述）。</li>
+</ul>
+<p>JS 中的三种对象到原始值转换算法：</p>
+<ul>
+<li><p>偏字符串算法</p>
+<p>返回原始值，尽可能返回一个字符串。首先尝试 <code>toString()</code>，如果该方法有定义并且返回一个原始值，则使用该原始值（即使这个值不是字符串）。如果 <code>toString()</code> 不存在，或者返回值不是一个原始值，则再尝试 <code>valueOf</code> 方法。如果该方法有定义且返回一个原始值，则使用该值。否则，转换失败，报错 <code>TypeError</code>。</p>
+</li>
+<li><p>偏数值算法</p>
+<p>返回原始值，尽可能返回一个数值。与偏字符串算法类似，只不过先尝试 <code>valueOf()</code>，再尝试 <code>toString()</code>。如果转换失败，同样报错 <code>TypeError</code>。</p>
+</li>
+<li><p>无偏好算法</p>
+<p>在转为原始值时，不倾向任何原始值。JS 中除了 <code>Date</code> 对象，使用偏字符串算法，其余类型的对象，都采用偏数值算法。</p>
+</li>
+</ul>
+<h2 id="隐式类型转换"><a href="#隐式类型转换" class="headerlink" title="隐式类型转换"></a>隐式类型转换</h2><p>什么是隐式类型转换？又或者什么时候会发生隐式类型转换？</p>
+<p>总结成一句话就是：当前操作的类型与需要的类型不一致时，就会发生隐式类型转换。比如，在 <code>if</code>、<code>while</code> 等判断语句里，需要一个 <em>Boolean</em> 类型，而传过来一个 <em>Number</em> 或者 <em>String</em> ，这时候就会把这个非 <em>Boolean</em> 类型隐式转化为 <em>Boolean</em> 类型。这种算是比较常见的隐式类型转换了，而且也比较容易理解，接下来重点讲讲几种晦涩难懂的隐式转换。</p>
+<h3 id="操作符"><a href="#操作符" class="headerlink" title="+ 操作符"></a><code>+</code> 操作符</h3><h4 id="一个操作数"><a href="#一个操作数" class="headerlink" title="一个操作数"></a>一个操作数</h4><p>当只有一个操作数时，<code>+</code>（<code>-</code> 也可以，转换后再乘以 <code>-1</code>） 会对当前的值进行隐式 <em>Number</em> 转换。如果是原始值类型，就如前文表中所述的转换规则进行转换 <a href="#转为-number-类型">👆(回到上方表格)</a>。否则，由于需要一个 <em>Number</em> 类型，所以会采用偏数值算法对当前值进行转换。</p>
+<ul>
+<li><p>当操作数是 <em>Array</em> 类型时</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token operator">+</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// 0</span>
+<span class="token comment">/**
+ * 转换流程
+ * 先调用 valueOf() 方法，返回当前数组本身 []，不是原始值
+ * 再调用 toString() 方法，返回一个字符串 ""，是原始值
+ * 将 "" 转为 Number 类型，就是 0，所以最后的结果就是 0
+ */</span></code></pre>
+</li>
+<li><p>当操作数是 <em>Object</em> 类型时</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token operator">+</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span> <span class="token comment">// NaN</span>
+<span class="token comment">/**
+ * 转换流程
+ * 先调用 valueOf() 方法，返回当前对象本身 &#123;&#125;，不是原始值
+ * 再调用 toString() 方法，返回一个字符串 "[object Object]"，是原始值
+ * 将 "[object Object]" 转为 Number 类型，就是 NaN，所以最后的结果就是 NaN
+ */</span></code></pre>
+</li>
+<li><p>如果更改了内部的 <code>valueOf()</code> 或 <code>toString()</code> 方法</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> obj <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token number">1</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> obj2 <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token number">2</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token operator">-</span>obj<span class="token punctuation">)</span> <span class="token comment">// -1</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token operator">-</span>obj2<span class="token punctuation">)</span> <span class="token comment">// -2</span></code></pre></li>
+</ul>
+<h4 id="两个操作数"><a href="#两个操作数" class="headerlink" title="两个操作数"></a>两个操作数</h4><p>当操作数有两个时，不仅可以进行数值加法运算，还可以进行字符串拼接。同为数值或者同为字符串的情况就不考虑了，着重介绍如果操作数中有对象的情况。可以铭记的一点是：<font style="border-bottom: 1px solid #4a4a4a"><em>任何类型与字符串进行 <code>+</code> 运算得到的一定是字符串</em></font>。</p>
+<ul>
+<li><p>操作数中有一个是对象</p>
+<p>先将该对象转为原始值（<code>Date</code> 采用偏字符串算法，其余对象采用偏数值算法），如果另一个操作数是字符串，则将该对象的原始值转为字符串，再拼接两个字符串。否则，都转成数值再相加。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token string">"hi"</span><span class="token punctuation">)</span> <span class="token comment">// Sat Nov 05 2022 20:10:14 GMT+0800 (中国标准时间)hi</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token number">25</span><span class="token punctuation">)</span> <span class="token comment">// Sat Nov 05 2022 20:10:14 GMT+0800 (中国标准时间)25</span>
+
+<span class="token keyword">const</span> obj <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment">// "[object Object]" + 1 = "[object Object]1"</span>
+<span class="token comment">/**
+ * 转换流程
+ * obj 先调用 valueOf() 方法，返回当前对象本身 &#123;&#125;，不是原始值
+ * 再调用 toString() 方法，返回一个字符串 "[object Object]"，是原始值
+ * "[object Object]" + 1 = "[object Object]1"
+ */</span>
+
+<span class="token keyword">const</span> obj2 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj <span class="token operator">+</span> <span class="token string">"1"</span><span class="token punctuation">)</span> <span class="token comment">// "[object Object]" + "1" = "[object Object]1"</span>
+
+<span class="token keyword">const</span> obj3 <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token number">3</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj3 <span class="token operator">+</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token comment">// 3 + 1 = 4</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj3 <span class="token operator">+</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">//  true => 1 -> 3 + 1 = 4</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj3 <span class="token operator">+</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token comment">// null => 0 -> 3 + 0 = 3</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj3 <span class="token operator">+</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// false => 0 -> 3 + 0 = 3</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj3 <span class="token operator">+</span> <span class="token keyword">undefined</span><span class="token punctuation">)</span> <span class="token comment">// undefined => NaN -> 3 + NaN = NaN</span></code></pre>
+</li>
+<li><p>两个操作数都是对象</p>
+<p>都先转为原始值，再进行原始值 <code>+</code> 运算。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> obj1 <span class="token operator">=</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> obj2 <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj1 <span class="token operator">+</span> obj2<span class="token punctuation">)</span> <span class="token comment">// "[object Object]" + "" = "[object Object]"</span>
+
+<span class="token keyword">const</span> obj3 <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj1 <span class="token operator">+</span> obj3<span class="token punctuation">)</span> <span class="token comment">// "[object Object]" + "1,2" = "[object Object]1,2"</span>
+
+<span class="token keyword">const</span> obj4 <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token number">4</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> obj5 <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token number">5</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>obj4 <span class="token operator">+</span> obj5<span class="token punctuation">)</span> <span class="token comment">// 4 + 5 = 9</span></code></pre></li>
+</ul>
+<blockquote>
+<p>由于 <code>+</code> 运算是从左到右进行的，如果是多个操作数的情况，只不过是先计算前一步的结果，然后再与后面的进行运算，同样遵循两个操作数的规则。</p>
+</blockquote>
+<h3 id="比较操作符"><a href="#比较操作符" class="headerlink" title="比较操作符"></a>比较操作符</h3><p><code>==</code> 、<code>!=</code> 、<code>&lt;</code>、<code>&lt;=</code>、<code>&gt;</code> 和 <code>&gt;=</code> 在进行比较时，允许进行类型转换。</p>
+<ul>
+<li><p>在原始值间比较</p>
+<ul>
+<li><p><code>null</code> 与 <code>undefined</code> 除了它俩之间宽松相等外，它们不与任何原始值宽松相等。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">null</span> <span class="token operator">==</span> <span class="token keyword">undefined</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">null</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">null</span> <span class="token operator">==</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">null</span> <span class="token operator">==</span> <span class="token string">""</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">undefined</span> <span class="token operator">==</span> <span class="token string">""</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">undefined</span> <span class="token operator">==</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token keyword">undefined</span> <span class="token operator">==</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+
+<span class="token comment">// 特殊的是，在进行大小比较时，null会先被转为数值后，再进行比较</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">>=</span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">></span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">></span> <span class="token keyword">null</span><span class="token punctuation">)</span> <span class="token comment">// false</span></code></pre>
+</li>
+<li><p>其余原始值在进行比较时，会转为数值后再进行比较。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">==</span> <span class="token string">""</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">==</span> <span class="token string">"0"</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">==</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"0"</span> <span class="token operator">==</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">==</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"1"</span> <span class="token operator">==</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">==</span> <span class="token string">"1"</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">==</span> <span class="token string">"1.0000"</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"2"</span> <span class="token operator">></span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">2</span> <span class="token operator">==</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"2"</span> <span class="token operator">==</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// false</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">0</span> <span class="token operator">>=</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"0"</span> <span class="token operator">>=</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token number">1</span> <span class="token operator">>=</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"2"</span> <span class="token operator">>=</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// true</span></code></pre></li>
+</ul>
+</li>
+<li><p>对象与原始值比较</p>
+<p>将对象转为原始值后，再比较。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">""</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token boolean">false</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token boolean">true</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">]</span> <span class="token operator">==</span> <span class="token string">"1,2"</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span> <span class="token operator">==</span> <span class="token string">"[object Object]"</span><span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token number">1</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span> <span class="token operator">==</span> <span class="token number">1</span>
+<span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token number">1</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span> <span class="token operator">==</span> <span class="token boolean">true</span>
+<span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token number">1</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span> <span class="token operator">></span> <span class="token boolean">true</span>
+<span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token number">0</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span> <span class="token operator">&lt;</span> <span class="token boolean">true</span>
+<span class="token punctuation">)</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>
+  <span class="token punctuation">&#123;</span>
+    <span class="token function">valueOf</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token string">""</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span> <span class="token operator">&lt;=</span> <span class="token boolean">false</span>
+<span class="token punctuation">)</span> <span class="token comment">// true</span></code></pre>
+</li>
+<li><p><code>Date</code> 类型的比较</p>
+<p>由于 <code>&gt;</code> 和 <code>&lt;</code> 使用偏数值的算法，而 <code>Date</code> 转为数值后，是一个表示时间的毫秒时间戳，也就意味着使用 <code>&gt;</code> 和 <code>&lt;</code> 来比较两个日期是可行的。</p>
+</li>
+</ul>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/e7cef8a1b722.html" title="CSS实现曲线导航菜单 &lt;W11&gt;"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: CSS实现曲线导航菜单 &lt;W11&gt;</span></a><a class="button is-default" href="/039b4a276713.html" title="如何实现状态的「伪更新」? &lt;W9&gt;"><span class="has-text-weight-semibold">下一页: 如何实现状态的「伪更新」? &lt;W9&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

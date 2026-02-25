@@ -1,0 +1,235 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>搭配el-cascader实现一个级联选择日期组件</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+事情是这样的：经理觉得日期范围选择组件（使用的是 &amp;lt;el-date-picker type=&amp;quot;daterange&amp;quot; /&amp;gt;），如果时间跨度太大，不便于操作，让我优化一下。思考良久之后，我提出方案：做成一个级联下拉框的形式，经理说：可以。开搞！
+组件整体是基于 el-cascader，然后进行改造，思路如下：
+
+将开始日期和结束日期拆分成两个 el-cascader;
+为了防止页面加载过多 DOM 节点，使用了 cascader 的 lazyload;
+首次展开面板时，显示最近 10 年的年份（对于本项目，10 年足够了），亦或是在年份的最下面添加一个 加载更多 的按钮（等有时间，下次尝试一下）；
+每个年份都有 12 个月，这是固定不变的，重点在于一些特殊月（二月：你们看我干嘛.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">搭配el-cascader实现一个级联选择日期组件</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#template"><span class="toc-text">template</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#script"><span class="toc-text">script</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#style-%C2%B7-scss"><span class="toc-text">style · scss</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%A8%E7%88%B6%E7%BB%84%E4%BB%B6%E4%B8%AD%E5%BC%95%E5%85%A5"><span class="toc-text">在父组件中引入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%88%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="toc-text">效果展示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-text"></span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/ElementUI"><i class="tag post-item-tag">ElementUI</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">搭配el-cascader实现一个级联选择日期组件</h1><time class="has-text-grey custom-date-font" datetime="2021-10-17T12:10:56.000Z">2021/10/17 12:10</time><article class="mt-2 post-content"><p><img src="https://cn.bing.com/th?id=OHR.Whakarewarewa_ZH-CN4957778498_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp" alt="华卡雷瓦雷瓦森林的红木纪念树林，新西兰北岛"></p>
+<p>事情是这样的：经理觉得日期范围选择组件（使用的是 <code>&lt;el-date-picker type=&quot;daterange&quot; /&gt;</code>），如果时间跨度太大，不便于操作，让我优化一下。思考良久之后，我提出方案：做成一个级联下拉框的形式，经理说：可以。开搞！</p>
+<p>组件整体是基于 <code>el-cascader</code>，然后进行改造，思路如下：</p>
+<ul>
+<li>将开始日期和结束日期拆分成两个 <code>el-cascader</code>;</li>
+<li>为了防止页面加载过多 DOM 节点，使用了 <code>cascader</code> 的 <em>lazyload</em>;</li>
+<li>首次展开面板时，显示最近 10 年的年份（对于本项目，10 年足够了），亦或是在年份的最下面添加一个 <em>加载更多</em> 的按钮（等有时间，下次尝试一下）；</li>
+<li>每个年份都有 12 个月，这是固定不变的，重点在于一些特殊月（二月：你们看我干嘛），获取某一个月的天数；</li>
+</ul>
+<h4 id="template"><a href="#template" class="headerlink" title="template"></a><center>template</center></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>template<span class="token operator">></span>
+  <span class="token operator">&lt;</span>div <span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"date-picker-wrap"</span><span class="token operator">></span>
+    <span class="token operator">&lt;</span>el<span class="token operator">-</span>cascader
+      <span class="token operator">:</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"['start-date', showPanel ? 'is-focus' : '']"</span>
+      <span class="token operator">:</span>size<span class="token operator">=</span><span class="token string">"size"</span>
+      placeholder<span class="token operator">=</span><span class="token string">"开始日期"</span>
+      <span class="token operator">:</span>options<span class="token operator">=</span><span class="token string">"options"</span>
+      separator<span class="token operator">=</span><span class="token string">"-"</span>
+      popper<span class="token operator">-</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"select-date"</span>
+      clearable
+      @visible<span class="token operator">-</span>change<span class="token operator">=</span><span class="token string">"isShow => (showPanel = isShow)"</span>
+      <span class="token operator">:</span>props<span class="token operator">=</span><span class="token string">"cascaderProp"</span>
+      @change<span class="token operator">=</span><span class="token string">"handlerSelectDate"</span>
+      v<span class="token operator">-</span>model<span class="token operator">=</span><span class="token string">"startTime"</span>
+    <span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>el<span class="token operator">-</span>cascader<span class="token operator">></span>
+    <span class="token operator">&lt;</span>el<span class="token operator">-</span>cascader
+      <span class="token operator">:</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"['end-date', showPanel ? 'is-focus' : '']"</span>
+      <span class="token operator">:</span>size<span class="token operator">=</span><span class="token string">"size"</span>
+      placeholder<span class="token operator">=</span><span class="token string">"结束日期"</span>
+      <span class="token operator">:</span>options<span class="token operator">=</span><span class="token string">"options"</span>
+      separator<span class="token operator">=</span><span class="token string">"-"</span>
+      popper<span class="token operator">-</span><span class="token keyword">class</span><span class="token operator">=</span><span class="token string">"select-date"</span>
+      clearable
+      @visible<span class="token operator">-</span>change<span class="token operator">=</span><span class="token string">"isShow => (showPanel = isShow)"</span>
+      <span class="token operator">:</span>props<span class="token operator">=</span><span class="token string">"cascaderProp"</span>
+      @change<span class="token operator">=</span><span class="token string">"handlerSelectDate"</span>
+      v<span class="token operator">-</span>model<span class="token operator">=</span><span class="token string">"endTime"</span>
+    <span class="token operator">></span><span class="token operator">&lt;</span><span class="token operator">/</span>el<span class="token operator">-</span>cascader<span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span></code></pre>
+
+<blockquote>
+<p>这里我通过 <code>@visible-change</code> 事件监听弹出层的打开和关闭状态，两个级联框“背靠背”实在是太难看了，于是就通过一个类来修改了 <code>focus</code> 和 <code>hover</code> 事件，让它俩合二为一，美观加倍！</p>
+</blockquote>
+<h4 id="script"><a href="#script" class="headerlink" title="script"></a><center>script</center></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script<span class="token operator">></span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">'date-picker'</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">size</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> String<span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">'small'</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">data</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">showPanel</span><span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">startTime</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">endTime</span><span class="token operator">:</span> <span class="token string">''</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">cascaderProp</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">lazy</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+        <span class="token function-variable function">lazyLoad</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token parameter">node<span class="token punctuation">,</span> resolve</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+          <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> level <span class="token punctuation">&#125;</span> <span class="token operator">=</span> node
+          <span class="token keyword">if</span> <span class="token punctuation">(</span>level <span class="token operator">===</span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">/* 懒加载年份 */</span>
+            <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">loadYear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>level <span class="token operator">===</span> <span class="token number">1</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">/* 懒加载月份 */</span>
+            <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">loadMonth</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token keyword">if</span> <span class="token punctuation">(</span>level <span class="token operator">===</span> <span class="token number">2</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token comment">/* 懒加载天 */</span>
+            <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">loadDay</span><span class="token punctuation">(</span>node<span class="token punctuation">.</span>value<span class="token punctuation">)</span><span class="token punctuation">)</span>
+          <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+            <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">methods</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">handlerSelectDate</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">let</span> time <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>startTime<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        time<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">$dayjs</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>startTime<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">'YYYY-MM-DD 00:00:00'</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      time<span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">$dayjs</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">.</span>endTime<span class="token punctuation">[</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">'YYYY-MM-DD 23:59:59'</span><span class="token punctuation">)</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">$emit</span><span class="token punctuation">(</span><span class="token string">'update:updateTime'</span><span class="token punctuation">,</span> time<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+
+    <span class="token function">loadYear</span> <span class="token punctuation">(</span>end <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getFullYear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> start <span class="token operator">=</span> end <span class="token operator">-</span> <span class="token number">10</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">let</span> yearlist <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> end<span class="token punctuation">;</span> i <span class="token operator">></span> start<span class="token punctuation">;</span> i<span class="token operator">--</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        yearlist<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+          <span class="token literal-property property">label</span><span class="token operator">:</span> i<span class="token punctuation">,</span>
+          <span class="token literal-property property">value</span><span class="token operator">:</span> i
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">return</span> yearlist
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+
+    <span class="token function">loadMonth</span> <span class="token punctuation">(</span><span class="token parameter">year</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">let</span> monthlist <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">13</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        monthlist<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+          <span class="token literal-property property">label</span><span class="token operator">:</span> i<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">padStart</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">'0'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">value</span><span class="token operator">:</span> year <span class="token operator">+</span> <span class="token string">'-'</span> <span class="token operator">+</span> i<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">padStart</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">'0'</span><span class="token punctuation">)</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">return</span> monthlist
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+
+    <span class="token function">loadDay</span> <span class="token punctuation">(</span><span class="token parameter">val</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">let</span> daylist <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+      <span class="token keyword">let</span> maxdays <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span>val<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span><span class="token punctuation">,</span> val<span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">'-'</span><span class="token punctuation">)</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">1</span><span class="token punctuation">;</span> i <span class="token operator">&lt;=</span> maxdays<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        daylist<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+          <span class="token literal-property property">label</span><span class="token operator">:</span> i<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">padStart</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">'0'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">value</span><span class="token operator">:</span> val <span class="token operator">+</span> <span class="token string">'-'</span> <span class="token operator">+</span> i<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">padStart</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">,</span> <span class="token string">'0'</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+          <span class="token literal-property property">leaf</span><span class="token operator">:</span> <span class="token boolean">true</span>
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">return</span> daylist
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+
+    <span class="token function">init</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">let</span> date <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">let</span> year <span class="token operator">=</span> date<span class="token punctuation">.</span><span class="token function">getFullYear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> year<span class="token punctuation">;</span> i <span class="token operator">></span> year <span class="token operator">-</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">--</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+          <span class="token literal-property property">label</span><span class="token operator">:</span> i<span class="token punctuation">,</span>
+          <span class="token literal-property property">value</span><span class="token operator">:</span> i
+        <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">this</span><span class="token punctuation">.</span>options<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">label</span><span class="token operator">:</span> <span class="token string">'加载更多...'</span><span class="token punctuation">,</span>
+        <span class="token literal-property property">value</span><span class="token operator">:</span> <span class="token number">0</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token function">getCurrentDate</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">$dayjs</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">format</span><span class="token punctuation">(</span><span class="token string">'YYYY-MM-DD 23:59:59'</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre>
+
+<h4 id="style-·-scss"><a href="#style-·-scss" class="headerlink" title="style · scss"></a><center>style · scss</center></h4><pre class="language-scss" data-language="scss"><code class="language-scss"><span class="token selector">.date-picker-wrap </span><span class="token punctuation">&#123;</span>
+  <span class="token property">width</span><span class="token punctuation">:</span> 240px<span class="token punctuation">;</span>
+  <span class="token property">height</span><span class="token punctuation">:</span> 40px<span class="token punctuation">;</span>
+  <span class="token property">display</span><span class="token punctuation">:</span> flex<span class="token punctuation">;</span>
+  <span class="token property">align-items</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+  <span class="token property">position</span><span class="token punctuation">:</span> relative<span class="token punctuation">;</span>
+
+  <span class="token selector"><span class="token parent important">&amp;</span>::before </span><span class="token punctuation">&#123;</span>
+    <span class="token property">content</span><span class="token punctuation">:</span> <span class="token string">"-"</span><span class="token punctuation">;</span>
+    <span class="token property">position</span><span class="token punctuation">:</span> absolute<span class="token punctuation">;</span>
+    <span class="token property">left</span><span class="token punctuation">:</span> 50%<span class="token punctuation">;</span>
+    <span class="token property">z-index</span><span class="token punctuation">:</span> 1<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token selector"><span class="token parent important">&amp;</span>:hover </span><span class="token punctuation">&#123;</span>
+    <span class="token selector">.el-cascader ::v-deep .el-input__inner </span><span class="token punctuation">&#123;</span>
+      <span class="token property">border-color</span><span class="token punctuation">:</span> #c0c4cc<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token selector">::v-deep </span><span class="token punctuation">&#123;</span>
+    <span class="token selector">.el-cascader </span><span class="token punctuation">&#123;</span>
+      <span class="token selector">.el-input__inner </span><span class="token punctuation">&#123;</span>
+        <span class="token property">text-align</span><span class="token punctuation">:</span> center<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token selector">.el-cascader.is-focus .el-input__inner </span><span class="token punctuation">&#123;</span>
+      <span class="token property">border-color</span><span class="token punctuation">:</span> #409eff<span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token selector">.el-cascader.start-date </span><span class="token punctuation">&#123;</span>
+      <span class="token selector">.el-input__inner </span><span class="token punctuation">&#123;</span>
+        <span class="token property">border-right</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span>
+        <span class="token property">border-top-right-radius</span><span class="token punctuation">:</span> 0<span class="token punctuation">;</span>
+        <span class="token property">border-bottom-right-radius</span><span class="token punctuation">:</span> 0<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token selector">.el-cascader.end-date </span><span class="token punctuation">&#123;</span>
+      <span class="token selector">.el-input__inner </span><span class="token punctuation">&#123;</span>
+        <span class="token property">border-left</span><span class="token punctuation">:</span> none<span class="token punctuation">;</span>
+        <span class="token property">border-top-left-radius</span><span class="token punctuation">:</span> 0<span class="token punctuation">;</span>
+        <span class="token property">border-bottom-left-radius</span><span class="token punctuation">:</span> 0<span class="token punctuation">;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>最后由于宽度太宽了，需要修改宽度，由于弹出层是在 <code>body</code> 下，需要将修改宽度的代码在 <code>main.js</code> 中引入：</p>
+</blockquote>
+<pre class="language-scss" data-language="scss"><code class="language-scss"><span class="token comment">/* 自定义日期选择组件弹出层的宽度 */</span>
+<span class="token selector">.el-popper.el-cascader__dropdown.select-date </span><span class="token punctuation">&#123;</span>
+  <span class="token selector">.el-scrollbar.el-cascader-menu </span><span class="token punctuation">&#123;</span>
+    <span class="token property">min-width</span><span class="token punctuation">:</span> 100px<span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="在父组件中引入"><a href="#在父组件中引入" class="headerlink" title="在父组件中引入"></a><center>在父组件中引入</center></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>template<span class="token operator">></span>
+  <span class="token operator">&lt;</span>div<span class="token operator">></span>
+    <span class="token operator">&lt;</span>ElCascaderDatePicker @update<span class="token operator">:</span>time<span class="token operator">=</span><span class="token string">"times => (timeRange = times)"</span> <span class="token operator">/</span><span class="token operator">></span>
+  <span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>template<span class="token operator">></span></code></pre>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>script<span class="token operator">></span>
+<span class="token keyword">import</span> ElCascaderDatePicker <span class="token keyword">from</span> <span class="token string">'el-cascader-date-picker.vue'</span>
+<span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">components</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    ElCascaderDatePicker
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">timeRange</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token operator">&lt;</span><span class="token operator">/</span>script<span class="token operator">></span></code></pre>
+
+<h4 id="效果展示"><a href="#效果展示" class="headerlink" title="效果展示"></a><center>效果展示</center></h4><img src="/5c8211979535/7.gif" class="" title="This is an test image">
+
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><p>最后，当我兴高采烈地找到经理，准备邀功时，经理：能不能做成之前其他页面那样，拆成两个框。我：可以！（辛辛苦苦搞了俩小时，等于白干…）</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/98d80ddf0bcb.html" title="手写一个流程图组件，就叫「flow-chart·1.0」吧"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 手写一个流程图组件，就叫「flow-chart·1.0」吧</span></a><a class="button is-default" href="/80e2baefa741.html" title="Hello World"><span class="has-text-weight-semibold">下一页: Hello World</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

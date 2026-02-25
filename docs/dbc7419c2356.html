@@ -1,0 +1,555 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-16】拓展：Vue.js 容易忽略的 API 详解</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+  
+    前面的 15 小节已经覆盖了 Vue.js 组件的绝大部分内容，但还是有一些 API
+    容易忽略。本节则对 Vue.js 的一些重要且易忽略的 API 进行详细介绍。
+  
+  nextTick
+  
+    nextTick 是 Vue.js 提供的一个函数，并非浏览器内置。nextTick
+    函数接收一个回调函数
+    cb，在下一个 DOM 更新循环之后执行。比如下面的示例：
+  
+  &amp;lt;template&amp;gt;
+  &amp;lt;div&amp;gt;
+    &amp;lt;p v-if=&quot;show&quot; ref=&quot;node&quot;&amp;gt;内容&amp;lt;/p&amp;gt;
+    &amp;lt;button @click=&quot;handleShow&quot;&amp;gt;显示&amp;lt;/button&amp;gt;
+  &amp;lt;/d.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-16】拓展：Vue.js 容易忽略的 API 详解</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">nextTick</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">v-model 语法糖</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">.sync 修饰符</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">$set</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">计算属性的 set</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">剩余值得注意的 API</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    delimiters
+  </span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    v-once
+  </span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    vm.$isServer
+  </span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    inheritAttrs
+  </span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    errorHandler
+  </span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    watch
+  </span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    comments
+  </span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">
+    transition
+  </span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-16】拓展：Vue.js 容易忽略的 API 详解</h1><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:16.000Z">2022/03/01 14:59</time><article class="mt-2 post-content">
+<div class="markdown-body">
+  <p>
+    前面的 15 小节已经覆盖了 Vue.js 组件的绝大部分内容，但还是有一些 API
+    容易忽略。本节则对 Vue.js 的一些重要且易忽略的 API 进行详细介绍。
+  </p>
+  <h2 data-id="heading-1">nextTick</h2>
+  <p>
+    nextTick 是 Vue.js 提供的一个函数，并非浏览器内置。nextTick
+    函数接收一个回调函数
+    <code>cb</code>，在下一个 DOM 更新循环之后执行。比如下面的示例：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>p</span> <span>v-if</span>=<span>"show"</span> <span>ref</span>=<span>"node"</span>&gt;</span>内容<span>&lt;/<span>p</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleShow"</span>&gt;</span>显示<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    data () &#123;
+      <span>return</span> &#123;
+        <span>show</span>: <span>false</span>
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      handleShow () &#123;
+        <span>this</span>.show = <span>true</span>;
+        <span>console</span>.log(<span>this</span>.$refs.node);  <span>// undefined</span>
+        <span>this</span>.$nextTick(<span><span>()</span> =&gt;</span> &#123;
+          <span>console</span>.log(<span>this</span>.$refs.node);  <span>// &lt;p&gt;内容&lt;/p&gt;</span>
+        &#125;);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    当 <code>show</code> 被置为 true 时，这时 p 节点还未被渲染，因此打印出的是
+    undefined，而在 nextTick 的回调里，p 已经渲染好了，这时能正确打印出节点。
+  </p>
+  <p>
+    nextTick 的源码在
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fvuejs%2Fvue%2Fblob%2Fdev%2Fsrc%2Fcore%2Futil%2Fnext-tick.js"
+      title="https://github.com/vuejs/vue/blob/dev/src/core/util/next-tick.js"
+      ref="nofollow noopener noreferrer"
+      >github.com/vuejs/vue/b…</a
+    >，可以看到，Vue.js 使用了 <code>Promise</code>、<code>setTimeout</code> 和
+    <code>setImmediate</code> 三种方法来实现
+    nextTick，在不同环境会使用不同的方法。
+  </p>
+  <h2 data-id="heading-2">v-model 语法糖</h2>
+  <p>
+    <code>v-model</code> 常用于表单元素上进行数据的双向绑定，比如
+    <code>&lt;input&gt;</code>。除了原生的元素，它还能在自定义组件中使用。
+  </p>
+  <p>
+    v-model 是一个语法糖，可以拆解为 props: value 和 events:
+    input。就是说组件必须提供一个名为 value 的 prop，以及名为 input
+    的自定义事件，满足这两个条件，使用者就能在自定义组件上使用
+    <code>v-model</code>。比如下面的示例，实现了一个数字选择器：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"increase(-1)"</span>&gt;</span>减 1<span>&lt;/<span>button</span>&gt;</span>
+    <span>&lt;<span>span</span> <span>style</span>=<span>"color: red;padding: 6px"</span>&gt;</span>&#123;&#123; currentValue &#125;&#125;<span>&lt;/<span>span</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"increase(1)"</span>&gt;</span>加 1<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'InputNumber'</span>,
+    <span>props</span>: &#123;
+      <span>value</span>: &#123;
+        <span>type</span>: <span>Number</span>
+      &#125;
+    &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>currentValue</span>: <span>this</span>.value
+      &#125;
+    &#125;,
+    <span>watch</span>: &#123;
+      value (val) &#123;
+        <span>this</span>.currentValue = val;
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      increase (val) &#123;
+        <span>this</span>.currentValue += val;
+        <span>this</span>.$emit(<span>'input'</span>, <span>this</span>.currentValue);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    props 一般不能在组件内修改，它是通过父级修改的，因此实现 v-model
+    一般都会有一个
+    <code>currentValue</code> 的内部 data，初始时从 value 获取一次值，当 value
+    修改时，也通过 watch 监听到及时更新；组件不会修改 value 的值，而是修改
+    currentValue，同时将修改的值通过自定义事件
+    <code>input</code> 派发给父组件，父组件接收到后，由父组件修改
+    value。所以，上面的数字选择器组件可以有下面两种使用方式：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>InputNumber</span> <span>v-model</span>=<span>"value"</span> /&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> InputNumber <span>from</span> <span>'../components/input-number/input-number.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; InputNumber &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>value</span>: <span>1</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>或：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>InputNumber</span> <span>:value</span>=<span>"value"</span> @<span>input</span>=<span>"handleChange"</span> /&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> InputNumber <span>from</span> <span>'../components/input-number/input-number.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; InputNumber &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>value</span>: <span>1</span>
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      handleChange (val) &#123;
+        <span>this</span>.value = val;
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    如果你不想用 <code>value</code> 和 <code>input</code> 这两个名字，从 Vue.js
+    2.2.0 版本开始，提供了一个
+    <code>model</code>
+    的选项，可以指定它们的名字，所以数字选择器组件也可以这样写：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"increase(-1)"</span>&gt;</span>减 1<span>&lt;/<span>button</span>&gt;</span>
+    <span>&lt;<span>span</span> <span>style</span>=<span>"color: red;padding: 6px"</span>&gt;</span>&#123;&#123; currentValue &#125;&#125;<span>&lt;/<span>span</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"increase(1)"</span>&gt;</span>加 1<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'InputNumber'</span>,
+    <span>props</span>: &#123;
+      <span>number</span>: &#123;
+        <span>type</span>: <span>Number</span>
+      &#125;
+    &#125;,
+    <span>model</span>: &#123;
+      <span>prop</span>: <span>'number'</span>,
+      <span>event</span>: <span>'change'</span>
+    &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>currentValue</span>: <span>this</span>.number
+      &#125;
+    &#125;,
+    <span>watch</span>: &#123;
+      value (val) &#123;
+        <span>this</span>.currentValue = val;
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      increase (val) &#123;
+        <span>this</span>.currentValue += val;
+        <span>this</span>.$emit(<span>'number'</span>, <span>this</span>.currentValue);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    在 model 选项里，就可以指定 prop 和 event 的名字了，而不一定非要用 value 和
+    input，因为这两个名字在一些原生表单元素里，有其它用处。
+  </p>
+  <h2 data-id="heading-3">.sync 修饰符</h2>
+  <p>
+    如果你使用过 Vue.js 1.x，一定对 <code>.sync</code> 不陌生。在 1.x
+    里，可以使用 .sync
+    双向绑定数据，也就是父组件或子组件都能修改这个数据，是双向响应的。在 Vue.js
+    2.x
+    里废弃了这种用法，目的是尽可能将父子组件解耦，避免子组件无意中修改了父组件的状态。
+  </p>
+  <p>
+    不过在 Vue.js 2.3.0 版本，又增加了 <code>.sync</code> 修饰符，但它的用法与
+    1.x 的不完全相同。2.x 的 .sync
+    不是真正的双向绑定，而是一个语法糖，修改数据还是在父组件完成的，并非在子组件。
+  </p>
+  <p>仍然是数字选择器的示例，这次不用 v-model，而是用 .sync，可以这样改写：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"increase(-1)"</span>&gt;</span>减 1<span>&lt;/<span>button</span>&gt;</span>
+    <span>&lt;<span>span</span> <span>style</span>=<span>"color: red;padding: 6px"</span>&gt;</span>&#123;&#123; value &#125;&#125;<span>&lt;/<span>span</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"increase(1)"</span>&gt;</span>加 1<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'InputNumber'</span>,
+    <span>props</span>: &#123;
+      <span>value</span>: &#123;
+        <span>type</span>: <span>Number</span>
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      increase (val) &#123;
+        <span>this</span>.$emit(<span>'update:value'</span>, <span>this</span>.value + val);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>用例：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>InputNumber</span> <span>:value.sync</span>=<span>"value"</span> /&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> InputNumber <span>from</span> <span>'../components/input-number/input-number.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; InputNumber &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>value</span>: <span>1</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    看起来要比 v-model 的实现简单多，实现的效果是一样的。v-model
+    在一个组件中只能有一个，但 .sync 可以设置很多个。.sync
+    虽好，但也有限制，比如：
+  </p>
+  <ul>
+    <li>
+      <strong>不能</strong>和表达式一起使用（如
+      <code>v-bind:title.sync="doc.title + '!'"</code> 是无效的）；
+    </li>
+    <li>
+      <strong>不能</strong>用在字面量对象上（如
+      <code>v-bind.sync="&#123; title: doc.title &#125;"</code> 是无法正常工作的）。
+    </li>
+  </ul>
+  <h2 data-id="heading-4">$set</h2>
+  <p>在上一节已经介绍过 <code>$set</code>，有两种情况会用到它：</p>
+  <ol>
+    <li>
+      <p>由于 JavaScript 的限制，Vue 不能检测以下变动的数组：</p>
+      <ol>
+        <li>
+          当利用索引直接设置一个项时，例如：<code
+            >this.items[index] = value</code
+          >;
+        </li>
+        <li>
+          当修改数组的长度时，例如：<code>vm.items.length = newLength</code>。
+        </li>
+      </ol>
+    </li>
+    <li>
+      <p>
+        由于 JavaScript 的限制，<strong>Vue 不能检测对象属性的添加或删除</strong
+        >。
+      </p>
+    </li>
+  </ol>
+  <p>举例来看，就是：</p>
+  <pre><code lang="js" class=""><span>// 数组</span>
+<span>export</span> <span>default</span> &#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>items</span>: [<span>'a'</span>, <span>'b'</span>, <span>'c'</span>]
+    &#125;
+  &#125;,
+  <span>methods</span>: &#123;
+    handler () &#123;
+      <span>this</span>.items[<span>1</span>] = <span>'x'</span>;  <span>// 不是响应性的</span>
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>使用 <code>$set</code>：</p>
+  <pre><code lang="js" class=""><span>// 数组</span>
+<span>export</span> <span>default</span> &#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>items</span>: [<span>'a'</span>, <span>'b'</span>, <span>'c'</span>]
+    &#125;
+  &#125;,
+  <span>methods</span>: &#123;
+    handler () &#123;
+      <span>this</span>.$set(<span>this</span>.items, <span>1</span>, <span>'x'</span>);  <span>// 是响应性的</span>
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>以对象为例：</p>
+  <pre><code lang="js" class=""><span>// 对象</span>
+<span>export</span> <span>default</span> &#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>item</span>: &#123;
+        <span>a</span>: <span>1</span>
+      &#125;
+    &#125;
+  &#125;,
+  <span>methods</span>: &#123;
+    handler () &#123;
+      <span>this</span>.item.b = <span>2</span>;  <span>// 不是响应性的</span>
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>使用 <code>$set</code>：</p>
+  <pre><code lang="js" class=""><span>// 对象</span>
+<span>export</span> <span>default</span> &#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>item</span>: &#123;
+        <span>a</span>: <span>1</span>
+      &#125;
+    &#125;
+  &#125;,
+  <span>methods</span>: &#123;
+    handler () &#123;
+      <span>this</span>.$set(<span>this</span>.item, <span>'b'</span>, <span>2</span>);  <span>// 是响应性的</span>
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    另外，数组的以下方法，都是<strong>可以</strong>触发视图更新的，也就是响应性的：
+  </p>
+  <p>
+    <code>push()</code
+    >、<code>pop()</code>、<code>shift()</code>、<code>unshift()</code>、<code>splice()</code>、<code>sort()</code>、<code>reverse()</code>。
+  </p>
+  <p>
+    还有一种小技巧，就是先 copy 一个数组，然后通过 index
+    修改后，再把原数组整个替换，比如：
+  </p>
+  <pre><code lang="js" class="">handler () &#123;
+  <span>const</span> data = [...this.items];
+  data[<span>1</span>] = <span>'x'</span>;
+  <span>this</span>.items = data;
+&#125;
+</code></pre>
+  <h2 data-id="heading-5">计算属性的 set</h2>
+  <p>
+    计算属性（computed）很简单，而且也会大量使用，但大多数时候，我们只是用它默认的
+    get 方法，也就是平时的常规写法，通过 computed
+    获取一个依赖其它状态的数据。比如：
+  </p>
+  <pre><code lang="js" class="">computed: &#123;
+  fullName () &#123;
+    <span>return</span> <span>`<span>$&#123;<span>this</span>.firstName&#125;</span> <span>$&#123;<span>this</span>.lastName&#125;</span>`</span>;
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    这里的 fullName 事实上可以写为一个 Object，而非 Function，只是 Function
+    形式是我们默认使用它的 get 方法，当写为 Object 时，还能使用它的 set 方法：
+  </p>
+  <pre><code lang="js" class="">computed: &#123;
+  <span>fullName</span>: &#123;
+    get () &#123;
+      <span>return</span> <span>`<span>$&#123;<span>this</span>.firstName&#125;</span> <span>$&#123;<span>this</span>.lastName&#125;</span>`</span>;
+    &#125;,
+    set (val) &#123;
+      <span>const</span> names = val.split(<span>' '</span>);
+      <span>this</span>.firstName = names[<span>0</span>];
+      <span>this</span>.lastName = names[names.length - <span>1</span>];
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    计算属性大多时候只是读取用，使用了 set
+    后，就可以写入了，比如上面的示例，如果执行
+    <code>this.fullName = 'Aresn Liang'</code>，computed 的 set
+    就会调用，firstName 和 lastName 会被赋值为 Aresn 和 Liang。
+  </p>
+  <h2 data-id="heading-6">剩余值得注意的 API</h2>
+  <p>
+    还有一些
+    API，可能不常用，也比较简单，只需知道就好，本册不详细展开介绍，可以通过指引到
+    Vue.js 文档查看。
+  </p>
+  <h3 data-id="heading-7">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23delimiters"
+      title="https://cn.vuejs.org/v2/api/#delimiters"
+      ref="nofollow noopener noreferrer"
+      >delimiters</a
+    >
+  </h3>
+  <p>
+    改变纯文本插入分隔符，Vue.js 默认的是
+    <code>&#123;&#123; &#125;&#125;</code>，如果你使用其它一些后端模板，比如 Python 的 Tornado
+    框架，那 Vue.js 和 Tornado 的
+    <code>&#123;&#123; &#125;&#125;</code> 就冲突了，这时用它可以修改为指定的分隔符。
+  </p>
+  <h3 data-id="heading-8">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23v-once"
+      title="https://cn.vuejs.org/v2/api/#v-once"
+      ref="nofollow noopener noreferrer"
+      >v-once</a
+    >
+  </h3>
+  <p>
+    只渲染元素和组件<strong>一次</strong>。随后的重新渲染，元素/组件及其所有的子节点将被视为静态内容并跳过。这可以用于优化更新性能。
+  </p>
+  <h3 data-id="heading-9">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23vm-isServer"
+      title="https://cn.vuejs.org/v2/api/#vm-isServer"
+      ref="nofollow noopener noreferrer"
+      >vm.$isServer</a
+    >
+  </h3>
+  <p>当前 Vue 实例是否运行于服务器，如果你的组件要兼容 SSR，它会很有用。</p>
+  <h3 data-id="heading-10">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23inheritAttrs"
+      title="https://cn.vuejs.org/v2/api/#inheritAttrs"
+      ref="nofollow noopener noreferrer"
+      >inheritAttrs</a
+    >
+  </h3>
+  <p>
+    一些原生的 html 特性，比如 <code>id</code>，即使没有定义
+    props，也会被集成到组件根节点上，设置 inheritAttrs 为 false 可以关闭此特性。
+  </p>
+  <h3 data-id="heading-11">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23errorHandler"
+      title="https://cn.vuejs.org/v2/api/#errorHandler"
+      ref="nofollow noopener noreferrer"
+      >errorHandler</a
+    >
+  </h3>
+  <p>使用 <code>errorHandler</code> 可以进行异常信息的获取。</p>
+  <h3 data-id="heading-12">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23watch"
+      title="https://cn.vuejs.org/v2/api/#watch"
+      ref="nofollow noopener noreferrer"
+      >watch</a
+    >
+  </h3>
+  <p>
+    监听状态的变化，用的也很多了，但它和 computed 一样，也有 Object
+    的写法，这样能配置更多的选项，比如：
+  </p>
+  <ul>
+    <li>handler 执行的函数</li>
+    <li>deep 是否深度</li>
+    <li>immediate 是否立即执行</li>
+  </ul>
+  <p>完整的配置可以阅读文档。</p>
+  <h3 data-id="heading-13">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23comments"
+      title="https://cn.vuejs.org/v2/api/#comments"
+      ref="nofollow noopener noreferrer"
+      >comments</a
+    >
+  </h3>
+  <p>开启会保留 html 注释。</p>
+  <h3 data-id="heading-14">
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23transition"
+      title="https://cn.vuejs.org/v2/api/#transition"
+      ref="nofollow noopener noreferrer"
+      >transition</a
+    >
+  </h3>
+  <p>
+    内置的组件，可做过渡效果，比如 CSS 的高度从 0 到 auto（使用纯 CSS
+    是无法实现动画的）。
+  </p>
+  <h2 data-id="heading-15">结语</h2>
+  <p>
+    彻底掌握一门语言（框架），不需要阅读它所有的源码，但至少要阅读它所有的
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F"
+      title="https://cn.vuejs.org/v2/api/"
+      ref="nofollow noopener noreferrer"
+      >API</a
+    >。
+  </p>
+</div>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/476fc7dffb90.html" title="【掘金小册·Vue组件精讲-17】拓展：Vue.js 面试、常见问题答疑"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 【掘金小册·Vue组件精讲-17】拓展：Vue.js 面试、常见问题答疑</span></a><a class="button is-default" href="/b2a95911020e.html" title="【掘金小册·Vue组件精讲-15】实战 7：树形控件——Tree"><span class="has-text-weight-semibold">下一页: 【掘金小册·Vue组件精讲-15】实战 7：树形控件——Tree</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

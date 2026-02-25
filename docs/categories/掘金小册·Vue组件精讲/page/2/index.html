@@ -1,0 +1,122 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>showlotus's blog</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><span>分类 · 掘金小册·Vue组件精讲</span></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/c5203a9cd445.html">【掘金小册·Vue组件精讲-10】实战 4：全局提示组件——$Alert</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:10.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    有一种 Vue.js
+    组件，它不同于常规的组件，但组件结构本身很简单，比如下面的全局提示组件：
+  
+  
+  
+    
+    
+  
+  
+  
+    实现这样一个组件并不难，只需要简单的几行 div 和
+    css，但使用者可能要这样来显示组件：
+  
+  &amp;lt;template&amp;gt;
+  &amp;lt;div&amp;gt;
+    &amp;lt;Alert v- ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/14959ccf8fcf.html">【掘金小册·Vue组件精讲-9】实战 3：动态渲染 .vue 文件的组件—— Display</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:09.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    你可能用过
+    jsfiddle
+    或
+    jsbin
+    之类的网站，在里面你可以用 CDN 的形式引入
+    Vue.js，然后在线写示例，实时运行，比如下面这个例子：
+  
+  
+    jsfiddle.net/c87yh92v/
+  
+  
+    不过，这类网站主要是一个 html，里面包含 js、css 部分，渲染侧是用 iframe
+  ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/0fe647728c31.html">【掘金小册·Vue组件精讲-8】Vue 的构造器——extend 与手动挂载——$mount</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:08.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    本节介绍两个 Vue.js 内置但却不常用的 API——extend 和
+    $mount，它们经常一起使用。不常用，是因为在业务开发中，基本没有它们的用武之地，但在独立组件开发时，在一些特定的场景它们是至关重要的。
+  
+  使用场景
+  
+    我们在写 Vue.js 时，不论是用 CDN 的方式还是在 Webpack 里用 npm 引入的
+    Vue.js ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/04cbc97d6481.html">【掘金小册·Vue组件精讲-7】实战 2：组合多选框组件——CheckboxGroup &amp; Checkbox</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:07.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    在第 5 节，我们完成了具有数据校验功能的组件
+    Form，本小节继续开发一个新的组件——组合多选框
+    Checkbox。它作为基础组件，也能集成在 Form 内并应用其验证规则。
+  
+  Checkbox 组件概览
+  
+    多选框组件也是由两个组件组成：CheckboxGroup 和
+    Checkbox。单独使用时，只需要一个
+    Chec ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/323d89bab85b.html">【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:06.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  概述
+  
+    前面的小节我们已经介绍了两种组件间通信的方法：provide / inject 和 dispatch /
+    broadcast。它们有各自的使用场景和局限，比如前者多用于子组件获取父组件的状态，后者常用于父子组件间通过自定义事件通信。
+  
+  
+    本节将介绍第 3 种组件通信方法，也就是 findComponents 系列方法，它并非 Vue.js ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/be59c6512284.html">【掘金小册·Vue组件精讲-5】实战 1：具有数据校验功能的表单组件——Form</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:05.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide / inject 和
+    dispatch / broadcast，前者是 Vue.js
+    内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Fo ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/b18ba3212f76.html">【掘金小册·Vue组件精讲-4】组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:04.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    上一讲的 provide / inject API
+    主要解决了跨级组件间的通信问题，不过它的使用场景，主要是子组件获取上级组件的状态，跨级组件间建立了一种主动提供与依赖注入的关系。然后有两种场景它不能很好的解决：
+  
+  
+    父组件向子组件（支持跨级）传递数据；
+    子组件向父组件（支持跨级）传递数据。
+  
+  
+    这种父子（含跨级）传递数据的 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/8c9b36b69ab4.html">【掘金小册·Vue组件精讲-3】组件的通信 1：provide &amp; inject</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:03.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    上一节中我们说到，ref 和
+    $parent / $children
+    在跨级通信时是有弊端的。当组件 A 和组件 B
+    中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus
+    这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js
+    内置的 provide / inject 接口。
+  ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/e656ddb2b6d8.html">【掘金小册·Vue组件精讲-2】基础：Vue.js 组件的三个 API：prop、event、slot</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:02.000Z">2022/03/01 14:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  
+    
+      如果您已经对 Vue.js
+      组件的基础用法了如指掌，可以跳过本小节，不过当做复习稍读一下也无妨。
+    
+  
+  组件的构成
+  
+    一个再复杂的组件，都是由三部分组成的：prop、event、slot，它们构成了 Vue.js
+    组件的
+    API。如果你开发的是一个通用组件，那一定要事先设计好这三部分，因为组件一旦发布，后 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/3cc96f12a0bf.html">【掘金小册·Vue组件精讲-1】开篇：Vue.js 的精髓——组件</a></h2><header><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-03-01T13:59:01.000Z">2022/03/01 13:59</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+  写在前面
+  
+    Vue.js，无疑是当下最火热的前端框架 Almost，而 Vue.js 最精髓的，正是它的组件与组件化。写一个 Vue
+    工程，也就是在写一个个的组件。
+  
+  
+    业务场景是千变万化的，而不变的是 Vue.js 组件开发的核心思想和使用技巧，掌握了
+    Vue.js
+    组件的各种开发模式，再复杂的业务场景也可以轻松化解。本小册则着 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><a class="extend prev" rel="prev" href="/categories/%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2/"><i class="iconfont icon-prev has-text-grey"></i></a><a class="page-number" href="/categories/%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2/">1</a><span class="page-number current">2</span></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><div style="position: sticky; top: 50px;"><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2/">掘金小册·Vue组件精讲</a><span class="category-list-count">20</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8E%A2%E7%B4%A2/">探索</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/daily/">日常</a><span class="category-list-count">28</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/weekly/">每周一篇</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/">笔记</a><span class="category-list-count">5</span></li></ul></section></main></div></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>

@@ -1,0 +1,599 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>VueMixinsLoader：类似 Mixin 功能的 Loader🦉</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+最近要给项目用到的组件库里的所有组件都要加一个 prop ，总共 126 个组件，如果是手动加，emm，也不是不可以，但就是有点呆，更何况如果后续有变动的话，又得重新来一遍。于是就想，如何用一种全局的配置，去统一给所有组件加 prop （这里没有使用 Vue.mixin 去全局混入，下文会作解释）。最后打算开发一个 Webpack Loader 去实现这个功能，刚好之前也没写过 Loader ，借这个机会试一试，顺便了解一下 Loader 的运行机制，如果能实现出来，想想就很酷 😉。（文末有仓库地址）
+
+为什么没有用 Vue.mixin？首先，先来讲一下 Vue.mixin 全局混入的机制。一个使用 Vue2 搭建的项目，我们可以通过 Vue.prototype.someProp = &amp;#39;he.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">VueMixinsLoader：类似 Mixin 功能的 Loader🦉</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E6%B2%A1%E6%9C%89%E7%94%A8-Vue-mixin%EF%BC%9F"><span class="toc-text">为什么没有用 Vue.mixin？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%94%A8-Loader-%E5%8E%BB%E5%AE%9E%E7%8E%B0%EF%BC%9F"><span class="toc-text">为什么要用 Loader 去实现？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Loader%E2%80%99s-options-%E9%85%8D%E7%BD%AE"><span class="toc-text">Loader’s options 配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E5%BC%95%E5%85%A5%E5%A4%96%E9%83%A8%E8%B5%84%E6%BA%90"><span class="toc-text">1. 引入外部资源</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-custom-%E5%B1%9E%E6%80%A7"><span class="toc-text">2. custom 属性</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B7%B7%E5%90%88%E4%BD%BF%E7%94%A8"><span class="toc-text">混合使用</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="toc-text">实现原理</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E8%A7%A3%E6%9E%90-options-%E9%85%8D%E7%BD%AE"><span class="toc-text">1. 解析 options 配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E8%A7%A3%E6%9E%90-script-%E6%A0%87%E7%AD%BE"><span class="toc-text">2. 解析 script 标签</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-%E7%94%9F%E6%88%90%E6%96%B0%E7%9A%84%E4%BB%A3%E7%A0%81"><span class="toc-text">3. 生成新的代码</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-%E5%B0%81%E8%A3%85%E6%88%90-Loader"><span class="toc-text">4. 封装成 Loader</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BB%86%E8%8A%82%E9%83%A8%E5%88%86"><span class="toc-text">细节部分</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/AST"><i class="tag post-item-tag">AST</i></a><a href="/tags/Babel"><i class="tag post-item-tag">Babel</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/Webpack"><i class="tag post-item-tag">Webpack</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">VueMixinsLoader：类似 Mixin 功能的 Loader🦉</h1><time class="has-text-grey custom-date-font" datetime="2023-03-31T19:37:38.000Z">2023/03/31 19:37</time><article class="mt-2 post-content"><img src="/2f85891a5103/banner.jpg" class="">
+
+<blockquote>
+<p>最近要给项目用到的组件库里的所有组件都要加一个 <em>prop</em> ，总共 <em>126</em> 个组件，如果是手动加，emm，也不是不可以，但就是有点呆，更何况如果后续有变动的话，又得重新来一遍。于是就想，如何用一种全局的配置，去统一给所有组件加 <em>prop</em> （这里没有使用 <code>Vue.mixin</code> 去全局混入，下文会作解释）。最后打算开发一个 <em>Webpack Loader</em> 去实现这个功能，刚好之前也没写过 <em>Loader</em> ，借这个机会试一试，顺便了解一下 <em>Loader</em> 的运行机制，如果能实现出来，想想就很酷 😉。（文末有仓库地址）</p>
+</blockquote>
+<h4 id="为什么没有用-Vue-mixin？"><a href="#为什么没有用-Vue-mixin？" class="headerlink" title="为什么没有用 Vue.mixin？"></a>为什么没有用 Vue.mixin？</h4><p>首先，先来讲一下 <code>Vue.mixin</code> 全局混入的机制。一个使用 <em>Vue2</em> 搭建的项目，我们可以通过 <code>Vue.prototype.someProp = &#39;hello&#39;</code> 的方式，在 <em>Vue</em> 的原型上挂载一个全局属性 <em>someProp</em> ，这样项目下所有的 <em>Vue</em> 实例都可以通过 <code>this.someProp</code> 的方式访问到。简单点说，就是每个 <em>Vue</em> 实例都能访问到原型上的属性。</p>
+<p>也可以通过 <code>Vue.mixin</code> 混入一个全局配置，例如像下面这样：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">Vue<span class="token punctuation">.</span><span class="token function">mixin</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+  <span class="token function">data</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">someProp</span><span class="token operator">:</span> <span class="token string">"hello"</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p>不过会有一个问题，它影响每一个之后创建的 <em>Vue</em> 实例，就是当前项目下所有的 <em>Vue</em> 实例都会被混入。而我们只需要对组件库中的所有组件混入就行，这种做法的影响范围有些广，有点不可取。同时，组件库和原项目之间耦合性又增加了，不建议。</p>
+<h4 id="为什么要用-Loader-去实现？"><a href="#为什么要用-Loader-去实现？" class="headerlink" title="为什么要用 Loader 去实现？"></a>为什么要用 <em>Loader</em> 去实现？</h4><p>因为之前写一个 <a href="https://showlotus.github.io/70ab28ff8c6d.html">Prettier Plugin</a> ，最开始也打算故技重施，再用 <em>Prettier</em> 写一个插件，对组件库中的所有 <em>Vue</em> 文件，添加一个 <em>Mixin</em> 。这种方案其实就是代替人工去给每一个 <em>Vue</em> 组件手动添加 <em>Mixin</em> 了。如果后续有更改，或者要把这个 <em>Mixin</em> 丢掉，有得重新写一个 <em>Plugin</em> ，emm，已经感到有点麻烦了。如果能通过外部插入的方式，添加 <em>Mixin</em> ，可随时注入或撤销，同时不对原文件做更改，那最好不过了。</p>
+<p><em>Webpack Loader 了 ~ 解 ~ 一 ~ 下 ~~~（画外音）</em></p>
+<p>关于 <em>Loader</em> ，<em>Webpack</em> 官网是这样介绍的：</p>
+<blockquote>
+<p>Webpack enables use of loaders to preprocess files. This allows you to bundle any static resource way beyond JavaScript. You can easily write your own loaders using Node.js.</p>
+<p>机翻：<em>Webpack</em> 允许使用加载器对文件进行预处理。这允许您以 JavaScript 之外的方式捆绑任何静态资源。你可以很容易地使用 Node.js 编写自己的加载器。</p>
+</blockquote>
+<p>因为 <em>Webpack</em> 只能解析 <em>JS</em> 和 <em>JSON</em> 类型的文件，对于其他类型的文件都需要安装一些 <em>Loader</em> 去处理，比如，<code>vue-loader</code>、<code>style-loader</code>、<code>less-loader</code> 等等。</p>
+<p>组件库在进行打包时，也需要使用 <code>vue-loader</code> 去处理 <em>Vue</em> 文件，就像下面这样：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// ...</span>
+  <span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.vue$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token string">"vue-loader"</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.less$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"vue-style-loader"</span><span class="token punctuation">,</span> <span class="token string">"css-loader"</span><span class="token punctuation">,</span> <span class="token string">"less-loader"</span><span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>可以使用多个 <em>Loader</em> 去处理，例如，上面的配置中，对于 <code>.less</code> 文件，使用了三个 Loader，并且按照从右到左的顺序依次执行。也就是，先由 <code>less-loader</code> 处理，将处理后的结果，传给 <code>css-loader</code>，<code>css-loader</code> 处理完后，再交给 <code>vue-style-loader</code> 处理。</p>
+<p>大致的实现思路就是：在 <code>vue-loader</code> 处理前，把 <em>Mixin</em> 注入到 <em>Vue</em> 文件里，然后再交给 <code>vue-loader</code> 处理，只需要保证在注入 <em>Mixin</em> 后的 <em>Vue</em> 文件的合法性即可。</p>
+<p>最后使用 <em>Loader</em> 后的 <em>Webpack</em> 配置大致如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// webpack.config.js</span>
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// ...</span>
+  <span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.vue$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"vue-loader"</span><span class="token punctuation">,</span>
+          <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">loader</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">,</span>
+            <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+              <span class="token comment">// TODO</span>
+            <span class="token punctuation">&#125;</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>通过 <em>Loader</em> 去注入，在不改变原文件的前提下，可操作性更强了！</p>
+<h4 id="Loader’s-options-配置"><a href="#Loader’s-options-配置" class="headerlink" title="Loader’s options 配置"></a>Loader’s options 配置</h4><p>身为一个 <em>Loader</em> ，那就少不了 <em>options</em> 配置，这里的 <em>options</em> 以一个对象的形式提供。为了更接近 <em>Mixin</em> 的写法，并且方便从外部引入，提供了有两种可选方式的配置：</p>
+<h5 id="1-引入外部资源"><a href="#1-引入外部资源" class="headerlink" title="1. 引入外部资源"></a>1. 引入外部资源</h5><p>对于比较复杂的 <em>Mixin</em> 可能需要单独封装在一个公共模块里，然后通过 <code>import</code> 的方式引入。比如，需要引入 <code>src/utils/tools.js</code> 这个模块。可以写成下面这样：</p>
+<p><strong>配置</strong></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">loader</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">tools</span><span class="token operator">:</span> <span class="token string">"src/utils/tools.js"</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><strong>原文件</strong></p>
+<pre class="language-txt" data-language="txt"><code class="language-txt">import A from "a.js"
+
+export default &#123;
+  // ...
+&#125;</code></pre>
+
+<p><strong>处理后</strong></p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> import toolsMixin from "src/utils/tools.js"
+</span></span>import A from "a.js"
+
+export default &#123;
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> // ...
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> mixins: [toolsMixin]
+</span></span>&#125;</code></pre>
+
+<p>提供的资源路径会原封不动地注入到 <em>Vue</em> 文件里，也就是需要保证 <strong>在不同的 <em>Vue</em> 文件中使用这个路径引入时，都能引入到这个资源</strong>。为了保证每个 <em>Vue</em> 文件都能正常地引入这个资源，建议使用绝对路径，或者使用 <code>alias</code> 别名。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">loader</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">tools</span><span class="token operator">:</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"src/utils/tools.js"</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token comment">// 使用 path.resolve 将路径转为绝对路径</span>
+    <span class="token literal-property property">tools2</span><span class="token operator">:</span> <span class="token string">"@/utils/tools.js"</span><span class="token punctuation">,</span> <span class="token comment">// 使用 @ 别名，@ 为 src 目录的别名</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>你可能会有疑问：加一句 <em>import</em> 和 <em>mixins</em> 就能注入了？其实 <code>vue-loader</code> 在解析时，也是拿到整个 <em>Vue</em> 文件代码的字符串，然后再去做解析的。单文件组件只是 <em>Vue</em> 提供的一种近似于原生 <em>HTML</em> 的写法，便于开发者开发。底层处理的时候，还是把整个文件当作一个字符串，然后去解析，没有那么玄乎（狗头保命）。</p>
+</blockquote>
+<h5 id="2-custom-属性"><a href="#2-custom-属性" class="headerlink" title="2. custom 属性"></a>2. custom 属性</h5><p>对于一些简单的 <em>Mixin</em> ，不需要以外部资源的形式引入，那么就可以直接提供一个对象，都写在 <em>custom</em> 这个属性下。</p>
+<blockquote>
+<p>后续测试时，发现了一个问题：<em>webpack</em> 在处理 <em>options</em> 时，会将其转为 <em>JSON</em> 格式，也就意味着，对于一些属性为函数的，就会丢失。研究了一种解决方案，<em>vue-mixins-loader</em> 提供了一个 <code>stringify</code> 方法，需要对这个 <code>custom</code> 对象进行包裹，将其转为一个字符串，保证 <em>JSON</em> 序列化时不会丢失属性。</p>
+</blockquote>
+<p><strong>配置</strong></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">loader</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">custom</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+          <span class="token literal-property property">type</span><span class="token operator">:</span> String<span class="token punctuation">,</span>
+          <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">'Hello World'</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token function">created</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'this is created hook'</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+      <span class="token function">mounted</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">'this is mounted hook'</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>写法和 <em>Mixin</em> 完全一样。最后处理的时候，会把整个对象赋值给 <code>customMixin</code> 这个变量，然后注入到 <em>mixins</em> 里。</p>
+<p><strong>原文件</strong></p>
+<pre class="language-txt" data-language="txt"><code class="language-txt">import A from "a.js"
+
+export default &#123;
+  // ...
+&#125;</code></pre>
+
+<p><strong>处理后</strong></p>
+<pre class="language-diff" data-language="diff"><code class="language-diff">import A from "a.js"
+
+<span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> const customMixin = &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">   props: &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">     message: &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">       type: String,
+</span><span class="token prefix inserted">+</span><span class="token line">       default: "Hello World"
+</span><span class="token prefix inserted">+</span><span class="token line">     &#125;
+</span><span class="token prefix inserted">+</span><span class="token line">   &#125;,
+</span><span class="token prefix inserted">+</span><span class="token line">   created() &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">     console.log("this is created hook")
+</span><span class="token prefix inserted">+</span><span class="token line">   &#125;,
+</span><span class="token prefix inserted">+</span><span class="token line">   mounted() &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">     console.log("this is mounted hook")
+</span><span class="token prefix inserted">+</span><span class="token line">   &#125;
+</span><span class="token prefix inserted">+</span><span class="token line"> &#125;
+</span></span>
+export default &#123;
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> // ...
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> mixins: [customMixin]
+</span></span>&#125;</code></pre>
+
+<h5 id="混合使用"><a href="#混合使用" class="headerlink" title="混合使用"></a>混合使用</h5><p>两种方式可以混合使用，并且如果原 <em>Vue</em> 文件中也有引入自己的 <em>Mixin</em> ，则会把它们合并。</p>
+<p><strong>配置</strong></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">loader</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">,</span>
+  <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">tools</span><span class="token operator">:</span> <span class="token string">"@/utils/tools.js"</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">custom</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+          <span class="token literal-property property">type</span><span class="token operator">:</span> String<span class="token punctuation">,</span>
+          <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">"Hello World"</span>
+        <span class="token punctuation">&#125;</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><strong>原文件</strong></p>
+<pre class="language-txt" data-language="txt"><code class="language-txt">import A from "a.js"
+import BMixin from "b.js"
+
+export default &#123;
+  // ...
+  mixins: [BMixin]
+&#125;</code></pre>
+
+<p><strong>处理后</strong></p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> import toolsMixin from "@/utils/tools.js"
+</span></span>import A from "a.js"
+import BMixin from "b.js"
+
+<span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> const customMixin = &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">   props: &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">     message: &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">       type: String,
+</span><span class="token prefix inserted">+</span><span class="token line">       default: "Hello World"
+</span><span class="token prefix inserted">+</span><span class="token line">     &#125;
+</span><span class="token prefix inserted">+</span><span class="token line">   &#125;
+</span><span class="token prefix inserted">+</span><span class="token line"> &#125;
+</span></span>
+export default &#123;
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> // ...
+</span></span><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> mixins: [BMixin]
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> mixins: [BMixin, toolsMixin, customMixin]
+</span></span>&#125;</code></pre>
+
+<h4 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h4><p>看到这里，你是不是很好奇，上面的操作是如何实现的。细心的你想必也发现了，文章的标签里有 <em>AST</em> 和 <em>Babel</em> ，到现在还没有提及，是时候登场啦！</p>
+<p>得益于 <em>Babel</em> 的强大，可以将任意一段 <em>JS</em> 代码，解析成 <em>AST</em> 。这也就使得我们可以对生成的 <em>AST</em> 做一些操作，比如，格式化代码、删除注释等等，这次的 <big><em>VueMixinLoader</em></big> 也是如此。</p>
+<blockquote>
+<p><em>AST</em> 在线生成网站：<a target="_blank" rel="noopener" href="https://astexplorer.net/">https://astexplorer.net</a></p>
+</blockquote>
+<h5 id="1-解析-options-配置"><a href="#1-解析-options-配置" class="headerlink" title="1. 解析 options 配置"></a>1. 解析 options 配置</h5><p>关于 <em>options</em> 中的配置项，只对值为 <em>String</em> 类型的属性和 <em>custom</em> 属性做处理，其他的忽略就好，不做任何处理。</p>
+<p>值为 <em>String</em> 类型的，都将该值作为一个资源路径，属性名作为变量名前缀，后缀为 <code>Mixin</code> ，然后生成 <code>ImportMixin</code> 语句：<code>import [属性名]Mixin from [值]</code>。</p>
+<p>例如，对于下面这种 <em>options</em> 配置：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">utils</span><span class="token operator">:</span> <span class="token string">"@/utils"</span><span class="token punctuation">,</span>
+  <span class="token literal-property property">libs</span><span class="token operator">:</span> <span class="token string">"@/libs"</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>生成的 <code>ImportMixin</code> 语句为：</p>
+<pre class="language-txt" data-language="txt"><code class="language-txt">import utilsMixin from "@/utils"
+import libsMixin from "@/libs"</code></pre>
+
+<p>还需要记录一下名称 <code>importMixinNames = [&quot;utilsMixin&quot;, &quot;libsMixin&quot;]</code>，后面还需要用到。</p>
+<p>而 <em>custom</em> 属性，要把它的值对象转成一个字符串，注意这一步不是调用 <code>JSON.stringify</code> 就可以了的。比如，对于下面这个：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> custom <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">message</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> String<span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">"Hello World"</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token constant">JSON</span><span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span>custom<span class="token punctuation">)</span> <span class="token comment">// &#123; "props": &#123; "message": &#123; "default" : "Hello World" &#125; &#125; &#125;</span></code></pre>
+
+<blockquote>
+<p><code>JSON.stringify</code> 不能处理函数、<code>undefined</code>、<code>Symbol</code> 和 <code>RegExp</code>。</p>
+</blockquote>
+<p>还好有第三方工具专门实现了这个功能：<a target="_blank" rel="noopener" href="https://www.npmjs.com/package/serialize-javascript">serialize-javascript</a>。不过它不支持值为原生构造函数类型的，像是，<em>Number</em> ，<em>String</em> ，<em>Array</em> ，<em>Object</em> 等等。并且还有 BUG，对于普通函数内部使用了箭头函数的，序列化后的结果就会有问题。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> serialize <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"serialize-javascript"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> custom <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">methods</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token function">fn</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> <span class="token function-variable function">f</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token function">serialize</span><span class="token punctuation">(</span>custom<span class="token punctuation">)</span>
+<span class="token comment">/** 序列化的结果
+&#123;
+   "methods": &#123;
+       "fn": fn() &#123;
+           const f = () => &#123;&#125;
+       &#125;
+   &#125;
+&#125;
+ */</span></code></pre>
+
+<p>翻了翻源码，关于是否是箭头函数的判断写得有点问题，源码是这样写的（省去了一些代码）：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">var</span> <span class="token constant">IS_ARROW_FUNCTION</span> <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">.*?=>.*?</span><span class="token regex-delimiter">/</span></span>
+
+<span class="token keyword">function</span> <span class="token function">serializeFunc</span><span class="token punctuation">(</span><span class="token parameter">fn</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">var</span> serializedFn <span class="token operator">=</span> fn<span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// arrow functions, example: arg1 => arg1+5</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token constant">IS_ARROW_FUNCTION</span><span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>serializedFn<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> serializedFn
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>emm，这个正则，着实有点粗糙了哈。问了问 ChatGPT，这个正则该怎么写，它给的答案是下面这样：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">var</span> <span class="token constant">IS_ARROW_FUNCTION</span> <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^(\([\w\s,]*\)|[\w\s]*)\s*=></span><span class="token regex-delimiter">/</span></span></code></pre>
+
+<p>测了测，确实没啥问题，先把 node_modules 里的改成这样，等有空了提个 PR，看看会不会被合并 🤭。</p>
+<blockquote>
+<p>仔细想想，<em>custom</em> 里也不会写一些比较复杂的逻辑，如果很复杂，建议还是通过外部资源引入的方式。这样的话，原箭头函数的判断就已经满足了，不需要额外修改源代码。但是，写都写了，岂有不用的道理（拽）。</p>
+</blockquote>
+<p>下面接着解决原生构造函数序列化的问题，原生构造函数调用 <code>toString()</code> 方法后，得到的都是下面这些值：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> PropTypeStr <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token string">"function String() &#123; [native code] &#125;"</span><span class="token punctuation">,</span>
+  <span class="token string">"function Number() &#123; [native code] &#125;"</span><span class="token punctuation">,</span>
+  <span class="token string">"function Boolean() &#123; [native code] &#125;"</span><span class="token punctuation">,</span>
+  <span class="token string">"function Array() &#123; [native code] &#125;"</span><span class="token punctuation">,</span>
+  <span class="token string">"function Object() &#123; [native code] &#125;"</span><span class="token punctuation">,</span>
+  <span class="token string">"function Date() &#123; [native code] &#125;"</span><span class="token punctuation">,</span>
+  <span class="token string">"function Function() &#123; [native code] &#125;"</span><span class="token punctuation">,</span>
+  <span class="token string">"function Symbol() &#123; [native code] &#125;"</span>
+<span class="token punctuation">]</span></code></pre>
+
+<p>也就意味着，如果当前值类型为 <code>Function</code>，并且调用 <code>toString()</code> 方法后的结果在上述的列表中，则说明当前函数为原生构造函数，需要特殊处理。如果是数组，并且数组里的每一项也满足这两个条件，则也需要特殊处理。主要针对的就是 <em>props</em> 里的某个属性，可以设置多个 <em>type</em> 的场景。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> custom <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">prop1</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token punctuation">[</span>String<span class="token punctuation">,</span> Number<span class="token punctuation">]</span><span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">"Hello World"</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">prop2</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> Object<span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>下一步，如何特殊处理？</p>
+<p>首先，特殊处理的这一步操作，要在序列化之前，从而保证整体能正常序列化。也即需要把原生构造函数转换成可被序列化的格式，简单点转成字符串就行。不过，这不是简简单单的字符串，需要做个标记，保证能由字符串还能转为原来构造函数的形式。</p>
+<p>先用一些特殊标记把原生构造函数包裹起来。以上述的 <em>custom</em> 为例，先转成下面这种格式：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">custom <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">prop1</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"__ConstructorFn([String, Number])"</span><span class="token punctuation">,</span>
+      <span class="token keyword">default</span><span class="token operator">:</span> <span class="token string">"Hello World"</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token literal-property property">prop2</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"__ConstructorFn(Object)"</span><span class="token punctuation">,</span>
+      <span class="token function-variable function">default</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>序列化后的结果如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">customStr <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">&#123;
+  "props": &#123;
+    "prop1": &#123;
+      "type": "__ConstructorFn([String, Number])",
+      "default": "Hello World"
+    &#125;,
+    "prop2": &#123;
+      "type": "__ConstructorFn(Object)",
+      "default": () => (&#123;&#125;)
+    &#125;
+  &#125;
+&#125;</span><span class="token template-punctuation string">`</span></span></code></pre>
+
+<p>移除特殊标记，一个正则搞定：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">removeConstructorFnTag</span> <span class="token operator">=</span> <span class="token parameter">str</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">['"]__ConstructorFn\(([^)]+)\)['"]</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">"$1"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+customStr <span class="token operator">=</span> <span class="token function">removeConstructorFnTag</span><span class="token punctuation">(</span>customStr<span class="token punctuation">)</span>
+<span class="token comment">/**
+&#123;
+  "props": &#123;
+    "prop1": &#123;
+      "type": [String, Number],
+      "default": "Hello World"
+    &#125;,
+    "prop2": &#123;
+      "type": Object,
+      "default": () => (&#123;&#125;)
+    &#125;
+  &#125;
+&#125;
+ */</span></code></pre>
+
+<p>生成 <code>customMixin</code> 语句：</p>
+<pre class="language-txt" data-language="txt"><code class="language-txt">const customMixin = &#123;
+  "props": &#123;
+    "prop1": &#123;
+      "type": [String, Number],
+      "default": "Hello World"
+    &#125;,
+    "prop2": &#123;
+      "type": Object,
+      "default": () => (&#123;&#125;)
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<p>至此，得到了 <code>importMixin</code> 语句和 <code>customMixin</code> 语句，后续需要插入到 <em>Vue</em> 的 <code>script</code> 标签内。</p>
+<pre class="language-txt" data-language="txt"><code class="language-txt">import utilsMixin from "@/utils"
+import libsMixin from "@/libs"
+
+const customMixin = &#123;
+  "props": &#123;
+    "prop1": &#123;
+      "type": [String, Number],
+      "default": "Hello World"
+    &#125;,
+    "prop2": &#123;
+      "type": Object,
+      "default": () => (&#123;&#125;)
+    &#125;
+  &#125;
+&#125;</code></pre>
+
+<h5 id="2-解析-script-标签"><a href="#2-解析-script-标签" class="headerlink" title="2. 解析 script 标签"></a>2. 解析 script 标签</h5><p>这里使用 <code>vue-template-compiler</code> 去解析 <em>Vue</em> 文件。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> compiler <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"vue-template-compiler"</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> source <span class="token operator">=</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">&lt;template>
+  &lt;p>&#123;&#123; greeting &#125;&#125; World!&lt;/p>
+&lt;/template>
+
+&lt;script>
+export default &#123;
+  data () &#123;
+    return &#123;
+      greeting: "Hello"
+    &#125;;
+  &#125;
+&#125;;
+&lt;/script>
+
+&lt;style scoped>
+p &#123;
+  font-size: 2em;
+  text-align: center;
+&#125;
+&lt;/style>
+</span><span class="token template-punctuation string">`</span></span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> script <span class="token punctuation">&#125;</span> <span class="token operator">=</span> compiler<span class="token punctuation">.</span><span class="token function">parseComponent</span><span class="token punctuation">(</span>source<span class="token punctuation">)</span>
+<span class="token comment">// script 内容的开始和结束位置</span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> start<span class="token punctuation">,</span> end <span class="token punctuation">&#125;</span> <span class="token operator">=</span> script
+<span class="token comment">// script 标签里的内容</span>
+<span class="token keyword">const</span> scriptContent <span class="token operator">=</span> script<span class="token punctuation">.</span>content</code></pre>
+
+<p>其中，<code>source.slice(start, end) == scriptContent == script.content</code>。</p>
+<h5 id="3-生成新的代码"><a href="#3-生成新的代码" class="headerlink" title="3. 生成新的代码"></a>3. 生成新的代码</h5><p>首先介绍一下 <em>Babel</em> 三步走：<code>parse</code>、<code>traverse</code>、<code>generate</code>。</p>
+<ul>
+<li><p><code>parse</code>：对应功能模块 <code>@babel/parser</code>，解析 <em>JavaScript</em> 代码，并将其转换为 <em>AST</em> （Abstract Syntax Tree）抽象语法树。</p>
+</li>
+<li><p><code>traverse</code>：对应功能模块 <code>@babel/traverse</code>，遍历 <em>AST</em> 抽象语法树，并对其进行修改或分析。</p>
+</li>
+<li><p><code>generate</code>：对应功能模块 <code>@babel/generator</code>，将 <em>AST</em> 抽象语法树转换为 <em>JavaScript</em> 代码的字符串形式。</p>
+</li>
+</ul>
+<blockquote>
+<p>通俗点讲，假如说你有一个玩偶，电池没电了，需要更换电池。但是更换电池，需要用螺丝刀把它拆开，才能更换。而 <code>parse</code> 就相当于能把整个玩偶拆成各种零部件，你只需要把旧电池换成新电池（这一步就是 <code>traverse</code>），最后再交给 <code>generate</code> 重新组装成玩偶。不需要用螺丝刀拆开，然后再给合上了，简单了好多。如果你还想把玩偶的眼睛，由小黄灯换成小红灯，也是只需要把黄灯部件换成红灯部件即可，完全不需要自己动手拆。</p>
+</blockquote>
+<p>先来看一段 <em>JS</em> 代码生成 <em>AST</em> 后的结果：</p>
+<img src="/2f85891a5103/1.png" class="">
+
+<p><code>program.body</code> 是个数组，有两个 <code>ImportDeclaration</code> 类型的节点和一个 <code>ExportDefaultDeclaration</code> 类型的节点，分别对应两个 <code>import</code> 语句和一个 <code>export default</code> 语句。</p>
+<p>比如，要清空所有 <code>import</code> 节点，就可以用下面的方式实现。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> parser <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"@babel/parser"</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> traverse <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"@babel/traverse"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>default
+<span class="token keyword">const</span> generate <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"@babel/generator"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>default
+
+<span class="token comment">// scriptContent 来源于第二步生成的</span>
+<span class="token comment">// 因为是对 Vue 文件解析，需要配置 &#123; sourceType: "module" &#125;</span>
+<span class="token comment">// 如果代码里有用到 JSX 语法，需要配置 &#123; plugins: ["jsx"] &#125;</span>
+<span class="token keyword">const</span> scriptAst <span class="token operator">=</span> parser<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>scriptContent<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"jsx"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token literal-property property">sourceType</span><span class="token operator">:</span> <span class="token string">"module"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token function">traverse</span><span class="token punctuation">(</span>scriptAst<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 遍历 import 节点</span>
+  <span class="token function">ImportDeclaration</span><span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// path.node 是当前节点</span>
+    scriptAst<span class="token punctuation">.</span>program<span class="token punctuation">.</span>body <span class="token operator">=</span> scriptAst<span class="token punctuation">.</span>program<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">node</span> <span class="token operator">=></span> node <span class="token operator">!==</span> path<span class="token punctuation">.</span>node<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 生成代码字符串</span>
+<span class="token keyword">const</span> newScript <span class="token operator">=</span> <span class="token function">generate</span><span class="token punctuation">(</span>scriptAst<span class="token punctuation">)</span><span class="token punctuation">.</span>code</code></pre>
+
+<p>如果，再需要向 <code>mixins</code> 中注入新的内容呢。</p>
+<p>先看一下 <code>mixins</code> 对应的 <em>AST</em> 长啥样。</p>
+<img src="/2f85891a5103/2.png" class="">
+
+<p><code>value.elements</code> 是个数组，数组的每个元素都是一个对象，里面存了关于 <code>mixins</code> 的值信息。照葫芦画瓢，如果需要新增一个 <code>customMixin</code>，就可以把这个 <code>elements</code> 数组改成：</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff">elements = [
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> &#123;
+</span><span class="token prefix unchanged"> </span><span class="token line">   type: "Identifier",
+</span><span class="token prefix unchanged"> </span><span class="token line">   name: "TestMixin"
+</span><span class="token prefix unchanged"> </span><span class="token line"> &#125;,
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> &#123;
+</span><span class="token prefix inserted">+</span><span class="token line">   type: "Identifier",
+</span><span class="token prefix inserted">+</span><span class="token line">   name: "customMixin"
+</span><span class="token prefix inserted">+</span><span class="token line"> &#125;
+</span></span>]</code></pre>
+
+<p>具体实现代码如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token function">traverse</span><span class="token punctuation">(</span>scriptAst<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 遍历 export default 节点</span>
+  <span class="token function">ExportDefaultDeclaration</span><span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> properties <span class="token operator">=</span> path<span class="token punctuation">.</span>node<span class="token punctuation">.</span>declaration<span class="token punctuation">.</span>properties
+    <span class="token comment">// 先找到 mixins 节点</span>
+    <span class="token keyword">const</span> mixins <span class="token operator">=</span> properties<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token parameter">property</span> <span class="token operator">=></span> property<span class="token punctuation">.</span>key<span class="token punctuation">.</span>name <span class="token operator">===</span> <span class="token string">"mixins"</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> customMixin <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"Identifier"</span><span class="token punctuation">,</span>
+      <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"customMixin"</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token comment">// 插入 customMixin</span>
+    mixins<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>customMixin<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p>回顾一下，在第一步中，我们拿到了 <code>importMixin</code> 和 <code>customMixin</code>，这两个需要添加到 <code>script</code> 标签里，<code>importMixinNames</code> 是需要注入的名称列表。第二步里，我们解析得到了 <code>script</code> 中的内容。刚才，我们又向 <code>mixins</code> 中插入了新的 <code>mixin</code>。有了这些后，我们就可以生成一份新的 <em>Vue</em> 文件字符串。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> compiler <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"vue-template-compiler"</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> parser <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"@babel/parser"</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> traverse <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"@babel/traverse"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>default
+<span class="token keyword">const</span> generate <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"@babel/generator"</span><span class="token punctuation">)</span><span class="token punctuation">.</span>default
+
+<span class="token comment">// source 来源于第二步提供的 Vue 文件字符串</span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> script <span class="token punctuation">&#125;</span> <span class="token operator">=</span> compiler<span class="token punctuation">.</span><span class="token function">parseComponent</span><span class="token punctuation">(</span>source<span class="token punctuation">)</span>
+<span class="token keyword">const</span> <span class="token punctuation">&#123;</span> start<span class="token punctuation">,</span> end <span class="token punctuation">&#125;</span> <span class="token operator">=</span> script
+<span class="token comment">// 在原 script 的头部添加 importMixin 和 customMixin</span>
+<span class="token keyword">const</span> scriptContent <span class="token operator">=</span> importMixin <span class="token operator">+</span> <span class="token string">"\n"</span> <span class="token operator">+</span> customMixin <span class="token operator">+</span> <span class="token string">"\n"</span> <span class="token operator">+</span> script<span class="token punctuation">.</span>content
+<span class="token keyword">const</span> scriptAst <span class="token operator">=</span> parser<span class="token punctuation">.</span><span class="token function">parse</span><span class="token punctuation">(</span>scriptContent<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span> <span class="token literal-property property">plugins</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"jsx"</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token literal-property property">sourceType</span><span class="token operator">:</span> <span class="token string">"module"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token function">traverse</span><span class="token punctuation">(</span>scriptAst<span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">ImportDeclaration</span><span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    scriptAst<span class="token punctuation">.</span>program<span class="token punctuation">.</span>body <span class="token operator">=</span> scriptAst<span class="token punctuation">.</span>program<span class="token punctuation">.</span>body<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">node</span> <span class="token operator">=></span> node <span class="token operator">!==</span> path<span class="token punctuation">.</span>node<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">ExportDefaultDeclaration</span><span class="token punctuation">(</span><span class="token parameter">path</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> properties <span class="token operator">=</span> path<span class="token punctuation">.</span>node<span class="token punctuation">.</span>declaration<span class="token punctuation">.</span>properties
+    <span class="token keyword">const</span> mixins <span class="token operator">=</span> properties<span class="token punctuation">.</span><span class="token function">find</span><span class="token punctuation">(</span><span class="token parameter">property</span> <span class="token operator">=></span> property<span class="token punctuation">.</span>key<span class="token punctuation">.</span>name <span class="token operator">===</span> <span class="token string">"mixins"</span><span class="token punctuation">)</span>
+    <span class="token keyword">const</span> newMixins <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">...</span>importMixinNames<span class="token punctuation">,</span> <span class="token string">"customMixin"</span><span class="token punctuation">]</span><span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">name</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+      <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"Identifier"</span><span class="token punctuation">,</span>
+      name
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+    mixins<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token operator">...</span>newMixins<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">const</span> newScript <span class="token operator">=</span> <span class="token function">generate</span><span class="token punctuation">(</span>scriptAst<span class="token punctuation">)</span><span class="token punctuation">.</span>code
+<span class="token comment">// 使用新的 script 内容</span>
+<span class="token keyword">const</span> newContent <span class="token operator">=</span> source<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span><span class="token number">0</span><span class="token punctuation">,</span> start<span class="token punctuation">)</span> <span class="token operator">+</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">\n</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>newScript<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">\n</span><span class="token template-punctuation string">`</span></span> <span class="token operator">+</span> source<span class="token punctuation">.</span><span class="token function">slice</span><span class="token punctuation">(</span>end<span class="token punctuation">)</span></code></pre>
+
+<h5 id="4-封装成-Loader"><a href="#4-封装成-Loader" class="headerlink" title="4. 封装成 Loader"></a>4. 封装成 <em>Loader</em></h5><blockquote>
+<p><em>Loader</em> 开发参考：</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://www.webpackjs.com/api/loaders">https://www.webpackjs.com/api/loaders</a></li>
+<li><a target="_blank" rel="noopener" href="https://www.webpackjs.com/contribute/writing-a-loader">https://www.webpackjs.com/contribute/writing-a-loader</a></li>
+</ul>
+</blockquote>
+<p><em>Loader</em> 其实就是一个函数，只不过大部分都写在一个单独的 <em>JS</em> 文件里，然后默认导出。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">source</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> source <span class="token operator">+</span> <span class="token string">"Hello World"</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>上面就是一个简单的 <em>Loader</em> ，往文件内容里追加一个 <code>&quot;Hello World&quot;</code> 字符串。</p>
+<p>除了在上一步中，生成新代码的逻辑之外，还需要 <code>loader-utils</code> 用来获取 <em>Loader</em> 的 <em>options</em> 。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token punctuation">&#123;</span> getOptions <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"loader-utils"</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span><span class="token function-variable function">exports</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">source</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> options <span class="token operator">=</span> <span class="token function">getOptions</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">)</span>
+  <span class="token comment">// ... 解析 options，生产新代码 newSource</span>
+  <span class="token keyword">return</span> newSource
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>在配置文件中使用本地 <em>Loader</em> 。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// webpack.config.js</span>
+<span class="token keyword">const</span> path <span class="token operator">=</span> <span class="token function">require</span><span class="token punctuation">(</span><span class="token string">"path"</span><span class="token punctuation">)</span>
+<span class="token keyword">const</span> VueMixinsLoader <span class="token operator">=</span> path<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"plugins/VueMixinsLoader/index.js"</span><span class="token punctuation">)</span>
+
+module<span class="token punctuation">.</span>exports <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// ...</span>
+  <span class="token literal-property property">module</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">rules</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+      <span class="token punctuation">&#123;</span>
+        <span class="token literal-property property">test</span><span class="token operator">:</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\.vue$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span>
+        <span class="token literal-property property">use</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+          <span class="token string">"vue-loader"</span><span class="token punctuation">,</span>
+          <span class="token punctuation">&#123;</span>
+            <span class="token literal-property property">loader</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">,</span>
+            <span class="token literal-property property">options</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+              <span class="token literal-property property">tools</span><span class="token operator">:</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"./test/VueMixinsLoader/src/mixins/mixin.js"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+              <span class="token literal-property property">tools2</span><span class="token operator">:</span> <span class="token function">resolve</span><span class="token punctuation">(</span><span class="token string">"./test/VueMixinsLoader/src/mixins/mixin2.js"</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+              <span class="token literal-property property">tools3</span><span class="token operator">:</span> <span class="token string">"@test/VueMixinsLoader/src/mixins/mixin3.js"</span><span class="token punctuation">,</span>
+              <span class="token literal-property property">custom</span><span class="token operator">:</span> VueMixinsLoader<span class="token punctuation">.</span><span class="token function">stringify</span><span class="token punctuation">(</span><span class="token punctuation">&#123;</span>
+                <span class="token literal-property property">props</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                  <span class="token literal-property property">block</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+                    <span class="token literal-property property">type</span><span class="token operator">:</span> Object<span class="token punctuation">,</span>
+                    <span class="token function-variable function">default</span><span class="token operator">:</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">(</span><span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+                  <span class="token punctuation">&#125;</span>
+                <span class="token punctuation">&#125;</span>
+              <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+            <span class="token punctuation">&#125;</span>
+          <span class="token punctuation">&#125;</span>
+        <span class="token punctuation">]</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<h4 id="细节部分"><a href="#细节部分" class="headerlink" title="细节部分"></a>细节部分</h4><p>大致的实现思路就是上述内容，其实还有一些细节问题没有谈到，这里简单说一下：</p>
+<ul>
+<li><code>importMixin</code> 和 <code>customMixin</code> 并没有直接插入在 <code>script</code> 的头部，而是都先转成 AST（<code>importMixinAST</code> 和 <code>customMixinAST</code>）。<code>importMixinAST</code> 插入在了源 <em>Vue</em> 文件 <code>import</code> 语句的前面，<code>customMixinAST</code> 插入在了 <code>import</code> 语句的下面（为了保证代码风格，这是我最后的倔强）。</li>
+<li>源 <em>Vue</em> 组件里，可能会没有 <code>mixins</code> 这个配置项，需要生成一个 <code>mixins</code> 的 AST，然后插入到 <code>ExportDefaultDeclaration</code> 中。</li>
+<li>使用 <em>webpack</em> 打包时，如果使用了 <code>cache-loader</code> 会导致，修改 <em>options</em> 后，重新打包，配置不会生效。需要关闭 <code>cache-loader</code>，并开启 <code>cache: false</code>，确保每次打包配置都能生效。</li>
+</ul>
+<p>从确定要开发这个 <em>Loader</em> 到功能完善，差不多弄了两天半的时间，写这篇文章写了两天，emm。</p>
+<img src="/2f85891a5103/4.png" class="">
+
+<p>当我兴致勃勃准备发布到 npm 社区的时候，发现 <code>vue-mixin-loader</code> 这个名字被人占用了，emm。于是就改成了 <code>vue-mixins-loader</code>，突然发现这个名字更符合，好巧不巧，嘻嘻嘻。</p>
+<p>总体来看，结果还蛮不错的，又可以往简历里写新花样了 🤭！</p>
+<blockquote>
+<p>GitHub 仓库：<a target="_blank" rel="noopener" href="https://github.com/showlotus/vue-mixins-loader">https://github.com/showlotus/vue-mixins-loader</a></p>
+</blockquote>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/b5b87ccfb749.html" title="开发利器：Todo Tree"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 开发利器：Todo Tree</span></a><a class="button is-default" href="/0ed07c1d813b.html" title="当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;"><span class="has-text-weight-semibold">下一页: 当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

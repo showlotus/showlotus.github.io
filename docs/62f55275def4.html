@@ -1,0 +1,268 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>相似请求合并</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="前言在日常开发中，有一种很常见的接口场景：例如，需要获取 type 为 a 的数据，这时候的接口入参为 &amp;#123; type: [&amp;quot;a&amp;quot;] &amp;#125;。如果需要同时获取 type 为 a 和 b 的数据，则入参为 &amp;#123; type: [&amp;quot;a&amp;quot;, &amp;quot;b&amp;quot;] &amp;#125;。在需要获取多种 type 数据的场景中，显而易见，只在一次请求里调用是最好不过的了。不过，如果后续需要将不同 type 的数据用作不同用途时，也就意味着，在请求成功后，需要再对数据进行拆分。
+
+在同一个组件下，在请求后拆分，是很方便的。如果是非同一个组件下呢？设想另一种场景，组件 A 需要获取 &amp;#123; type: [&amp;quot;a&amp;quot;] &amp;#125; 的数据，.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">相似请求合并</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%89%8D%E8%A8%80"><span class="toc-text">前言</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%94%B6%E9%9B%86%E7%B1%BB%E5%9E%8B"><span class="toc-text">收集类型</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8F%91%E8%B5%B7%E8%AF%B7%E6%B1%82"><span class="toc-text">发起请求</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8B%86%E5%88%86%E6%95%B0%E6%8D%AE"><span class="toc-text">拆分数据</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><i class="tag post-item-tag">工具函数</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">相似请求合并</h1><time class="has-text-grey custom-date-font" datetime="2023-11-26T20:00:00.000Z">2023/11/26 20:00</time><article class="mt-2 post-content"><h4 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h4><p>在日常开发中，有一种很常见的接口场景：例如，需要获取 <code>type</code> 为 <code>a</code> 的数据，这时候的接口入参为 <code>&#123; type: [&quot;a&quot;] &#125;</code>。如果需要同时获取 <code>type</code> 为 <code>a</code> 和 <code>b</code> 的数据，则入参为 <code>&#123; type: [&quot;a&quot;, &quot;b&quot;] &#125;</code>。在需要获取多种 <code>type</code> 数据的场景中，显而易见，只在一次请求里调用是最好不过的了。不过，如果后续需要将不同 <code>type</code> 的数据用作不同用途时，也就意味着，在请求成功后，需要再对数据进行拆分。</p>
+<p><img src="/62f55275def4/intro.excalidraw.png" alt="intro"></p>
+<p>在同一个组件下，在请求后拆分，是很方便的。如果是非同一个组件下呢？设想另一种场景，组件 A 需要获取 <code>&#123; type: [&quot;a&quot;] &#125;</code> 的数据，组件 B 需要获取 <code>&#123; type: [&quot;b&quot;] &#125;</code> 的数据，那么可以在两者的父组件中统一调用接口 <code>&#123; type: [&quot;a&quot;, &quot;b&quot;] &#125;</code> ，然后拆分数据后，分别将数据传给对应需要的组件，这种应该是很普遍的解决方案了。</p>
+<p>再设想几个场景，如果组件 A 与 组件 B 不是兄弟组件呢？如果组件 A 需要在另一个组件中复用呢？这种通过在祖先组件内调用接口，获取数据后再传递给对应后代组件的方式，是不是就不太合适了。所以还是尽可能地将某个组件的内部逻辑与其他组件进行解耦，减少它们之间的关联，这样才能方便后续的复用。</p>
+<p>这时候，你可能在想，那每个组件各自调用接口不就好了。但是呢，明明是同一个接口，只是入参中的某个参数不一样，却调用了多次，而且明明是可以同时传入多种类型参数的，嘶，总感觉不是很优雅。<span style="border-bottom: 1px dashed">如果能把这些调用的接口合并成一个接口，获取数据后按照类型进行拆分，然后根据每个调用所需的类型返回对应类型的数据</span>，那该多好呀。那么这能实现吗？当然可以！</p>
+<p><img src="/62f55275def4/idea.excalidraw.png" alt="idea"></p>
+<h4 id="收集类型"><a href="#收集类型" class="headerlink" title="收集类型"></a>收集类型</h4><p>首先，先思考一个问题，如果一个函数同步调用了多次，那么如何只执行一次呢？比如，对于下面这段代码：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"print"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>毫无疑问会打印 <code>10</code> 次 <code>print</code>。如果只想打印 <code>1</code> 次 <code>print</code>，该如何实现？</p>
+<p>不妨先了解一个小知识点：<em>Vue</em> 中响应式数据更新的优化策略，它的主体思想就是：<span style="border-bottom: 1px dashed">把需要触发的回调函数放进一个任务队列中，同时过滤掉相同的回调，并在下一次事件循环中执行队列中的所有回调。</span>（下面的代码源自：《Vue.js 设计与实现》P63）</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 定义一个任务队列</span>
+<span class="token keyword">const</span> jobQueue <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token comment">// 使用 Promise.resolve() 创建一个 promise 实例，我们用它将一个任务添加到微任务队列</span>
+<span class="token keyword">const</span> p <span class="token operator">=</span> Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 一个标志代表是否正在刷新队列</span>
+<span class="token keyword">let</span> isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+<span class="token keyword">function</span> <span class="token function">flushJob</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 如果队列正在刷新，则什么都不做</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span>isFlushing<span class="token punctuation">)</span> <span class="token keyword">return</span>
+  <span class="token comment">// 设置为 true，代表正在刷新</span>
+  isFlushing <span class="token operator">=</span> <span class="token boolean">true</span>
+  <span class="token comment">// 在微任务队列中刷新 jobQueue 队列</span>
+  p<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    jobQueue<span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">job</span> <span class="token operator">=></span> <span class="token function">job</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">finally</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 结束后重置 isFlushing</span>
+    isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>按照这个思路把 <code>print</code> 改造一下，如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">transform</span><span class="token punctuation">(</span><span class="token parameter">callback</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 每次调用时，将回调函数添加到 jobQueue 队列中</span>
+    jobQueue<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>callback<span class="token punctuation">)</span>
+    <span class="token comment">// 调用 flushJob 刷新队列</span>
+    <span class="token function">flushJob</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">const</span> print <span class="token operator">=</span> <span class="token function">transform</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"print"</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> <span class="token number">10</span><span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">print</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>执行结果如下：</p>
+<p><img src="/62f55275def4/test1.png" alt="test1"></p>
+<p>果然只打印了一次！了解这个思路后，现在我们要去收集传入的多种类型。比如，对于下面这段代码：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">print</span><span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"c"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span></code></pre>
+
+<p>虽然 <code>print</code> 调用了 <code>4</code> 次，但是我们期望最后只打印一次，且结果为 <code>[&quot;a&quot;, &quot;b&quot;, &quot;c&quot;]</code>。</p>
+<p>原方法是对传入不同的回调函数进行收集，而现在，已知每次调用的都是同一个函数，首先就想到：要基于回调函数进行封装处理，这个回调函数作为一个入参传入。其次，收集传入的不同类型，原有的任务队列变成了已收集类型的集合。基于这个思路，我们需要进行一些改造，改造后的代码如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">collectTypes</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">callback</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> types <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> p <span class="token operator">=</span> Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">let</span> isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+
+  <span class="token keyword">function</span> <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>isFlushing<span class="token punctuation">)</span> <span class="token keyword">return</span>
+    isFlushing <span class="token operator">=</span> <span class="token boolean">true</span>
+    p<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">const</span> typeValues <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">...</span>types<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+      <span class="token function">callback</span><span class="token punctuation">(</span>typeValues<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">finally</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+      types<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    types<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span>
+    <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<ul>
+<li><code>collectTypes</code> 接收一个函数作为入参，同时执行完后返回一个新函数。</li>
+<li>新函数每次执行时，会将传入的 <code>type</code> 收集在内部的 <code>types</code> 中。</li>
+<li>在 <code>promise</code> 实例 <code>p</code> 的 <code>then</code> 方法中处理最终结果，执行 <code>callback</code> 并将收集到的所有类型传入，同时在 <code>finally</code> 方法中清空 <code>types</code>。</li>
+</ul>
+<p>用法如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> print <span class="token operator">=</span> <span class="token function">collectTypes</span><span class="token punctuation">(</span><span class="token parameter">type</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"c"</span><span class="token punctuation">)</span>
+<span class="token function">print</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span></code></pre>
+
+<p>执行结果如下：</p>
+<p><img src="/62f55275def4/test2.png" alt="test2"></p>
+<p>完美符合预期！</p>
+<h4 id="发起请求"><a href="#发起请求" class="headerlink" title="发起请求"></a>发起请求</h4><p>收集到所有类型后，接下来就是发起请求。为了更具通用性，这个请求方法一定是可灵活配置的，也即它也是一个入参，可以根据需要自定义传入。其次，返回的新函数，要有一个返回值，返回对应类型的数据，这里先暂时返回请求到的所有类型的数据。改造后的代码如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">mergeSimilarRequest</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">request</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> types <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">let</span> p <span class="token operator">=</span> Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">let</span> isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+
+  <span class="token keyword">function</span> <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>isFlushing<span class="token punctuation">)</span> <span class="token keyword">return</span>
+    isFlushing <span class="token operator">=</span> <span class="token boolean">true</span>
+    p <span class="token operator">=</span> p
+      <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">const</span> values <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">...</span>types<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+        <span class="token keyword">return</span> <span class="token function">request</span><span class="token punctuation">(</span>values<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">finally</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+        types<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    types<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span>
+    <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> p
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<ul>
+<li>换一个更符合气质的名字：<code>mergeSimilarRequest</code> —— <em>合并相似请求</em> 。</li>
+<li>入参调整为 <code>request</code>（发起请求的方法），在最后处理阶段，将所有的类型传给 <code>request</code>，把获取数据的过程交给 <code>request</code>，只需要它的返回结果即可。</li>
+<li>刷新队列时，对 <code>p</code> 进行重新赋值，<code>p</code> 的结果即为 <code>request</code> 的执行结果（请求的所有数据）。</li>
+<li>返回的函数 <code>fetchData</code> 的执行结果：返回当前的 <code>p</code> 实例。</li>
+</ul>
+<p>使用如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"a-1"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"a-2"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"b-1"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"b-2"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"c-1"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"c-2"</span> <span class="token punctuation">&#125;</span>
+<span class="token punctuation">]</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">request</span> <span class="token operator">=</span> <span class="token parameter">types</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token parameter">resolve</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"发起请求，types:"</span><span class="token punctuation">,</span> types<span class="token punctuation">)</span>
+      <span class="token keyword">const</span> res <span class="token operator">=</span> data<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">v</span> <span class="token operator">=></span> types<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>v<span class="token punctuation">.</span>type<span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token function">resolve</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">const</span> fetchData <span class="token operator">=</span> <span class="token function">mergeSimilarRequest</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span>
+
+<span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">dataA</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"dataA"</span><span class="token punctuation">,</span> dataA<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">dataB</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"dataB"</span><span class="token punctuation">,</span> dataB<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p>执行结果如下：</p>
+<p><img src="/62f55275def4/test3.png" alt="test3"></p>
+<p>从执行结果可以看出：<code>request</code> 只执行了一次，并且入参的请求类型是 <code>a</code> 和 <code>b</code>，<code>dataA</code> 与 <code>dataB</code> 都是请求到的所有数据，还需要进行拆分。</p>
+<h4 id="拆分数据"><a href="#拆分数据" class="headerlink" title="拆分数据"></a>拆分数据</h4><p>最后一步，点睛之笔！现在已经知道实例 <code>p</code> 返回的是所有数据，而返回函数 <code>fetchData</code> 的入参里有 <code>type</code>，那么去做数据拆分就十分容易了。代码如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">mergeSimilarRequest</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">request</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">/* ... */</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/* ... */</span>
+    <span class="token keyword">return</span> p<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> res<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">v</span> <span class="token operator">=></span> v<span class="token punctuation">.</span>type <span class="token operator">===</span> type<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>但是，我们还需要考虑通用性的问题，并不是所有的类型字段就叫做 <code>type</code>，也有可能叫做 <code>type1</code>、<code>type2</code>，返回的结果 <code>res</code> 也不一定都是数组类型。所以，不妨把这个拆分规则抽离成一个方法 <code>filterRule</code> ，作为 <code>mergeSimilarRequest</code> 的新入参传入。如下所示：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">mergeSimilarRequest</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">request<span class="token punctuation">,</span> filterRule</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">/* ... */</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/* ... */</span>
+    <span class="token keyword">return</span> p<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token function">filterRule</span><span class="token punctuation">(</span>res<span class="token punctuation">,</span> type<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>后续测试的时候发现，<code>request</code> 和 <code>filterRule</code> 其实是强关联的，<code>filterRule</code> 的内部逻辑完全依赖于 <code>request</code> 返回数据的类型，于是就把它俩合并成一个入参，最终版代码如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">mergeSimilarRequest</span> <span class="token operator">=</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token punctuation">&#123;</span> request<span class="token punctuation">,</span> filterRule <span class="token punctuation">&#125;</span></span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> types <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Set</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">let</span> p <span class="token operator">=</span> Promise<span class="token punctuation">.</span><span class="token function">resolve</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">let</span> isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+
+  <span class="token keyword">function</span> <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>isFlushing<span class="token punctuation">)</span> <span class="token keyword">return</span>
+    isFlushing <span class="token operator">=</span> <span class="token boolean">true</span>
+    p <span class="token operator">=</span> p
+      <span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">const</span> values <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token operator">...</span>types<span class="token punctuation">.</span><span class="token function">values</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">]</span>
+        <span class="token keyword">return</span> <span class="token function">request</span><span class="token punctuation">(</span>values<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+      <span class="token punctuation">.</span><span class="token function">finally</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+        isFlushing <span class="token operator">=</span> <span class="token boolean">false</span>
+        types<span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token parameter">type</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    types<span class="token punctuation">.</span><span class="token function">add</span><span class="token punctuation">(</span>type<span class="token punctuation">)</span>
+    <span class="token function">flush</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token keyword">return</span> p<span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">return</span> <span class="token function">filterRule</span><span class="token punctuation">(</span>res<span class="token punctuation">,</span> type<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>最后，测试一下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"a-1"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"a"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"a-2"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"b-1"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"b"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"b-2"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"c-1"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">type</span><span class="token operator">:</span> <span class="token string">"c"</span><span class="token punctuation">,</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"c-2"</span> <span class="token punctuation">&#125;</span>
+<span class="token punctuation">]</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">request</span> <span class="token operator">=</span> <span class="token parameter">types</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token parameter">resolve</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"发起请求，types:"</span><span class="token punctuation">,</span> types<span class="token punctuation">)</span>
+      <span class="token keyword">const</span> res <span class="token operator">=</span> data<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">v</span> <span class="token operator">=></span> types<span class="token punctuation">.</span><span class="token function">includes</span><span class="token punctuation">(</span>v<span class="token punctuation">.</span>type<span class="token punctuation">)</span><span class="token punctuation">)</span>
+      <span class="token function">resolve</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> <span class="token function-variable function">filterRule</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> type</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> data<span class="token punctuation">.</span><span class="token function">filter</span><span class="token punctuation">(</span><span class="token parameter">v</span> <span class="token operator">=></span> v<span class="token punctuation">.</span>type <span class="token operator">===</span> type<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">const</span> config <span class="token operator">=</span> <span class="token punctuation">&#123;</span>
+  request<span class="token punctuation">,</span>
+  filterRule
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">const</span> fetchData <span class="token operator">=</span> <span class="token function">mergeSimilarRequest</span><span class="token punctuation">(</span>config<span class="token punctuation">)</span>
+
+<span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token string">"a"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">dataA</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"dataA"</span><span class="token punctuation">,</span> dataA<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">fetchData</span><span class="token punctuation">(</span><span class="token string">"b"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">dataB</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"dataB"</span><span class="token punctuation">,</span> dataB<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p>执行结果如下：</p>
+<p><img src="/62f55275def4/test4.png" alt="test4"></p>
+<p><em>Goooooooooooooooooooooooooooood ~ ~ ~ ~ ~ ~ ~</em></p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/48a22582094f.html" title="Babel 插件：自定义转换 JSX 语法规则"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: Babel 插件：自定义转换 JSX 语法规则</span></a><a class="button is-default" href="/56f897d68ca6.html" title="Mac 开发环境搭建（持续更新中～）"><span class="has-text-weight-semibold">下一页: Mac 开发环境搭建（持续更新中～）</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

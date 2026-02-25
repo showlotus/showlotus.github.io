@@ -1,0 +1,788 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-12】实战 5：可用 Render 自定义列的表格组件——Table</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+  
+    表格组件 Table
+    是中后台产品中最常用的组件之一，用于展示大量结构化的数据。大多数组件库都提供了表格组件，比如
+    iView，功能也是非常强大。正规的表格，是由
+    &amp;lt;table&amp;gt;、&amp;lt;thead&amp;gt;、&amp;lt;tbody&amp;gt;、&amp;lt;tr&amp;gt;、&amp;lt;th&amp;gt;、&amp;lt;td&amp;gt;
+    这些标签组成，一般分为表头 columns 和数据
+    data。本小节就来开发一个最基本的表格组件 Table，它支持使用
+    Render 函数来自定义某一列。
+  
+  分析
+  如果表格只是呈现数据，是比较简单的，比如下图：
+  
+  
+    
+    
+  
+  
+  
+    因为结构简单，我们甚至不需要组件，直接使用标准的 t.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-12】实战 5：可用 Render 自定义列的表格组件——Table</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">分析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">完成基础表格</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">使用 Render 自定义列模板</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">修改当前行</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">扩展阅读</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-12】实战 5：可用 Render 自定义列的表格组件——Table</h1><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:12.000Z">2022/03/01 14:59</time><article class="mt-2 post-content">
+<div class="markdown-body">
+  <p>
+    表格组件 Table
+    是中后台产品中最常用的组件之一，用于展示大量结构化的数据。大多数组件库都提供了表格组件，比如
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fwww.iviewui.com%2Fcomponents%2Ftable"
+      title="https://www.iviewui.com/components/table"
+      ref="nofollow noopener noreferrer"
+      >iView</a
+    >，功能也是非常强大。正规的表格，是由
+    <code>&lt;table&gt;</code
+    >、<code>&lt;thead&gt;</code>、<code>&lt;tbody&gt;</code>、<code>&lt;tr&gt;</code>、<code>&lt;th&gt;</code>、<code
+      >&lt;td&gt;</code
+    >
+    这些标签组成，一般分为表头 <strong>columns</strong> 和数据
+    <strong>data</strong>。本小节就来开发一个最基本的表格组件 Table，它支持使用
+    Render 函数来自定义某一列。
+  </p>
+  <h2 data-id="heading-1">分析</h2>
+  <p>如果表格只是呈现数据，是比较简单的，比如下图：</p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/15/16716c44a664e7f1~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    因为结构简单，我们甚至不需要组件，直接使用标准的 table
+    系列标签就可以。但有的时候，除了呈现数据，也会带有一些交互，比如有一列操作栏，可以编辑整行的数据：
+  </p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/15/16716c54fc74a1a5~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    写一个个的 table
+    系列标签是很麻烦并且重复的，而组件的好处就是省去这些基础的工作，我们直接给
+    Table 组件传递列的配置 <strong>columns</strong> 和行数据
+    <strong>data</strong>，其余的都交给 Table 组件做了。
+  </p>
+  <p>
+    开发 Table 组件前，有必要先了解上文说到的一系列 table 标签。一般的 table
+    结构是这样的：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>table</span>&gt;</span>
+  <span>&lt;<span>thead</span>&gt;</span>
+    <span>&lt;<span>tr</span>&gt;</span>
+      <span>&lt;<span>th</span>&gt;</span>姓名<span>&lt;/<span>th</span>&gt;</span>
+      <span>&lt;<span>th</span>&gt;</span>年龄<span>&lt;/<span>th</span>&gt;</span>
+    <span>&lt;/<span>tr</span>&gt;</span>
+  <span>&lt;/<span>thead</span>&gt;</span>
+  <span>&lt;<span>tbody</span>&gt;</span>
+    <span>&lt;<span>tr</span>&gt;</span>
+      <span>&lt;<span>td</span>&gt;</span>王小明<span>&lt;/<span>td</span>&gt;</span>
+      <span>&lt;<span>td</span>&gt;</span>18<span>&lt;/<span>td</span>&gt;</span>
+    <span>&lt;/<span>tr</span>&gt;</span>
+    <span>&lt;<span>tr</span>&gt;</span>
+      <span>&lt;<span>td</span>&gt;</span>张小刚<span>&lt;/<span>td</span>&gt;</span>
+      <span>&lt;<span>td</span>&gt;</span>25<span>&lt;/<span>td</span>&gt;</span>
+    <span>&lt;/<span>tr</span>&gt;</span>
+  <span>&lt;/<span>tbody</span>&gt;</span>
+<span>&lt;/<span>table</span>&gt;</span>
+</code></pre>
+  <ul>
+    <li>table：定义 HTML 表格；</li>
+    <li>thead：定义表头；</li>
+    <li>tbody：定义表格主体；</li>
+    <li>tr：定义表格行；</li>
+    <li>th：定义表头单元格；</li>
+    <li>td：定义表格单元。</li>
+  </ul>
+  <p>
+    标准的表格系列标签，跟 div+css
+    实现是有很大区别的，比如表格在做单元格合并时，有提供原生属性，用 div
+    就很麻烦了；再比如渲染原理上也有一定的区别，table
+    会在内容全部下载完后加载。详细的介绍可以阅读文末的扩展阅读 1。
+  </p>
+  <p>
+    知道了表格的结构，再来分析如何定制 API。可以看到，表格分为了两部分，表头
+    thead 和数据 tbody，那 props 也定义两个：
+  </p>
+  <ul>
+    <li>
+      <p>
+        columns：列配置，格式为数组，其中每一列 column
+        是一个对象，用来描述这一列的信息，它的具体说明如下：
+      </p>
+      <ul>
+        <li>title：列头显示文字；</li>
+        <li>key：对应列内容的字段名；</li>
+        <li>
+          render：自定义渲染列，使用 Vue 的 Render
+          函数，不定义则直接显示为文本。
+        </li>
+      </ul>
+      <p>比如：</p>
+      <pre><code lang="js" class="">[
+  &#123;
+    <span>title</span>: <span>'姓名'</span>,
+    <span>key</span>: <span>'name'</span>
+  &#125;,
+  &#123;
+    <span>title</span>: <span>'年龄'</span>,
+    <span>key</span>: <span>'age'</span>
+  &#125;
+]
+</code></pre>
+    </li>
+    <li>
+      <p>
+        data：显示的结构化数据，格式为数组，其中每一个对象，就是一行的数据，比如：
+      </p>
+      <pre><code lang="js" class="">[
+  &#123;
+    <span>name</span>: <span>'王小明'</span>,
+    <span>age</span>: <span>18</span>
+  &#125;,
+  &#123;
+    <span>name</span>: <span>'张小刚'</span>,
+    <span>age</span>: <span>25</span>
+  &#125;
+]
+</code></pre>
+    </li>
+  </ul>
+  <p>
+    column 定义的 <code>key</code> 值，与 data
+    是一一对应的，这是一种常见的数据接口定义规则，也是 Vue.js
+    组件中，用数据驱动而不是 slot 驱动的经典案例。
+  </p>
+  <p>
+    为什么 Table 组件要用数据驱动，而不是 slot 驱动呢？slot
+    在很多组件中的确很好用，不过 Table
+    组件包含了大量的基础表格标签，如果都交给使用者由 slot
+    承载的话，开发成本不亚于自己实现一个 table
+    了，而数据驱动就简单的多，数据一般从服务端获取后就可以直接使用（或简单处理），使用者主要来定义每列的配置
+    <strong>columns</strong> 就可以了。
+  </p>
+  <p>
+    因为不确定使用者要对某一列做什么交互，所以不能在 Table
+    内来实现自定义列。使用 Render
+    函数可以将复杂的自定义列模板的工作交给使用者来配置，Table 内只用一个
+    Functional Render 做中转。
+  </p>
+  <h2 data-id="heading-2">完成基础表格</h2>
+  <p>我们先来完成一个基础的表格组件，之后再接入 Render 来配置自定义列。</p>
+  <p>
+    在 <code>src/components</code> 目录下新建
+    <code>table-render</code> 目录，并创建 <code>table.vue</code> 文件：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- src/components/table-render/table.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>table</span>&gt;</span>
+    <span>&lt;<span>thead</span>&gt;</span>
+      <span>&lt;<span>tr</span>&gt;</span>
+        <span>&lt;<span>th</span> <span>v-for</span>=<span>"col in columns"</span>&gt;</span>&#123;&#123; col.title &#125;&#125;<span>&lt;/<span>th</span>&gt;</span>
+      <span>&lt;/<span>tr</span>&gt;</span>
+    <span>&lt;/<span>thead</span>&gt;</span>
+    <span>&lt;<span>tbody</span>&gt;</span>
+      <span>&lt;<span>tr</span> <span>v-for</span>=<span>"row in data"</span>&gt;</span>
+        <span>&lt;<span>td</span> <span>v-for</span>=<span>"col in columns"</span>&gt;</span>&#123;&#123; row[col.key] &#125;&#125;<span>&lt;/<span>td</span>&gt;</span>
+      <span>&lt;/<span>tr</span>&gt;</span>
+    <span>&lt;/<span>tbody</span>&gt;</span>
+  <span>&lt;/<span>table</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>props</span>: &#123;
+      <span>columns</span>: &#123;
+        <span>type</span>: <span>Array</span>,
+        <span>default</span> () &#123;
+          <span>return</span> [];
+        &#125;
+      &#125;,
+      <span>data</span>: &#123;
+        <span>type</span>: <span>Array</span>,
+        <span>default</span> () &#123;
+          <span>return</span> [];
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+<span>&lt;<span>style</span>&gt;</span><span>
+  <span>table</span>&#123;
+    <span>width</span>: <span>100%</span>;
+    <span>border-collapse</span>: collapse;
+    <span>border-spacing</span>: <span>0</span>;
+    <span>empty-cells</span>: show;
+    <span>border</span>: <span>1px</span> solid <span>#e9e9e9</span>;
+  &#125;
+  <span>table</span> <span>th</span>&#123;
+    <span>background</span>: <span>#f7f7f7</span>;
+    <span>color</span>: <span>#5c6b77</span>;
+    <span>font-weight</span>: <span>600</span>;
+    <span>white-space</span>: nowrap;
+  &#125;
+  <span>table</span> <span>td</span>, <span>table</span> <span>th</span>&#123;
+    <span>padding</span>: <span>8px</span> <span>16px</span>;
+    <span>border</span>: <span>1px</span> solid <span>#e9e9e9</span>;
+    <span>text-align</span>: left;
+  &#125;
+</span><span>&lt;/<span>style</span>&gt;</span>
+</code></pre>
+  <blockquote>
+    <p>
+      props 中的 columns 和 data 的格式都是数组，这里要注意的是，如果 props
+      的类型是<strong>对象</strong>或<strong>数组</strong>，它的默认值必须从一个工厂函数获取。
+    </p>
+  </blockquote>
+  <p>
+    tbody 内嵌套使用了两次 <code>v-for</code>，外层循环数据 data，内层循环列
+    columns，这样就填充了每个单元格。
+  </p>
+  <p>
+    新建路由 <code>table-render</code>，并在
+    <code>src/views/</code> 目录下新建页面 <code>table-render.vue</code>：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- src/views/table-render.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>table-render</span> <span>:columns</span>=<span>"columns"</span> <span>:data</span>=<span>"data"</span>&gt;</span><span>&lt;/<span>table-render</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> TableRender <span>from</span> <span>'../components/table-render/table.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; TableRender &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>columns</span>: [
+          &#123;
+            <span>title</span>: <span>'姓名'</span>,
+            <span>key</span>: <span>'name'</span>
+          &#125;,
+          &#123;
+            <span>title</span>: <span>'年龄'</span>,
+            <span>key</span>: <span>'age'</span>
+          &#125;,
+          &#123;
+            <span>title</span>: <span>'出生日期'</span>,
+            <span>key</span>: <span>'birthday'</span>
+          &#125;,
+          &#123;
+            <span>title</span>: <span>'地址'</span>,
+            <span>key</span>: <span>'address'</span>
+          &#125;,
+          &#123;
+            <span>title</span>: <span>'操作'</span>
+          &#125;
+        ],
+        <span>data</span>: [
+          &#123;
+            <span>name</span>: <span>'王小明'</span>,
+            <span>age</span>: <span>18</span>,
+            <span>birthday</span>: <span>'919526400000'</span>,
+            <span>address</span>: <span>'北京市朝阳区芍药居'</span>
+          &#125;,
+          &#123;
+            <span>name</span>: <span>'张小刚'</span>,
+            <span>age</span>: <span>25</span>,
+            <span>birthday</span>: <span>'696096000000'</span>,
+            <span>address</span>: <span>'北京市海淀区西二旗'</span>
+          &#125;,
+          &#123;
+            <span>name</span>: <span>'李小红'</span>,
+            <span>age</span>: <span>30</span>,
+            <span>birthday</span>: <span>'563472000000'</span>,
+            <span>address</span>: <span>'上海市浦东新区世纪大道'</span>
+          &#125;,
+          &#123;
+            <span>name</span>: <span>'周小伟'</span>,
+            <span>age</span>: <span>26</span>,
+            <span>birthday</span>: <span>'687024000000'</span>,
+            <span>address</span>: <span>'深圳市南山区深南大道'</span>
+          &#125;
+        ]
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>运行后的效果如下图：</p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/15/16716c5b99ef76ac~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    表格已经能渲染出来了，但现在的单元格只是将 data
+    当作纯文本来显示，所以出生日期列显示为时间戳，因为服务端对日期有时会保存为时间戳格式。如果要显示正常的日期（如1991-5-14），目前可以另写一个计算属性（computed），手动将时间戳换算为标准日期格式后，来动态修改
+    data 里的
+    <code>birthday</code>
+    字段。这样做对于出生日期这样的数据还好，但对于<strong>操作</strong>这一列就不可取了，因为它带有业务逻辑，点击<strong>编辑</strong>按钮，是可以对当前行数据进行修改的。这时就要用到
+    Render 函数。
+  </p>
+  <h2 data-id="heading-3">使用 Render 自定义列模板</h2>
+  <p>
+    上一节我们已经介绍过函数式组件 Functional Render
+    的用法，它没有状态和上下文，主要用于中转一个组件，用在本节的 Table
+    组件非常合适。
+  </p>
+  <p>
+    先在 <code>src/components/table-render</code> 目录下新建
+    <code>render.js</code> 文件：
+  </p>
+  <pre><code lang="js" class=""><span>// src/components/table-render/render.js</span>
+<span>export</span> <span>default</span> &#123;
+  <span>functional</span>: <span>true</span>,
+  <span>props</span>: &#123;
+    <span>row</span>: <span>Object</span>,
+    <span>column</span>: <span>Object</span>,
+    <span>index</span>: <span>Number</span>,
+    <span>render</span>: <span>Function</span>
+  &#125;,
+  <span>render</span>: <span>(<span>h, ctx</span>) =&gt;</span> &#123;
+    <span>const</span> params = &#123;
+      <span>row</span>: ctx.props.row,
+      <span>column</span>: ctx.props.column,
+      <span>index</span>: ctx.props.index
+    &#125;;
+
+    <span>return</span> ctx.props.render(h, params);
+  &#125;
+&#125;;
+</code></pre>
+  <p>render.js 定义了 4 个 props：</p>
+  <ul>
+    <li><strong>row</strong>：当前行的数据；</li>
+    <li><strong>column</strong>：当前列的数据；</li>
+    <li><strong>index</strong>：当前是第几行；</li>
+    <li><strong>render</strong>：具体的 render 函数内容。</li>
+  </ul>
+  <p>
+    这里的 <code>render</code> 选项并没有渲染任何节点，而是直接返回 props
+    中定义的 render，并将 h 和当前的行、列、序号作为参数传递出去。然后在
+    table.vue 里就可以使用 render.js 组件：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- table.vue，部分代码省略 --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>table</span>&gt;</span>
+    <span>&lt;<span>thead</span>&gt;</span>
+      <span>&lt;<span>tr</span>&gt;</span>
+        <span>&lt;<span>th</span> <span>v-for</span>=<span>"col in columns"</span>&gt;</span>&#123;&#123; col.title &#125;&#125;<span>&lt;/<span>th</span>&gt;</span>
+      <span>&lt;/<span>tr</span>&gt;</span>
+    <span>&lt;/<span>thead</span>&gt;</span>
+    <span>&lt;<span>tbody</span>&gt;</span>
+      <span>&lt;<span>tr</span> <span>v-for</span>=<span>"(row, rowIndex) in data"</span>&gt;</span>
+        <span>&lt;<span>td</span> <span>v-for</span>=<span>"col in columns"</span>&gt;</span>
+          <span>&lt;<span>template</span> <span>v-if</span>=<span>"'render' in col"</span>&gt;</span>
+            <span>&lt;<span>Render</span> <span>:row</span>=<span>"row"</span> <span>:column</span>=<span>"col"</span> <span>:index</span>=<span>"rowIndex"</span> <span>:render</span>=<span>"col.render"</span>&gt;</span><span>&lt;/<span>Render</span>&gt;</span>
+          <span>&lt;/<span>template</span>&gt;</span>
+          <span>&lt;<span>template</span> <span>v-else</span>&gt;</span>&#123;&#123; row[col.key] &#125;&#125;<span>&lt;/<span>template</span>&gt;</span>
+        <span>&lt;/<span>td</span>&gt;</span>
+      <span>&lt;/<span>tr</span>&gt;</span>
+    <span>&lt;/<span>tbody</span>&gt;</span>
+  <span>&lt;/<span>table</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> Render <span>from</span> <span>'./render.js'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; Render &#125;,
+    <span>props</span>: &#123;
+      <span>columns</span>: &#123;
+        <span>type</span>: <span>Array</span>,
+        <span>default</span> () &#123;
+          <span>return</span> [];
+        &#125;
+      &#125;,
+      <span>data</span>: &#123;
+        <span>type</span>: <span>Array</span>,
+        <span>default</span> () &#123;
+          <span>return</span> [];
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    如果 columns 中的某一列配置了 render 字段，那就通过 render.js
+    完成自定义模板，否则以字符串形式渲染。比如对出生日期这列显示为标准的日期格式，可以这样定义
+    column：
+  </p>
+  <pre><code lang="js" class=""><span>// src/views/table-render.vie，部分代码省略</span>
+<span>export</span> <span>default</span> &#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>columns</span>: [
+        <span>// ...</span>
+        &#123;
+          <span>title</span>: <span>'出生日期'</span>,
+          <span>render</span>: <span>(<span>h, &#123; row, column, index &#125;</span>) =&gt;</span> &#123;
+            <span>const</span> date = <span>new</span> <span>Date</span>(<span>parseInt</span>(row.birthday));
+            <span>const</span> year = date.getFullYear();
+            <span>const</span> month = date.getMonth() + <span>1</span>;
+            <span>const</span> day = date.getDate();
+            
+            <span>const</span> birthday = <span>`<span>$&#123;year&#125;</span>-<span>$&#123;month&#125;</span>-<span>$&#123;day&#125;</span>`</span>;
+            
+            <span>return</span> h(<span>'span'</span>, birthday);
+          &#125;
+        &#125;
+      ]
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>效果如下图：</p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/15/16716c604e151fa0~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    需要注意的是，columns 里定义的 render，是有两个参数的，第一个是
+    createElement（即 h），第二个是从 render.js
+    传过来的对象，它包含了当前行数据（<code>row</code>）、当前列配置（<code>column</code>）、当前是第几行（<code>index</code>），使用者可以基于这
+    3
+    个参数得到任意想要的结果。由于是自定义列了，显示什么都是使用者决定的，因此在使用了
+    render 的 column 里可以不用写字段 <code>key</code> 。
+  </p>
+  <p>
+    如果你真正理解了，应该知道 columns 里定义的 render 字段，它仅仅是名字叫
+    render 的一个普通函数，并非 Vue.js 实例的
+    <em>render</em> 选项，只是我们恰巧把它叫做 render
+    而已，如果愿意，也可以改为其它名字，比如 renderRow。真正的 Render
+    函数只有一个地方，那就是 render.js 中的 render 选项，只是它代理了 column
+    中的 render。这里有点绕，理清这个关系，就对 Functional Render 彻底理解了。
+  </p>
+  <h2 data-id="heading-4">修改当前行</h2>
+  <p>
+    有了 render，Table 组件就已经完成了，剩余工作都是使用者来配置 columns
+    完成各种复杂的业务逻辑。本例来介绍最常见的表格中对整行数据编辑的功能。
+  </p>
+  <p>
+    <strong>操作</strong
+    >这一列，默认是一个<strong>修改</strong>按钮，点击后，变为<strong>保存</strong>和<strong>取消</strong>两个按钮，同时本行其它各列都变为了输入框，并且初始值就是刚才单元格的数据。变为输入框后，可以任意修改单元格数据，点击保存按钮保存整行数据，点击取消按钮，还原至修改前的数据。
+  </p>
+  <p>
+    当进入编辑状态时，每一列的输入框都要有一个临时的数据使用
+    <code>v-model</code> 双向绑定来响应修改，所以在 data 里再声明四个数据：
+  </p>
+  <pre><code lang="js" class=""><span>// table-render.vue，部分代码省略</span>
+&#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>// ...</span>
+      editName: <span>''</span>,  <span>// 第一列输入框</span>
+      editAge: <span>''</span>,  <span>// 第二列输入框</span>
+      editBirthday: <span>''</span>,  <span>// 第三列输入框</span>
+      editAddress: <span>''</span>,  <span>// 第四列输入框</span>
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    同时还要知道是在修改第几行的数据，所以再加一个数据标识当前正在修改的行序号（从
+    0 开始）：
+  </p>
+  <pre><code lang="js" class=""><span>// table-render.vue，部分代码省略</span>
+&#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>// ...</span>
+      editIndex: <span>-1</span>,  <span>// 当前聚焦的输入框的行数</span>
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    <code>editIndex</code> 默认给了
+    -1，也就是一个不存在的行号，当点击修改按钮时，再将它置为正确的行号。我们先定义操作列的
+    render：
+  </p>
+  <pre><code lang="js" class=""><span>// table-render.vue，部分代码省略</span>
+&#123;
+  data () &#123;
+    <span>columns</span>: [
+      <span>// ...</span>
+      &#123;
+        <span>title</span>: <span>'操作'</span>,
+        <span>render</span>: <span>(<span>h, &#123; row, index &#125;</span>) =&gt;</span> &#123;
+          <span>// 如果当前行是编辑状态，则渲染两个按钮</span>
+          <span>if</span> (<span>this</span>.editIndex === index) &#123;
+            <span>return</span> [
+              h(<span>'button'</span>, &#123;
+                <span>on</span>: &#123;
+                  <span>click</span>: <span><span>()</span> =&gt;</span> &#123;
+                    <span>this</span>.data[index].name = <span>this</span>.editName;
+                    <span>this</span>.data[index].age = <span>this</span>.editAge;
+                    <span>this</span>.data[index].birthday = <span>this</span>.editBirthday;
+                    <span>this</span>.data[index].address = <span>this</span>.editAddress;
+                    <span>this</span>.editIndex = <span>-1</span>;
+                  &#125;
+                &#125;
+              &#125;, <span>'保存'</span>),
+              h(<span>'button'</span>, &#123;
+                <span>style</span>: &#123;
+                  <span>marginLeft</span>: <span>'6px'</span>
+                &#125;,
+                <span>on</span>: &#123;
+                  <span>click</span>: <span><span>()</span> =&gt;</span> &#123;
+                    <span>this</span>.editIndex = <span>-1</span>;
+                  &#125;
+                &#125;
+              &#125;, <span>'取消'</span>)
+            ];
+          &#125; <span>else</span> &#123;  <span>// 当前行是默认状态，渲染为一个按钮</span>
+            <span>return</span> h(<span>'button'</span>, &#123;
+              <span>on</span>: &#123;
+                <span>click</span>: <span><span>()</span> =&gt;</span> &#123;
+                  <span>this</span>.editName = row.name;
+                  <span>this</span>.editAge = row.age;
+                  <span>this</span>.editAddress = row.address;
+                  <span>this</span>.editBirthday = row.birthday;
+                  <span>this</span>.editIndex = index;
+                &#125;
+              &#125;
+            &#125;, <span>'修改'</span>);
+          &#125;
+        &#125;
+      &#125;
+    ]
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    render 里的 <code>if / else</code> 可以先看
+    else，因为默认是非编辑状态，也就是说 <code>editIndex</code> 还是
+    -1。当点击<strong>修改</strong>按钮时，把 render 中第二个参数
+    <code>&#123; row &#125;</code> 中的各列数据赋值给了之前在 data 中声明的 4
+    个数据，这样做是因为之后点击<strong>取消</strong>按钮时，editName
+    等值已经修改了，还没有还原，所以在开启编辑状态的同时，初始化各输入框的值（当然也可以在取消时重置）。最后再把
+    <code>editIndex</code> 置为了对应的行序号 <code>&#123; index &#125;</code>，此时
+    render 的 <code>if</code> 条件
+    <code>this.editIndex === index</code>
+    为真，编辑列变成了两个按钮：保存和取消。点击保存，直接修改表格源数据 data
+    中对应的各字段值，并将 editIndex 置为
+    -1，退出编辑状态；点击取消，不保存源数据，直接退出编辑状态。
+  </p>
+  <p>除编辑列，其它各数据列都有两种状态：</p>
+  <ol>
+    <li>当 editIndex 等于当前行号 index 时，呈现输入框状态；</li>
+    <li>当 editIndex 不等于当前行号 index 时，呈现默认数据。</li>
+  </ol>
+  <p>以姓名为例：</p>
+  <pre><code lang="js" class=""><span>// table-render.vue，部分代码省略</span>
+&#123;
+  data () &#123;
+    <span>columns</span>: [
+      <span>// ...</span>
+      &#123;
+        <span>title</span>: <span>'姓名'</span>,
+        <span>key</span>: <span>'name'</span>,
+        <span>render</span>: <span>(<span>h, &#123; row, index &#125;</span>) =&gt;</span> &#123;
+          <span>let</span> edit;
+
+          <span>// 当前行为聚焦行时</span>
+          <span>if</span> (<span>this</span>.editIndex === index) &#123;
+            edit = [h(<span>'input'</span>, &#123;
+              <span>domProps</span>: &#123;
+                <span>value</span>: row.name
+              &#125;,
+              <span>on</span>: &#123;
+                <span>input</span>: <span>(<span>event</span>) =&gt;</span> &#123;
+                  <span>this</span>.editName = event.target.value;
+                &#125;
+              &#125;
+            &#125;)];
+          &#125; <span>else</span> &#123;
+            edit = row.name;
+          &#125;
+
+          <span>return</span> h(<span>'div'</span>, [
+            edit
+          ]);
+        &#125;
+      &#125;
+    ]
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    变量 <code>edit</code> 根据 editIndex 呈现不同的节点，还是先看
+    else，直接显示了对应字段的数据。在聚焦时（this.editIndex ===
+    index），渲染一个 <code>input</code> 输入框，初始值 <code>value</code> 通过
+    render 的 <code>domProps</code> 绑定了 <code>row.name</code>（这里也可绑定
+    editName），并监听了 input 事件，将输入的内容，实时缓存在数据
+    <code>editName</code> 中，供保存时使用。事实上，这里绑定的 value 和事件
+    input 就是语法糖 <code>v-model</code> 在 Render 函数中的写法，在 template
+    中，经常写作 <code>&lt;input v-model="editName"&gt;</code>。
+  </p>
+  <p>其它列与姓名类似，只是对于的字段不同：</p>
+  <pre><code lang="js" class=""><span>// table-render.vue，部分代码省略</span>
+&#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>columns</span>: [
+        <span>// ...</span>
+        &#123;
+          <span>title</span>: <span>'年龄'</span>,
+          <span>key</span>: <span>'age'</span>,
+          <span>render</span>: <span>(<span>h, &#123; row, index &#125;</span>) =&gt;</span> &#123;
+            <span>let</span> edit;
+
+            <span>// 当前行为聚焦行时</span>
+            <span>if</span> (<span>this</span>.editIndex === index) &#123;
+              edit = [h(<span>'input'</span>, &#123;
+                <span>domProps</span>: &#123;
+                  <span>value</span>: row.age
+                &#125;,
+                <span>on</span>: &#123;
+                  <span>input</span>: <span>(<span>event</span>) =&gt;</span> &#123;
+                    <span>this</span>.editAge = event.target.value;
+                  &#125;
+                &#125;
+              &#125;)];
+            &#125; <span>else</span> &#123;
+              edit = row.age;
+            &#125;
+
+            <span>return</span> h(<span>'div'</span>, [
+              edit
+            ]);
+          &#125;
+        &#125;,
+        &#123;
+          <span>title</span>: <span>'出生日期'</span>,
+          <span>render</span>: <span>(<span>h, &#123; row, index &#125;</span>) =&gt;</span> &#123;
+            <span>let</span> edit;
+
+            <span>// 当前行为聚焦行时</span>
+            <span>if</span> (<span>this</span>.editIndex === index) &#123;
+              edit = [h(<span>'input'</span>, &#123;
+                <span>domProps</span>: &#123;
+                  <span>value</span>: row.birthday
+                &#125;,
+                <span>on</span>: &#123;
+                  <span>input</span>: <span>(<span>event</span>) =&gt;</span> &#123;
+                    <span>this</span>.editBirthday = event.target.value;
+                  &#125;
+                &#125;
+              &#125;)];
+            &#125; <span>else</span> &#123;
+              <span>const</span> date = <span>new</span> <span>Date</span>(<span>parseInt</span>(row.birthday));
+              <span>const</span> year = date.getFullYear();
+              <span>const</span> month = date.getMonth() + <span>1</span>;
+              <span>const</span> day = date.getDate();
+
+              edit = <span>`<span>$&#123;year&#125;</span>-<span>$&#123;month&#125;</span>-<span>$&#123;day&#125;</span>`</span>;
+            &#125;
+
+            <span>return</span> h(<span>'div'</span>, [
+              edit
+            ]);
+          &#125;
+        &#125;,
+        &#123;
+          <span>title</span>: <span>'地址'</span>,
+          <span>key</span>: <span>'address'</span>,
+          <span>render</span>: <span>(<span>h, &#123; row, index &#125;</span>) =&gt;</span> &#123;
+            <span>let</span> edit;
+
+            <span>// 当前行为聚焦行时</span>
+            <span>if</span> (<span>this</span>.editIndex === index) &#123;
+              edit = [h(<span>'input'</span>, &#123;
+                <span>domProps</span>: &#123;
+                  <span>value</span>: row.address
+                &#125;,
+                <span>on</span>: &#123;
+                  <span>input</span>: <span>(<span>event</span>) =&gt;</span> &#123;
+                    <span>this</span>.editAddress = event.target.value;
+                  &#125;
+                &#125;
+              &#125;)];
+            &#125; <span>else</span> &#123;
+              edit = row.address;
+            &#125;
+
+            <span>return</span> h(<span>'div'</span>, [
+              edit
+            ]);
+          &#125;
+        &#125;,
+      ]
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <blockquote>
+    <p>
+      完整的代码见：<a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Ficarusion%2Fvue-component-book%2Fblob%2Fmaster%2Fsrc%2Fviews%2Ftable-render.vue"
+        title="https://github.com/icarusion/vue-component-book/blob/master/src/views/table-render.vue"
+        ref="nofollow noopener noreferrer"
+        >github.com/icarusion/v…</a
+      >
+    </p>
+  </blockquote>
+  <p>这样，可编辑行的表格示例就完成了：</p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/15/16716c54fc74a1a5~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <h2 data-id="heading-5">结语</h2>
+  <p>
+    本示例的 Table 组件，只展现了表格最核心的功能——自定义列模板，一个完整的
+    Table
+    组件功能要复杂的多，比如排序、筛选、列固定、表头固定、表头嵌套等。万事开头难，打好了
+    Table 的地基，后面的功能可以持续开发。
+  </p>
+  <p>
+    事实上，很多 Vue.js 的开发难题，都可以用 Render 函数来解决，它比 template
+    模板更灵活，可以完全发挥 JavaScript 的编程能力，因此很多 JS
+    的开发思想都可以借鉴。如果你习惯 JSX，那完全可以抛弃传统的 template 写法。
+  </p>
+  <p>
+    Render 函数虽好，但也是有弊端的，通过上面的示例可以发现，写出来的 VNode
+    对象是很难读的，维护性也比 template 差。下一节，我们将改写 Table
+    组件，用另一种思想来实现同样的功能。
+  </p>
+  <h2 data-id="heading-6">扩展阅读</h2>
+  <ul>
+    <li>
+      <a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fwww.cnblogs.com%2Flovebear%2Farchive%2F2012%2F04%2F18%2F2456081.html"
+        title="https://www.cnblogs.com/lovebear/archive/2012/04/18/2456081.html"
+        ref="nofollow noopener noreferrer"
+        >Div 和 Table 的区别</a
+      >
+    </li>
+  </ul>
+</div>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/f41ebad182d9.html" title="【掘金小册·Vue组件精讲-13】实战 6：可用 slot-scope 自定义列的表格组件——Table"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 【掘金小册·Vue组件精讲-13】实战 6：可用 slot-scope 自定义列的表格组件——Table</span></a><a class="button is-default" href="/04195784c30e.html" title="【掘金小册·Vue组件精讲-11】更灵活的组件：Render 函数与 Functional Render"><span class="has-text-weight-semibold">下一页: 【掘金小册·Vue组件精讲-11】更灵活的组件：Render 函数与 Functional Render</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

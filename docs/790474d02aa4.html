@@ -1,0 +1,58 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>Windows 终端美化 + 使用 Code 命令用 VSCode 打开文件夹</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+在终端使用 Code 命令垂涎 Mac 的终端，能直接用 Code . 然后在 VSCode 中打开当前文件夹，作为一个 Windows 的开发者羡慕不已。直到前几天，在网上冲浪，发现了某个视频博主在 Windows 下，居然能也能用 Code . 命令，于是顺藤摸瓜，找到了下面这个（链接指路）：
+
+
+点击标注的那个下载链接，然后傻瓜式安装即可。安装完毕后，就能在终端中使用 Code . 命令，用 VSCode 打开文件夹了。
+美化 PowerShell为了方便后续的操作，先去 Windows 商店下载一个 Windows Terminal。
+
+
+接下来开始操作：
+安装 on-my-posh在终端中执行安装命令。
+winget install JanDeDobbeleer.OhMyPosh -s win.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Windows 终端美化 + 使用 Code 命令用 VSCode 打开文件夹</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9C%A8%E7%BB%88%E7%AB%AF%E4%BD%BF%E7%94%A8-Code-%E5%91%BD%E4%BB%A4"><span class="toc-text">在终端使用 Code 命令</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%BE%8E%E5%8C%96-PowerShell"><span class="toc-text">美化 PowerShell</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%89%E8%A3%85-on-my-posh"><span class="toc-text">安装 on-my-posh</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%AE%89%E8%A3%85%E5%AD%97%E4%BD%93"><span class="toc-text">安装字体</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%AE%BE%E7%BD%AE%E7%BB%88%E7%AB%AF%E5%AD%97%E4%BD%93"><span class="toc-text">设置终端字体</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E6%89%80%E6%9C%89%E4%B8%BB%E9%A2%98"><span class="toc-text">查看所有主题</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#VSCode-%E9%85%8D%E7%BD%AE"><span class="toc-text">VSCode 配置</span></a></li></ol></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Dev-Tools"><i class="tag post-item-tag">Dev Tools</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">Windows 终端美化 + 使用 Code 命令用 VSCode 打开文件夹</h1><time class="has-text-grey custom-date-font" datetime="2022-07-18T12:38:23.000Z">2022/07/18 12:38</time><article class="mt-2 post-content"><img alt="布满奇石的青海岛，日本北长门海岸国定公园" src="https://bing.com/th?id=OHR.OmijimaIsland_ZH-CN3328515301_UHD.jpg" loading="lazy" />
+
+<h4 id="在终端使用-Code-命令"><a href="#在终端使用-Code-命令" class="headerlink" title="在终端使用 Code 命令"></a>在终端使用 <code>Code</code> 命令</h4><p>垂涎 Mac 的终端，能直接用 <code>Code .</code> 然后在 VSCode 中打开当前文件夹，作为一个 Windows 的开发者羡慕不已。直到前几天，在网上冲浪，发现了某个视频博主在 Windows 下，居然能也能用 <code>Code .</code> 命令，于是顺藤摸瓜，找到了下面这个（<a target="_blank" rel="noopener" href="https://code.visualstudio.com/docs/setup/windows">链接指路</a>）：</p>
+<img src="/790474d02aa4/1.png" class="">
+
+<p>点击标注的那个下载链接，然后傻瓜式安装即可。安装完毕后，就能在终端中使用 <code>Code .</code> 命令，用 VSCode 打开文件夹了。</p>
+<h4 id="美化-PowerShell"><a href="#美化-PowerShell" class="headerlink" title="美化 PowerShell"></a>美化 PowerShell</h4><p>为了方便后续的操作，先去 Windows 商店下载一个 Windows Terminal。</p>
+<img src="/790474d02aa4/2.png" class="">
+
+<p>接下来开始操作：</p>
+<h5 id="安装-on-my-posh"><a href="#安装-on-my-posh" class="headerlink" title="安装 on-my-posh"></a>安装 <a target="_blank" rel="noopener" href="https://ohmyposh.dev/docs/installation/windows">on-my-posh</a></h5><p>在终端中执行安装命令。</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">winget <span class="token function">install</span> JanDeDobbeleer.OhMyPosh <span class="token parameter variable">-s</span> winget</code></pre>
+
+<p>然后在终端中，执行下面的命令，如果有彩色的字体出现，则证明安装成功了。</p>
+<pre class="language-bash" data-language="bash"><code class="language-bash">oh-my-posh init pwsh <span class="token operator">|</span> Invoke-Expression</code></pre>
+
+<h5 id="安装字体"><a href="#安装字体" class="headerlink" title="安装字体"></a>安装字体</h5><p><code>on-my-posh</code> 有提供一些字体，如果不使用这些特定的字体，终端就会出现乱码的情况（<a target="_blank" rel="noopener" href="https://github.com/ryanoasis/nerd-fonts#patched-fonts">字体指路</a>）。</p>
+<img src="/790474d02aa4/5.png" class="">
+
+<p>选一款下载完压缩包，解压后，全选，右键，安装。</p>
+<h5 id="设置终端字体"><a href="#设置终端字体" class="headerlink" title="设置终端字体"></a>设置终端字体</h5><p>打开终端设置面板。</p>
+<blockquote>
+<p>小知识：在命令行一栏，在命令的最后添加 <code>-nologo</code> 后缀，这样每次打开终端就没有 “可恶” 的凭证信息了。</p>
+</blockquote>
+<img src="/790474d02aa4/6.png" class="">
+
+<p>言归正传，点开外观一栏。</p>
+<img src="/790474d02aa4/7.png" class="">
+
+<p>设置刚才下载的字体，如果没加载出来，记得重启终端。设置完之后，记得保存。</p>
+<img src="/790474d02aa4/8.png" class="">
+
+<h5 id="查看所有主题"><a href="#查看所有主题" class="headerlink" title="查看所有主题"></a>查看所有主题</h5><pre class="language-bash" data-language="bash"><code class="language-bash">Get-PoshThemes</code></pre>
+
+<p>最后，会有个提示，告诉我们怎么设置其他主题。</p>
+<img src="/790474d02aa4/3.png" class="">
+
+<p><font color="red">红下划线</font>标注的路径：设置终端主题的配置文件，如果没有，按照这个路径创建就行。<br><font color="blue">蓝下划线</font>标注的命令：设置当前终端的主题，不过只是临时的，重新打开新的终端就会失效。永久设置主题就需要把这段命令粘贴在刚刚新建的配置文件里。</p>
+<img src="/790474d02aa4/4.png" class="">
+
+<p><font color="red">红下划线</font>标注的，也即当前的主题，可根据自己喜好切换即可。（<a target="_blank" rel="noopener" href="https://ohmyposh.dev/docs/themes">官网主题大全</a>）。</p>
+<h5 id="VSCode-配置"><a href="#VSCode-配置" class="headerlink" title="VSCode 配置"></a>VSCode 配置</h5><p>在 VSCode 里还需设置终端的配置（下面是我的配置）：</p>
+<img src="/790474d02aa4/9.png" class="">
+
+<p>然后，在 VSCode 里打开一个终端就能看到炫酷的主题啦！</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/1b3ec3018bbe.html" title="正则学习笔记 + 案例"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 正则学习笔记 + 案例</span></a><a class="button is-default" href="/cf1875787629.html" title="原型和原型链"><span class="has-text-weight-semibold">下一页: 原型和原型链</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

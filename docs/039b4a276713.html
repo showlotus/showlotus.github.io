@@ -1,0 +1,103 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>如何实现状态的「伪更新」? &lt;W9&gt;</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+最近要做一个与颜色选择器有关功能：当用户在颜色面板里预选颜色时，需要同时更新当前画布的颜色；如果取消选择，则将画布背景重置为初始颜色；如果确定了颜色，则更新当前画布颜色。比较容易想到的方法是，用两个变量分别记录初始值 originValue 与当前值 value ：如果只是选择，那就用去更新 value ；如果取消选择，重置为 originValue ；如果选中，将 originValue 更新为 value 。不过，除了颜色，还有背景图，也需要用到这个类似的功能。既然多个地方用到了，那就写的优雅一点，封装一个类来实现吧。
+
+与上述逻辑相同，需要两个变量用来记录 originValue 和 value ，而且根据不同的操作，可以划分为三种更新方式：
+
+change ：更新 value ；
+update.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">如何实现状态的「伪更新」? &lt;W9&gt;</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">如何实现状态的「伪更新」? &lt;W9&gt;</h1><time class="has-text-grey custom-date-font" datetime="2022-10-29T12:41:45.000Z">2022/10/29 12:41</time><article class="mt-2 post-content"><img src="/039b4a276713/banner.jpg" class="">
+
+<blockquote>
+<p>最近要做一个与颜色选择器有关功能：当用户在颜色面板里预选颜色时，需要同时更新当前画布的颜色；如果取消选择，则将画布背景重置为初始颜色；如果确定了颜色，则更新当前画布颜色。比较容易想到的方法是，用两个变量分别记录初始值 <em>originValue</em> 与当前值 <em>value</em> ：如果只是选择，那就用去更新 <em>value</em> ；如果取消选择，重置为 <em>originValue</em> ；如果选中，将 <em>originValue</em> 更新为 <em>value</em> 。不过，除了颜色，还有背景图，也需要用到这个类似的功能。既然多个地方用到了，那就写的优雅一点，封装一个类来实现吧。</p>
+</blockquote>
+<p>与上述逻辑相同，需要两个变量用来记录 <em>originValue</em> 和 <em>value</em> ，而且根据不同的操作，可以划分为三种更新方式：</p>
+<ul>
+<li><em>change</em> ：更新 <em>value</em> ；</li>
+<li><em>update</em> ：将 <em>originValue</em> 改为 <em>value</em> ；</li>
+<li><em>reset</em> ：将 <em>value</em> 改为 <em>originValue</em> 。</li>
+</ul>
+<p>在实例化时，需要传入一个初始值，用以构造函数内部初始化。</p>
+<p>大体思路有了，先来实现一个简单的版本。我给它起了一个高大上的名字：<em>PseudoUpdate（伪更新）</em> 。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// PseudoUpdate 1.0</span>
+<span class="token keyword">class</span> <span class="token class-name">PseudoUpdate</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>originValue <span class="token operator">=</span> value
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> value
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">change</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> value
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">update</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>originValue <span class="token operator">=</span> value
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">reset</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>originValue
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>用法也很简单。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> color <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">PseudoUpdate</span><span class="token punctuation">(</span><span class="token string">"red"</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 当预选颜色时</span>
+<span class="token keyword">function</span> <span class="token function">handleChange</span><span class="token punctuation">(</span><span class="token parameter">newColor</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  color<span class="token punctuation">.</span><span class="token function">change</span><span class="token punctuation">(</span>newColor<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 当确定颜色时</span>
+<span class="token keyword">function</span> <span class="token function">handleUpdate</span><span class="token punctuation">(</span><span class="token parameter">newColor</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  color<span class="token punctuation">.</span><span class="token function">update</span><span class="token punctuation">(</span>newColor<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 当取消选择时</span>
+<span class="token keyword">function</span> <span class="token function">handleReset</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  color<span class="token punctuation">.</span><span class="token function">reset</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p><em>ViewDesign</em> 中的 <em>ColorPicker</em> 刚好提供了三个 <em>event</em> ：</p>
+<img src="/039b4a276713/api.png" class="">
+
+<p>两者搭配使用就是：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>color<span class="token operator">-</span>picker
+  v<span class="token operator">-</span>model<span class="token operator">=</span><span class="token string">"color.value"</span>
+  @on<span class="token operator">-</span>change<span class="token operator">=</span><span class="token string">"handleUpdate"</span>
+  @on<span class="token operator">-</span>active<span class="token operator">-</span>change<span class="token operator">=</span><span class="token string">"handleChange"</span>
+  @on<span class="token operator">-</span>open<span class="token operator">-</span>change<span class="token operator">=</span><span class="token string">"isOpen => !isOpen &amp;&amp; handleReset()"</span>
+<span class="token operator">/</span><span class="token operator">></span></code></pre>
+
+<div class="iframe-codepen" src="https://codepen.io/olderk/full/WNyvWqp" width="100%" height="500"></div>
+
+<p>而实际开发的时候，<em>color</em> 不一定是当前组件中的，有可能是从其他组件中传过来的，这时候，如果需要更新其他组件中的 <em>color</em> ，就需要监听 <code>color.value</code> 的值，然后通知其他组件去更新。</p>
+<p>再或者，可以在类的构造函数中，再传入一个 <em>callback</em> 函数，当内部的 <em>value</em> 发生变化时，去执行这个 <em>callback</em> 方法。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// PseudoUpdate 2.0</span>
+<span class="token keyword">class</span> <span class="token class-name">PseudoUpdate</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">constructor</span><span class="token punctuation">(</span><span class="token parameter">value<span class="token punctuation">,</span> callback</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>originValue <span class="token operator">=</span> value
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> value
+    <span class="token keyword">this</span><span class="token punctuation">.</span>callback <span class="token operator">=</span> callback
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">change</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> value
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">callback</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">update</span><span class="token punctuation">(</span><span class="token parameter">value</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>originValue <span class="token operator">=</span> value
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token function">reset</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">this</span><span class="token punctuation">.</span>value <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>originValue
+    <span class="token keyword">this</span><span class="token punctuation">.</span><span class="token function">callback</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<blockquote>
+<p>如果在 <em>callback</em> 内部使用到了 <em>this</em> ，这里需要额外谨慎！</p>
+</blockquote>
+<p>两者其实差别不大，相比之下，第二种方法更清晰一点，只需要定义一个 <em>callback</em> 方法，其余的交给 <em>PseudoUpdate</em> 内部去做就可以了，无需关心其他问题。</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/73e1f0916820.html" title="JS中的类型转换 &lt;W10&gt;"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: JS中的类型转换 &lt;W10&gt;</span></a><a class="button is-default" href="/9cc2e610b92e.html" title="Vue：beforeCreate -&gt; created &lt;W8&gt;"><span class="has-text-weight-semibold">下一页: Vue：beforeCreate -&gt; created &lt;W8&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

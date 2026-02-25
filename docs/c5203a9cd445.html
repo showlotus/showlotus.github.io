@@ -1,0 +1,456 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-10】实战 4：全局提示组件——$Alert</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+  
+    有一种 Vue.js
+    组件，它不同于常规的组件，但组件结构本身很简单，比如下面的全局提示组件：
+  
+  
+  
+    
+    
+  
+  
+  
+    实现这样一个组件并不难，只需要简单的几行 div 和
+    css，但使用者可能要这样来显示组件：
+  
+  &amp;lt;template&amp;gt;
+  &amp;lt;div&amp;gt;
+    &amp;lt;Alert v-if=&quot;show&quot;&amp;gt;这是一条提示信息&amp;lt;/Alert&amp;gt;
+    &amp;lt;button @click=&quot;show = true&quot;&amp;gt;显示&amp;lt;/button&amp;gt;
+  &amp;lt;/div&amp;gt;
+&amp;lt;/template&amp;gt;
+&amp;lt;script&amp;gt;
+  import Alert from '.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-10】实战 4：全局提示组件——$Alert</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">1&#x2F;3 先把组件写好</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">2&#x2F;3 实例化封装</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">3&#x2F;3 入口</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">友情提示</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-10】实战 4：全局提示组件——$Alert</h1><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:10.000Z">2022/03/01 14:59</time><article class="mt-2 post-content">
+<div class="markdown-body">
+  <p>
+    有一种 Vue.js
+    组件，它不同于常规的组件，但组件结构本身很简单，比如下面的全局提示组件：
+  </p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/10/166fcc05107e987c~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    实现这样一个组件并不难，只需要简单的几行 div 和
+    css，但使用者可能要这样来显示组件：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>Alert</span> <span>v-if</span>=<span>"show"</span>&gt;</span>这是一条提示信息<span>&lt;/<span>Alert</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"show = true"</span>&gt;</span>显示<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> Alert <span>from</span> <span>'../component/alert.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; Alert &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>show</span>: <span>false</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>这样的用法，有以下缺点：</p>
+  <ul>
+    <li>每个使用的地方，都得注册组件；</li>
+    <li>需要预先将 <code>&lt;Alert&gt;</code> 放置在模板中；</li>
+    <li>需要额外的 data 来控制 Alert 的显示状态；</li>
+    <li>
+      Alert 的位置，是在当前组件位置，并非在 body 下，有可能会被其它组件遮挡。
+    </li>
+  </ul>
+  <p>
+    总之对使用者来说是很不友好的，那怎样才能优雅地实现这样一个组件呢？事实上，原生的
+    JavaScript 早已给出了答案：
+  </p>
+  <pre><code lang="js" class=""><span>// 全局提示</span>
+<span>window</span>.alert(<span>'这是一条提示信息'</span>);
+<span>// 二次确认</span>
+<span>const</span> confirm = <span>window</span>.confirm(<span>'确认删除吗？'</span>);
+<span>if</span> (confirm) &#123;
+  <span>// ok</span>
+&#125; <span>else</span> &#123;
+  <span>// cancel</span>
+&#125;
+</code></pre>
+  <p>所以，结论是：我们需要一个能用 JavaScript 调用组件的 API。</p>
+  <p>
+    如果你使用过 iView 之类的组件库，一定对它内置的 $Message、$Notice、$Modal
+    等组件很熟悉，本节就来开发一个全局通知组件——$Alert。
+  </p>
+  <h2 data-id="heading-1">1/3 先把组件写好</h2>
+  <p>我们期望最终的 API 是这样的：</p>
+  <pre><code lang="js" class="">methods: &#123;
+  handleShow () &#123;
+    <span>this</span>.$Alert(&#123;
+      <span>content</span>: <span>'这是一条提示信息'</span>,
+      <span>duration</span>: <span>3</span>
+    &#125;)
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    <code>this.$Alert</code>
+    可以在任何位置调用，无需单独引入。该方法接收两个参数：
+  </p>
+  <ul>
+    <li>content：提示内容；</li>
+    <li>duration：持续时间，单位秒，默认 1.5 秒，到时间自动消失。</li>
+  </ul>
+  <p>最终效果如下：</p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/10/166fcc09c43c2ad1~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>我们从最简单的入手，不考虑其它，先写一个基本的 Alert 组件。</p>
+  <p>
+    在 <code>src/component</code> 下新建 <code>alert</code> 目录，并创建文件
+    <code>alert.vue</code>：
+  </p>
+  <p>通知可以是多个，我们用一个数组 <code>notices</code> 来管理每条通知：</p>
+  <pre><code lang="html" class=""><span>&lt;!-- alert.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span> <span>class</span>=<span>"alert"</span>&gt;</span>
+    <span>&lt;<span>div</span> <span>class</span>=<span>"alert-main"</span> <span>v-for</span>=<span>"item in notices"</span> <span>:key</span>=<span>"item.name"</span>&gt;</span>
+      <span>&lt;<span>div</span> <span>class</span>=<span>"alert-content"</span>&gt;</span>&#123;&#123; item.content &#125;&#125;<span>&lt;/<span>div</span>&gt;</span>
+    <span>&lt;/<span>div</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    data () &#123;
+      <span>return</span> &#123;
+        <span>notices</span>: []
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+<span>&lt;<span>style</span>&gt;</span><span>
+  <span>.alert</span>&#123;
+    <span>position</span>: fixed;
+    <span>width</span>: <span>100%</span>;
+    <span>top</span>: <span>16px</span>;
+    <span>left</span>: <span>0</span>;
+    <span>text-align</span>: center;
+    <span>pointer-events</span>: none;
+  &#125;
+  <span>.alert-content</span>&#123;
+    <span>display</span>: inline-block;
+    <span>padding</span>: <span>8px</span> <span>16px</span>;
+    <span>background</span>: <span>#fff</span>;
+    <span>border-radius</span>: <span>3px</span>;
+    <span>box-shadow</span>: <span>0</span> <span>1px</span> <span>6px</span> <span>rgba</span>(0, 0, 0, .2);
+    <span>margin-bottom</span>: <span>8px</span>;
+  &#125;
+</span><span>&lt;/<span>style</span>&gt;</span>
+</code></pre>
+  <p>
+    Alert 组件不同于常规的组件使用方式，它最终是通过 JS
+    来调用的，因此组件不用预留 props 和 events 接口。
+  </p>
+  <p>
+    接下来，只要给数组
+    <code>notices</code>
+    增加数据，这个提示组件就能显示内容了，我们先假设，最终会通过 JS 调用 Alert
+    的一个方法 <code>add</code>，并将 <code>content</code> 和
+    <code>duration</code> 传入进来：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- alert.vue，部分代码省略 --&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>let</span> seed = <span>0</span>;
+
+  <span><span>function</span> <span>getUuid</span>(<span></span>) </span>&#123;
+    <span>return</span> <span>'alert_'</span> + (seed++);
+  &#125;
+
+  <span>export</span> <span>default</span> &#123;
+    data () &#123;
+      <span>return</span> &#123;
+        <span>notices</span>: []
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      add (notice) &#123;
+        <span>const</span> name = getUuid();
+
+        <span>let</span> _notice = <span>Object</span>.assign(&#123;
+          <span>name</span>: name
+        &#125;, notice);
+
+        <span>this</span>.notices.push(_notice);
+
+        <span>// 定时移除，单位：秒</span>
+        <span>const</span> duration = notice.duration;
+        setTimeout(<span><span>()</span> =&gt;</span> &#123;
+          <span>this</span>.remove(name);
+        &#125;, duration * <span>1000</span>);
+      &#125;,
+      remove (name) &#123;
+        <span>const</span> notices = <span>this</span>.notices;
+
+        <span>for</span> (<span>let</span> i = <span>0</span>; i &lt; notices.length; i++) &#123;
+          <span>if</span> (notices[i].name === name) &#123;
+            <span>this</span>.notices.splice(i, <span>1</span>);
+            <span>break</span>;
+          &#125;
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    在 <code>add</code> 方法中，给每一条传进来的提示数据，加了一个不重复的
+    <code>name</code> 字段来标识，并通过
+    <code>setTimeout</code> 创建了一个计时器，当到达指定的
+    <code>duration</code> 持续时间后，调用 <code>remove</code> 方法，将对应
+    <code>name</code> 的那条提示信息找到，并从数组中移除。
+  </p>
+  <p>
+    由这个思路，Alert 组件就可以无限扩展，只要在 add
+    方法中传递更多的参数，就能支持更复杂的组件，比如是否显示手动关闭按钮、确定 /
+    取消按钮，甚至传入一个 Render 函数都可以，完成本例后，读者可以尝试”改造“。
+  </p>
+  <h2 data-id="heading-2">2/3 实例化封装</h2>
+  <p>
+    这一步，我们对 Alert
+    组件进一步封装，让它能够实例化，而不是常规的组件使用方法。实例化组件我们在第
+    8 节中介绍过，可以使用 Vue.extend 或 new Vue，然后用 $mount 挂载到 body
+    节点下。
+  </p>
+  <p>
+    在 <code>src/components/alert</code> 目录下新建
+    <code>notification.js</code> 文件：
+  </p>
+  <pre><code lang="js" class=""><span>// notification.js</span>
+<span>import</span> Alert <span>from</span> <span>'./alert.vue'</span>;
+<span>import</span> Vue <span>from</span> <span>'vue'</span>;
+
+Alert.newInstance = <span><span>properties</span> =&gt;</span> &#123;
+  <span>const</span> props = properties || &#123;&#125;;
+
+  <span>const</span> Instance = <span>new</span> Vue(&#123;
+    <span>data</span>: props,
+    render (h) &#123;
+      <span>return</span> h(Alert, &#123;
+        <span>props</span>: props
+      &#125;);
+    &#125;
+  &#125;);
+
+  <span>const</span> component = Instance.$mount();
+  <span>document</span>.body.appendChild(component.$el);
+
+  <span>const</span> alert = Instance.$children[<span>0</span>];
+
+  <span>return</span> &#123;
+    add (noticeProps) &#123;
+      alert.add(noticeProps);
+    &#125;,
+    remove (name) &#123;
+      alert.remove(name);
+    &#125;
+  &#125;
+&#125;;
+
+<span>export</span> <span>default</span> Alert;
+</code></pre>
+  <p>
+    notification.js 并不是最终的文件，它只是对 alert.vue 添加了一个方法
+    <code>newInstance</code>。虽然 alert.vue 包含了 template、script、style
+    三个标签，并不是一个 JS 对象，那怎么能够给它扩展一个方法
+    <code>newInstance</code> 呢？事实上，alert.vue 会被 Webpack 的 vue-loader
+    编译，把 template 编译为 Render 函数，最终就会成为一个 JS
+    对象，自然可以对它进行扩展。
+  </p>
+  <p>
+    Alert 组件没有任何 props，这里在 Render Alert 组件时，还是给它加了
+    props，当然，这里的 props 是空对象
+    {}，而且即使传了内容，也不起作用。这样做的目的还是为了扩展性，如果要在 Alert
+    上添加 props 来支持更多特性，是要在这里传入的。不过话说回来，因为能拿到
+    Alert 实例，用 data 或 props 都是可以的。
+  </p>
+  <p>
+    在第 8 节已经解释过，<code>const alert = Instance.$children[0];</code
+    >，这里的 alert 就是 Render 的 Alert 组件实例。在
+    <code>newInstance</code> 里，使用闭包暴露了两个方法 <code>add</code> 和
+    <code>remove</code>。这里的 add 和 remove 可不是 alert.vue 里的 add 和
+    remove，它们只是名字一样。
+  </p>
+  <h2 data-id="heading-3">3/3 入口</h2>
+  <p>
+    最后要做的，就是调用 notification.js 创建实例，并通过
+    <code>add</code> 把数据传递过去，这是组件开发的最后一步，也是最终的入口。在
+    <code>src/component/alert</code> 下创建文件 <code>alert.js</code>：
+  </p>
+  <pre><code lang="js" class=""><span>// alert.js</span>
+<span>import</span> Notification <span>from</span> <span>'./notification.js'</span>;
+
+<span>let</span> messageInstance;
+
+<span><span>function</span> <span>getMessageInstance</span> (<span></span>) </span>&#123;
+  messageInstance = messageInstance || Notification.newInstance();
+  <span>return</span> messageInstance;
+&#125;
+
+<span><span>function</span> <span>notice</span>(<span>&#123; duration = <span>1.5</span>, content = <span>''</span> &#125;</span>) </span>&#123;
+  <span>let</span> instance = getMessageInstance();
+
+  instance.add(&#123;
+    <span>content</span>: content,
+    <span>duration</span>: duration
+  &#125;);
+&#125;
+
+<span>export</span> <span>default</span> &#123;
+  info (options) &#123;
+    <span>return</span> notice(options);
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    <code>getMessageInstance</code> 函数用来获取实例，它不会重复创建，如果
+    messageInstance 已经存在，就直接返回了，只在第一次调用 Notification 的
+    <code>newInstance</code> 时来创建实例。
+  </p>
+  <p>
+    alert.js 对外提供了一个方法
+    <code>info</code>，如果需要各种显示效果，比如成功的、失败的、警告的，可以在
+    info 下面提供更多的方法，比如 success、fail、warning 等，并传递不同参数让
+    Alert.vue 知道显示哪种状态的图标。本例因为只有一个
+    info，事实上也可以省略掉，直接导出一个默认的函数，这样在调用时，就不用
+    <code>this.$Alert.info()</code> 了，直接 <code>this.$Alert()</code>。
+  </p>
+  <p>来看一下显示一个信息提示组件的流程：</p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/11/10/166fcc0fe6df06d2~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    最后把 alert.js 作为插件注册到 Vue 里就行，在入口文件
+    <code>src/main.js</code>中，通过 <code>prototype</code> 给 Vue
+    添加一个实例方法：
+  </p>
+  <pre><code lang="js" class=""><span>// src/main.js</span>
+<span>import</span> Vue <span>from</span> <span>'vue'</span>
+<span>import</span> App <span>from</span> <span>'./App.vue'</span>
+<span>import</span> router <span>from</span> <span>'./router'</span>
+<span>import</span> Alert <span>from</span> <span>'../src/components/alert/alert.js'</span>
+
+Vue.config.productionTip = <span>false</span>
+
+Vue.prototype.$Alert = Alert
+
+<span>new</span> Vue(&#123;
+  router,
+  <span>render</span>: <span><span>h</span> =&gt;</span> h(App)
+&#125;).$mount(<span>'#app'</span>)
+
+</code></pre>
+  <p>
+    这样在项目任何地方，都可以通过 <code>this.$Alert</code> 来调用 Alert
+    组件了，我们创建一个 alert 的路由，并在 <code>src/views</code> 下创建页面
+    <code>alert.vue</code>：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- src/views/alert.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleOpen1"</span>&gt;</span>打开提示 1<span>&lt;/<span>button</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleOpen2"</span>&gt;</span>打开提示 2<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>methods</span>: &#123;
+      handleOpen1 () &#123;
+        <span>this</span>.$Alert.info(&#123;
+          <span>content</span>: <span>'我是提示信息 1'</span>
+        &#125;);
+      &#125;,
+      handleOpen2 () &#123;
+        <span>this</span>.$Alert.info(&#123;
+          <span>content</span>: <span>'我是提示信息 2'</span>,
+          <span>duration</span>: <span>3</span>
+        &#125;);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p><code>duration</code> 如果不传入，默认是 1.5 秒。</p>
+  <p>以上就是全局通知组件的全部内容。</p>
+  <h2 data-id="heading-4">友情提示</h2>
+  <p>
+    本示例算是一个
+    MVP（最小化可行方案），要开发一个完善的全局通知组件，还需要更多可维护性和功能性的设计，但离不开本例的设计思路。以下几点是同类组件中值得注意的：
+  </p>
+  <ol>
+    <li>
+      Alert.vue 的最外层是有一个 .alert 节点的，它会在第一次调用
+      <code>$Alert</code> 时，在 body 下创建，因为不在
+      <code>&lt;router-view&gt;</code>
+      内，它不受路由的影响，也就是说一经创建，除非刷新页面，这个节点是不会消失的，所以在
+      alert.vue 的设计中，并没有主动销毁这个组件，而是维护了一个子节点数组
+      <code>notices</code>。
+    </li>
+    <li>
+      .alert 节点是 <code>position: fixed</code> 固定的，因此要合理设计它的
+      <code>z-index</code>，否则可能被其它节点遮挡。
+    </li>
+    <li>
+      notification.js 和 alert.vue
+      是可以复用的，如果还要开发其它同类的组件，比如二次确认组件
+      <code>$Confirm</code>, 只需要再写一个入口 <code>confirm.js</code>，并将
+      <code>alert.vue</code> 进一步封装，将
+      <code>notices</code> 数组的循环体写为一个新的组件，通过配置来决定是渲染
+      Alert 还是 Confirm，这在可维护性上是友好的。
+    </li>
+    <li>
+      在 notification.js 的 new Vue 时，使用了 Render 函数来渲染
+      alert.vue，这是因为使用 template 在 runtime 的 Vue.js 版本下是会报错的。
+    </li>
+    <li>
+      本例的 content 只能是字符串，如果要显示自定义的内容，除了用
+      <code>v-html</code> 指令，也能用 Functional Render（之后章节会介绍）。
+    </li>
+  </ol>
+  <h2 data-id="heading-5">结语</h2>
+  <p>
+    Vue.js 的精髓是组件，组件的精髓是 JavaScript。将 JavaScript 开发中的技巧结合
+    Vue.js 组件，就能玩出不一样的东西。
+  </p>
+  <p>
+    注：本节部分代码参考
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fiview%2Fiview%2Ftree%2F2.0%2Fsrc%2Fcomponents%2Fbase%2Fnotification"
+      title="https://github.com/iview/iview/tree/2.0/src/components/base/notification"
+      ref="nofollow noopener noreferrer"
+      >iView</a
+    >。
+  </p>
+</div>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/04195784c30e.html" title="【掘金小册·Vue组件精讲-11】更灵活的组件：Render 函数与 Functional Render"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 【掘金小册·Vue组件精讲-11】更灵活的组件：Render 函数与 Functional Render</span></a><a class="button is-default" href="/14959ccf8fcf.html" title="【掘金小册·Vue组件精讲-9】实战 3：动态渲染 .vue 文件的组件—— Display"><span class="has-text-weight-semibold">下一页: 【掘金小册·Vue组件精讲-9】实战 3：动态渲染 .vue 文件的组件—— Display</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

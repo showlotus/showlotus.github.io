@@ -1,0 +1,101 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>“搞定”了稿定证件照</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+事情是这样的，朋友找我帮他证件照换个背景，顺便调整一下图片尺寸，我首选是打开了稿定官网（证件照换底），但是背景提供的只有几种颜色，而且尺寸也没有我想要的，于是就有了下面的故事…
+
+思考？
+页面上固定的几种背景色（尺寸）无非是两种方式：
+通过后端接口获取；
+写死在前端代码里。
+
+
+
+
+顺便提一下，最开始走的弯路。起初是看了几个接口传参的数据，误以为是通过接口传参配置的图片信息，然后再生成，于是就一股脑想着通过更改接口数据的方式，去生成自定义的。结果反反复复发请求，测试了好久，发现不太对：有一个 PUT 接口像是上传了一个图片，往这里深挖，发现了这个请求上传一个类似缩略图的东西到 Minio ，除了尺寸不太对（而且还没水印），其他的没啥不一样的，而且每次图片的高度都是 300px ，从这里开始，才渐渐走上.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">“搞定”了稿定证件照</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%9D%E8%80%83%EF%BC%9F"><span class="toc-text">思考？</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81"><span class="toc-text">验证</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-1"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-2"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-3"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Fiddler-%E7%99%BB%E5%9C%BA"><span class="toc-text">Fiddler 登场</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-4"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-5"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-6"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-7"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-8"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E4%B8%8B%E8%BD%BD"><span class="toc-text">图片下载</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-9"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-10"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-11"><span class="toc-text"></span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#-12"><span class="toc-text"></span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/Fiddler"><i class="tag post-item-tag">Fiddler</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/%E6%8A%93%E5%8C%85"><i class="tag post-item-tag">抓包</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">“搞定”了稿定证件照</h1><time class="has-text-grey custom-date-font" datetime="2022-04-03T18:46:45.000Z">2022/04/03 18:46</time><article class="mt-2 post-content"><img alt="太湖边盛开的樱花，无锡 (© Eric Yang/Getty Images)" src="https://cn.bing.com/th?id=OHR.TaihuCherry_ZH-CN9040685764_1920x1080.jpg&rf=LaDigue_1920x1080.jpg&pid=hp" loading="lazy" />
+
+<h4 id=""><a href="#" class="headerlink" title=""></a></h4><blockquote>
+<p>事情是这样的，朋友找我帮他证件照换个背景，顺便调整一下图片尺寸，我首选是打开了稿定官网（证件照换底），但是背景提供的只有几种颜色，而且尺寸也没有我想要的，于是就有了下面的故事…</p>
+</blockquote>
+<h4 id="思考？"><a href="#思考？" class="headerlink" title="思考？"></a>思考？</h4><ul>
+<li>页面上固定的几种背景色（尺寸）无非是两种方式：<ol>
+<li>通过后端接口获取；</li>
+<li>写死在前端代码里。</li>
+</ol>
+</li>
+</ul>
+<blockquote>
+<p>顺便提一下，最开始走的弯路。起初是看了几个接口传参的数据，误以为是通过接口传参配置的图片信息，然后再生成，于是就一股脑想着通过更改接口数据的方式，去生成自定义的。结果反反复复发请求，测试了好久，发现不太对：有一个 <em>PUT</em> 接口像是上传了一个图片，往这里深挖，发现了这个请求上传一个类似缩略图的东西到 <em>Minio</em> ，除了尺寸不太对（而且还没水印），其他的没啥不一样的，而且每次图片的高度都是 <em>300px</em> ，从这里开始，才渐渐走上正道 😂。</p>
+</blockquote>
+<h4 id="验证"><a href="#验证" class="headerlink" title="验证"></a>验证</h4><p>刷新页面，把接口挨个看了个遍，没有一个返回了背景色或者尺寸，说明在前端代码里。打开控制台，<code>Ctrl + Shift + F</code>，搜索颜色色值（hex&#x2F;rgb），或者颜色名，果不其然：</p>
+<img src="/50be54edf29e/1.png" class="">
+
+<h4 id="-1"><a href="#-1" class="headerlink" title=""></a></h4><p>点进去一看，好家伙，一个没少，而且尺寸的列表就在上面，直接一锅端了。</p>
+<img src="/50be54edf29e/2.png" class="">
+
+<h4 id="-2"><a href="#-2" class="headerlink" title=""></a></h4><img src="/50be54edf29e/3.png" class="">
+
+<h4 id="-3"><a href="#-3" class="headerlink" title=""></a></h4><h4 id="Fiddler-登场"><a href="#Fiddler-登场" class="headerlink" title="Fiddler 登场"></a>Fiddler 登场</h4><p>知道了颜色和尺寸的源头，接下来就是“篡改”这个 <em>JS</em> 文件，通过 <em>Fiddler</em> 拦截这个 <em>JS</em> 文件的请求，然后把它替换成自定义的 <em>JS</em> 文件。</p>
+<p>打开 <em>Fiddler</em> ，找到请求这个 <em>JS</em> 文件的链接地址，先打开 <em>Tab</em> 栏中的 <em>AutoResponder</em> ，然后把左侧这个请求拖到 <em>AutoResponder</em> 中。</p>
+<img src="/50be54edf29e/4.png" class="">
+
+<h4 id="-4"><a href="#-4" class="headerlink" title=""></a></h4><p>然后点击下拉框，找到最下方的 <em>Find a file…</em> ，选择修改的 <em>JS</em> 文件。选完之后，点击右侧的 <em>Save</em> ，同时勾选上方的两个选框：<em>Enable rules</em> 和 <em>Unmatched requests passthrough</em> 。</p>
+<img src="/50be54edf29e/5.png" class="">
+
+<h4 id="-5"><a href="#-5" class="headerlink" title=""></a></h4><p>重新刷新页面，如果有下面这个报错，则需要额外设置 <em>Access-Control-Allow-Origin</em> 。</p>
+<img src="/50be54edf29e/6.png" class="">
+
+<h4 id="-6"><a href="#-6" class="headerlink" title=""></a></h4><p>打开 <em>Tab</em> 栏中的 <em>Filters</em> ，找到最下方的 <em>Set response header</em> ，左边的框框填：<code>Access-Control-Allow-Origin</code>，右边的框框填：<code>https://koutu.gaoding.com</code>。</p>
+<img src="/50be54edf29e/7.png" class="">
+
+<h4 id="-7"><a href="#-7" class="headerlink" title=""></a></h4><p>填完之后，记得开启 <em>Filters</em> 。</p>
+<img src="/50be54edf29e/8.png" class="">
+
+<h4 id="-8"><a href="#-8" class="headerlink" title=""></a></h4><p>到这里，添加自定义背景色和尺寸已达目的，贴一下自己修改的内容：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 尺寸</span>
+<span class="token literal-property property">sizes</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">"大二寸"</span><span class="token punctuation">,</span> <span class="token literal-property property">subtitle</span><span class="token operator">:</span> <span class="token string">"35x53mm"</span><span class="token punctuation">,</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">413</span><span class="token punctuation">,</span> <span class="token number">626</span><span class="token punctuation">,</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token number">202</span><span class="token punctuation">,</span> <span class="token number">0.6</span><span class="token punctuation">]</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token punctuation">&#123;</span> <span class="token literal-property property">title</span><span class="token operator">:</span> <span class="token string">"自定义尺寸"</span><span class="token punctuation">,</span> <span class="token literal-property property">subtitle</span><span class="token operator">:</span> <span class="token string">"480x640"</span><span class="token punctuation">,</span> <span class="token literal-property property">val</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">480</span><span class="token punctuation">,</span> <span class="token number">640</span><span class="token punctuation">,</span> <span class="token number">50</span><span class="token punctuation">,</span> <span class="token number">202</span><span class="token punctuation">,</span> <span class="token number">0.6</span><span class="token punctuation">]</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token operator">...</span>
+  <span class="token comment">/**
+   * val 各个参数含义
+   * val[0]: 图片宽度
+   * val[1]: 图片高度
+   * val[2]: 距离顶部距离
+   * val[3]: 未知
+   * val[4]: 缩放比例，0.6挺好
+   */</span>
+<span class="token punctuation">]</span><span class="token punctuation">,</span>
+<span class="token comment">// 背景色</span>
+<span class="token literal-property property">backgrounds</span><span class="token operator">:</span> <span class="token punctuation">[</span>
+  <span class="token punctuation">[</span>
+    <span class="token punctuation">&#123;</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"自定义蓝"</span><span class="token punctuation">,</span> <span class="token literal-property property">bg</span><span class="token operator">:</span> <span class="token string">"#64c5ff"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token punctuation">&#123;</span> <span class="token literal-property property">name</span><span class="token operator">:</span> <span class="token string">"浅灰"</span><span class="token punctuation">,</span> <span class="token literal-property property">bg</span><span class="token operator">:</span> <span class="token string">"#E1E0E5"</span> <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token operator">...</span>
+  <span class="token punctuation">]</span>
+<span class="token punctuation">]</span></code></pre>
+
+<h4 id="图片下载"><a href="#图片下载" class="headerlink" title="图片下载"></a>图片下载</h4><p>上文提到的，有一个请求会上传一个缩略图，这是关键。查看这个接口触发时，调用的一些方法，很明显这哥仨绝对有问题。</p>
+<img src="/50be54edf29e/9.png" class="">
+
+<h4 id="-9"><a href="#-9" class="headerlink" title=""></a></h4><p>还是在添加背景色和尺寸的那个 <em>JS</em> 文件中，找到了这个 <em>exportImage</em> 方法。</p>
+<img src="/50be54edf29e/10.png" class="">
+
+<h4 id="-10"><a href="#-10" class="headerlink" title=""></a></h4><p>代码解读</p>
+<pre class="language-txt" data-language="txt"><code class="language-txt">t => 前端生成的 canvas 对象
+e => canvas 的宽度，i => canvas 的高度
+n => 缩放比例：高度和宽度分别与300做运算，取最小的值，也即保证宽或者高最大为300
+r => 缩放后的宽度，s => 缩放后的高度
+按照 width == r，height == s 生成一个新的 canvas 对象，绘制在画板上，然后返回这个 canvas</code></pre>
+
+<p>这也就解释了，之前测试接口时，为什么得到的图片高度一直是 <em>300px</em> ，只要将 <em>r</em> 和 <em>s</em> 保持原尺寸即可。</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> r = n * e, s = n * i
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> r = e, s = i</span></span></code></pre>
+
+<p>每次切换完背景或者尺寸后，会有一个请求 <em><a target="_blank" rel="noopener" href="https://gd-filems.oss-cn-hangzhou.aliyuncs.com/gaoding/gaoding/[imgId]/[imgName].jpg">https://gd-filems.oss-cn-hangzhou.aliyuncs.com/gaoding/gaoding/[imgId]/[imgName].jpg</a></em> ，这个请求也即之前上传的缩略图。</p>
+<img src="/50be54edf29e/11.gif" class="">
+
+<h4 id="-11"><a href="#-11" class="headerlink" title=""></a></h4><p>和官网下载对比了一下，原始下载的图片和这个调整尺寸后的缩略图，几乎没啥两样（亮出你的火眼金睛，下面两张图中找不同！<em>PS</em> ：<em>左图为官网下载，右图为缩略图</em> ），而且文件大小从 <em>300kb</em> 缩小到了 <em>27kb</em> ，完美！</p>
+<img src="/50be54edf29e/12.png" class="">
+
+<h4 id="-12"><a href="#-12" class="headerlink" title=""></a></h4></article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/cf1875787629.html" title="原型和原型链"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 原型和原型链</span></a><a class="button is-default" href="/099ef0fda68d.html" title="Vue风格指南（选项、属性顺序）"><span class="has-text-weight-semibold">下一页: Vue风格指南（选项、属性顺序）</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

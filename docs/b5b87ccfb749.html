@@ -1,0 +1,84 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>开发利器：Todo Tree</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+最近换了一份新工作，也入职一段时间了，平时开发工具还是 VS Code ，但是公司内网没有开放一些外网权限，也就导致不能同步自己的账号，也就意味着我要手动去把之前用的插件挨个再下载一遍，emmmmm。不过也不是所有的都能下载，插件市场提供的都是公司自己阉割过的版本，有些版本低的离谱，不过平时开发也够用了。之前我都是用 TODO HighLight + Todo Tree ，使用关键词标记注释行，不仅高亮关键词，还方便定位，开发体验极其友好。不过，新下载的插件又得重新搞配置，于是就打算把自己之前的配置贴出来（还设计了好几种颜色呢）。
+
+翻了翻配置，发现只有 Todo Tree （ v0.0.226 ）的相关配置，好家伙，功能越来越丰富了。配置如下：
+&amp;#123;
+  &quot;todo-tree.general.t.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">开发利器：Todo Tree</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/Dev-Tools"><i class="tag post-item-tag">Dev Tools</i></a><a href="/tags/VS-Code-%E6%8F%92%E4%BB%B6"><i class="tag post-item-tag">VS Code 插件</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">开发利器：Todo Tree</h1><time class="has-text-grey custom-date-font" datetime="2023-06-02T23:56:16.000Z">2023/06/02 23:56</time><article class="mt-2 post-content"><blockquote>
+<p>最近换了一份新工作，也入职一段时间了，平时开发工具还是 <em>VS Code</em> ，但是公司内网没有开放一些外网权限，也就导致不能同步自己的账号，也就意味着我要手动去把之前用的插件挨个再下载一遍，emmmmm。不过也不是所有的都能下载，插件市场提供的都是公司自己阉割过的版本，有些版本低的离谱，不过平时开发也够用了。之前我都是用 <em>TODO HighLight</em> + <em>Todo Tree</em> ，使用关键词标记注释行，不仅高亮关键词，还方便定位，开发体验极其友好。不过，新下载的插件又得重新搞配置，于是就打算把自己之前的配置贴出来（还设计了好几种颜色呢）。</p>
+</blockquote>
+<p>翻了翻配置，发现只有 <em>Todo Tree</em> （ <strong><em>v0.0.226</em></strong> ）的相关配置，好家伙，功能越来越丰富了。配置如下：</p>
+<pre class="language-json" data-language="json"><code class="language-json"><span class="token punctuation">&#123;</span>
+  <span class="token property">"todo-tree.general.tags"</span><span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">"TODO"</span><span class="token punctuation">,</span> <span class="token string">"BUG"</span><span class="token punctuation">,</span> <span class="token string">"DONE"</span><span class="token punctuation">,</span> <span class="token string">"FIX"</span><span class="token punctuation">,</span> <span class="token string">"TAG"</span><span class="token punctuation">,</span> <span class="token string">"WARN"</span><span class="token punctuation">]</span><span class="token punctuation">,</span>
+  <span class="token property">"todo-tree.highlights.defaultHighlight"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"foreground"</span><span class="token operator">:</span> <span class="token string">"#fff"</span><span class="token punctuation">,</span>
+    <span class="token property">"background"</span><span class="token operator">:</span> <span class="token string">"#ffa500"</span><span class="token punctuation">,</span>
+    <span class="token property">"icon"</span><span class="token operator">:</span> <span class="token string">"checklist"</span><span class="token punctuation">,</span>
+    <span class="token property">"rulerColour"</span><span class="token operator">:</span> <span class="token string">"#ffa500"</span><span class="token punctuation">,</span>
+    <span class="token property">"type"</span><span class="token operator">:</span> <span class="token string">"tag"</span><span class="token punctuation">,</span>
+    <span class="token property">"iconColour"</span><span class="token operator">:</span> <span class="token string">"#ffa500"</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token property">"todo-tree.highlights.customHighlight"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+    <span class="token property">"BUG"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token property">"background"</span><span class="token operator">:</span> <span class="token string">"#f00"</span><span class="token punctuation">,</span>
+      <span class="token property">"icon"</span><span class="token operator">:</span> <span class="token string">"bug"</span><span class="token punctuation">,</span>
+      <span class="token property">"rulerColour"</span><span class="token operator">:</span> <span class="token string">"#f00"</span><span class="token punctuation">,</span>
+      <span class="token property">"iconColour"</span><span class="token operator">:</span> <span class="token string">"#f00"</span><span class="token punctuation">,</span>
+      <span class="token property">"opacity"</span><span class="token operator">:</span> <span class="token number">100</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token property">"DONE"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token property">"foreground"</span><span class="token operator">:</span> <span class="token string">"#000"</span><span class="token punctuation">,</span>
+      <span class="token property">"background"</span><span class="token operator">:</span> <span class="token string">"#add8e6"</span><span class="token punctuation">,</span>
+      <span class="token property">"icon"</span><span class="token operator">:</span> <span class="token string">"verified"</span><span class="token punctuation">,</span>
+      <span class="token property">"rulerColour"</span><span class="token operator">:</span> <span class="token string">"#add8e6"</span><span class="token punctuation">,</span>
+      <span class="token property">"iconColour"</span><span class="token operator">:</span> <span class="token string">"#add8e6"</span><span class="token punctuation">,</span>
+      <span class="token property">"opacity"</span><span class="token operator">:</span> <span class="token number">100</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token property">"FIX"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token property">"background"</span><span class="token operator">:</span> <span class="token string">"#008000"</span><span class="token punctuation">,</span>
+      <span class="token property">"icon"</span><span class="token operator">:</span> <span class="token string">"beaker"</span><span class="token punctuation">,</span>
+      <span class="token property">"rulerColour"</span><span class="token operator">:</span> <span class="token string">"#008000"</span><span class="token punctuation">,</span>
+      <span class="token property">"iconColour"</span><span class="token operator">:</span> <span class="token string">"#008000"</span><span class="token punctuation">,</span>
+      <span class="token property">"opacity"</span><span class="token operator">:</span> <span class="token number">100</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token property">"TAG"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token property">"foreground"</span><span class="token operator">:</span> <span class="token string">"#000"</span><span class="token punctuation">,</span>
+      <span class="token property">"background"</span><span class="token operator">:</span> <span class="token string">"#ffc0cb"</span><span class="token punctuation">,</span>
+      <span class="token property">"icon"</span><span class="token operator">:</span> <span class="token string">"pin"</span><span class="token punctuation">,</span>
+      <span class="token property">"rulerColour"</span><span class="token operator">:</span> <span class="token string">"#ffc0cb"</span><span class="token punctuation">,</span>
+      <span class="token property">"iconColour"</span><span class="token operator">:</span> <span class="token string">"#ffc0cb"</span><span class="token punctuation">,</span>
+      <span class="token property">"rulerLane"</span><span class="token operator">:</span> <span class="token string">"full"</span><span class="token punctuation">,</span>
+      <span class="token property">"opacity"</span><span class="token operator">:</span> <span class="token number">100</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+    <span class="token property">"WARN"</span><span class="token operator">:</span> <span class="token punctuation">&#123;</span>
+      <span class="token property">"foreground"</span><span class="token operator">:</span> <span class="token string">"#000"</span><span class="token punctuation">,</span>
+      <span class="token property">"background"</span><span class="token operator">:</span> <span class="token string">"#ff0"</span><span class="token punctuation">,</span>
+      <span class="token property">"icon"</span><span class="token operator">:</span> <span class="token string">"$(warning)"</span><span class="token punctuation">,</span>
+      <span class="token property">"rulerColour"</span><span class="token operator">:</span> <span class="token string">"#ff0"</span><span class="token punctuation">,</span>
+      <span class="token comment">// "iconColour": "#ff0",</span>
+      <span class="token property">"opacity"</span><span class="token operator">:</span> <span class="token number">100</span>
+    <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>比如下面这段代码，</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// TODO this is todo</span>
+
+<span class="token comment">// BUG this is bug</span>
+
+<span class="token comment">// DONE this is done</span>
+
+<span class="token comment">// FIX this is fix</span>
+
+<span class="token comment">// TAG this is tag</span>
+
+<span class="token comment">// WARN this is warn</span></code></pre>
+
+<p>使用配置后的效果图如下：</p>
+<img src="/b5b87ccfb749/1.png" class="">
+
+<p>侧边栏，代办事项列表，点击某一个直接就能跳转到指定位置：</p>
+<img src="/b5b87ccfb749/2.png" class="">
+
+<p>赶紧试一试吧~</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/05320cebd912.html" title="VueMixinsLoader v1.0.2 release !"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: VueMixinsLoader v1.0.2 release !</span></a><a class="button is-default" href="/2f85891a5103.html" title="VueMixinsLoader：类似 Mixin 功能的 Loader🦉"><span class="has-text-weight-semibold">下一页: VueMixinsLoader：类似 Mixin 功能的 Loader🦉</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

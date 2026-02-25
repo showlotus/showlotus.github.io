@@ -1,0 +1,158 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>最大余额法</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="当开发一些图表类页面时，经常需要对一组数据求百分比，而像是常用的 Echarts 图表，在内部已经计算妥当了，保证一组数据在计算完百分比之后，这些百分比相加后仍然等于 100% 。而这种计算百分比的算法之一就是 —— 最大余额法。
+核心思想就是，根据每部分所占比例的大小，按照从高到低的顺序去分配剩余部分。
+
+比如，一组数据 [ 4, 4, 3 ]，所占百分比为 [ 36.36363636363636687, 36.36363636363636687, 27.2727272727272734 ]。先取出整数部分，得到 [ 36, 36, 27 ]，累加后总和为 99，还剩余 1。接下来再取出小数部分，得到 [ 0.36363636363636687, 0.36363636363636687, 0.272727.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">最大余额法</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><i class="tag post-item-tag">工具函数</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">最大余额法</h1><time class="has-text-grey custom-date-font" datetime="2023-10-01T00:11:13.000Z">2023/10/01 00:11</time><article class="mt-2 post-content"><p>当开发一些图表类页面时，经常需要对一组数据求百分比，而像是常用的 <em>Echarts</em> 图表，在内部已经计算妥当了，保证一组数据在计算完百分比之后，这些百分比相加后仍然等于 <em>100%</em> 。而这种计算百分比的算法之一就是 —— 最大余额法。</p>
+<center><p><b>核心思想就是，根据每部分所占比例的大小，按照从高到低的顺序去分配剩余部分。</b></p></center>
+
+<p>比如，一组数据 <code>[ 4, 4, 3 ]</code>，所占百分比为 <code>[ 36.36363636363636687, 36.36363636363636687, 27.2727272727272734 ]</code>。先取出整数部分，得到 <code>[ 36, 36, 27 ]</code>，累加后总和为 <code>99</code>，还剩余 <code>1</code>。接下来再取出小数部分，得到 <code>[ 0.36363636363636687, 0.36363636363636687, 0.2727272727272734 ]</code>。把最后剩余的 <code>1</code> 根据小数部分的大小，优先加到最大的部分，如果有多个，则索引在前的优先级高。这里就是加到索引为 <code>0</code> 的位置上，最终得到结果 <code>[ 37, 36, 27 ]</code>。如果有多个剩余，则同理，每次找最大的小数部分，然后追加 1。需要注意：已经追加过 1 的部分不能再次追加。</p>
+<blockquote>
+<p>有同学可能会有疑惑，会不会出现：有 N 个数，剩余为 M，且 M &gt; N ？答案是 <strong>否定</strong> 的。因为 M 等于 N 个数的小数部分之和，而且小数部分都小于 1，N 个小于 1 的数之和一定小于 N 。所以，M &lt; N 恒成立。也就意味着，每个部分最多追加一次余额，不会出现追加两次的情况。</p>
+</blockquote>
+<p>理清思路后，先来实现一个简单版本。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">/**
+ * 计算各个数值所占百分比
+ * @param &#123;number[]&#125; data 源数据
+ * @returns &#123;number[]&#125;
+ */</span>
+<span class="token keyword">function</span> <span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token parameter">data</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>data<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 求和</span>
+  <span class="token keyword">const</span> sum <span class="token operator">=</span> <span class="token function">getSum</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+  <span class="token comment">// 初始化剩余为 100</span>
+  <span class="token keyword">let</span> remainSum <span class="token operator">=</span> <span class="token number">100</span>
+  <span class="token comment">// 记录整数部分</span>
+  <span class="token keyword">const</span> integerPart <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token comment">// 记录小数部分</span>
+  <span class="token keyword">const</span> decimalPart <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> v <span class="token keyword">of</span> data<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 因为要计算百分比，需要先乘以 100</span>
+    <span class="token keyword">const</span> newVal <span class="token operator">=</span> v <span class="token operator">*</span> <span class="token number">100</span>
+    <span class="token comment">// 计算实际的百分比</span>
+    <span class="token keyword">const</span> percent <span class="token operator">=</span> newVal <span class="token operator">/</span> sum
+    <span class="token comment">// 得到整数部分</span>
+    <span class="token keyword">const</span> integer <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>percent<span class="token punctuation">)</span>
+    <span class="token comment">// 得到小数部分</span>
+    <span class="token keyword">const</span> decimal <span class="token operator">=</span> percent <span class="token operator">-</span> integer
+    <span class="token comment">// 将整数、小数部分分别存入对应的数组中</span>
+    integerPart<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>integer<span class="token punctuation">)</span>
+    decimalPart<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>decimal<span class="token punctuation">)</span>
+    <span class="token comment">// 更新剩余，减去当前的整数部分</span>
+    remainSum <span class="token operator">-=</span> integer
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 如果剩余大于 0，循环去消减剩余</span>
+  <span class="token keyword">while</span> <span class="token punctuation">(</span>remainSum <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 找到小数部分数组中最大值的索引</span>
+    <span class="token keyword">const</span> maxIdx <span class="token operator">=</span> <span class="token function">findMaxValIndex</span><span class="token punctuation">(</span>decimalPart<span class="token punctuation">)</span>
+    <span class="token comment">// 将整数部分对应索引的值加 1</span>
+    integerPart<span class="token punctuation">[</span>maxIdx<span class="token punctuation">]</span> <span class="token operator">+=</span> <span class="token number">1</span>
+    <span class="token comment">// 将本次找到的小数部分置为负数，防止重复查找</span>
+    decimalPart<span class="token punctuation">[</span>maxIdx<span class="token punctuation">]</span> <span class="token operator">*=</span> <span class="token operator">-</span><span class="token number">1</span>
+    <span class="token comment">// 剩余减 1</span>
+    remainSum<span class="token operator">--</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 整数部分就是最后的结果</span>
+  <span class="token keyword">return</span> integerPart
+
+  <span class="token comment">// 计算当前数组之和</span>
+  <span class="token keyword">function</span> <span class="token function">getSum</span><span class="token punctuation">(</span><span class="token parameter">arr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> arr<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">prev<span class="token punctuation">,</span> sum</span><span class="token punctuation">)</span> <span class="token operator">=></span> prev <span class="token operator">+</span> sum<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 查找当前数组中最大值索引</span>
+  <span class="token keyword">function</span> <span class="token function">findMaxValIndex</span><span class="token punctuation">(</span><span class="token parameter">arr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">let</span> max <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token keyword">let</span> maxIdx <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> arr<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">></span> max<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        max <span class="token operator">=</span> arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+        maxIdx <span class="token operator">=</span> i
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> maxIdx
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>小测一下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// [ 30, 30, 40 ]</span>
+<span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// [ 18, 18, 23, 18, 23 ]</span>
+<span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// [ 37, 36, 27 ]</span>
+<span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// [ 100 ]</span>
+<span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// [ 17, 17, 17, 17, 16, 16 ]</span>
+<span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">30</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">)</span> <span class="token comment">// [ 53, 35, 10, 2 ]</span></code></pre>
+
+<p>效果不错，<em>very nice</em> ～</p>
+<p>接下来，再加一个功能，因为有时候百分比不一定都是整数，也需要保留到小数点后几位。新增一个参数 <code>precision</code>，默认为 <code>0</code>，即保留到整数位，若为 <code>2</code>，则保留到小数点后 <code>2</code> 位。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">/**
+ * 计算各个数值所占百分比
+ * @param &#123;number[]&#125; data 源数据
+ * @param &#123;number&#125; precision 精度，默认为 0，即保留到整数位
+ * @returns &#123;number[]&#125;
+ */</span>
+<span class="token keyword">function</span> <span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token parameter">data<span class="token punctuation">,</span> precision <span class="token operator">=</span> <span class="token number">0</span></span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>data<span class="token punctuation">.</span>length<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 除了基本的需要乘以 100 之外，还需要根据精度大小，再乘以 10^n 次方</span>
+  <span class="token keyword">const</span> base <span class="token operator">=</span> <span class="token number">100</span> <span class="token operator">*</span> Math<span class="token punctuation">.</span><span class="token function">pow</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> precision<span class="token punctuation">)</span>
+  <span class="token comment">// 初始化剩余为基数值</span>
+  <span class="token keyword">let</span> remainSum <span class="token operator">=</span> base
+  <span class="token keyword">const</span> sum <span class="token operator">=</span> <span class="token function">getSum</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+  <span class="token keyword">const</span> integerPart <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">const</span> decimalPart <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> v <span class="token keyword">of</span> data<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 不再乘以 100，这里乘以基数</span>
+    <span class="token keyword">const</span> newVal <span class="token operator">=</span> v <span class="token operator">*</span> base
+    <span class="token keyword">const</span> percent <span class="token operator">=</span> newVal <span class="token operator">/</span> sum
+    <span class="token keyword">const</span> integer <span class="token operator">=</span> Math<span class="token punctuation">.</span><span class="token function">floor</span><span class="token punctuation">(</span>percent<span class="token punctuation">)</span>
+    <span class="token keyword">const</span> decimal <span class="token operator">=</span> percent <span class="token operator">-</span> integer
+    integerPart<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>integer<span class="token punctuation">)</span>
+    decimalPart<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>decimal<span class="token punctuation">)</span>
+    remainSum <span class="token operator">-=</span> integer
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token keyword">while</span> <span class="token punctuation">(</span>remainSum <span class="token operator">></span> <span class="token number">0</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">const</span> maxIdx <span class="token operator">=</span> <span class="token function">findMaxValIndex</span><span class="token punctuation">(</span>decimalPart<span class="token punctuation">)</span>
+    integerPart<span class="token punctuation">[</span>maxIdx<span class="token punctuation">]</span> <span class="token operator">+=</span> <span class="token number">1</span>
+    decimalPart<span class="token punctuation">[</span>maxIdx<span class="token punctuation">]</span> <span class="token operator">*=</span> <span class="token operator">-</span><span class="token number">1</span>
+    remainSum<span class="token operator">--</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 根据精度，挪动小数点位置</span>
+  <span class="token keyword">return</span> integerPart<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span><span class="token parameter">v</span> <span class="token operator">=></span> v <span class="token operator">/</span> Math<span class="token punctuation">.</span><span class="token function">pow</span><span class="token punctuation">(</span><span class="token number">10</span><span class="token punctuation">,</span> precision<span class="token punctuation">)</span><span class="token punctuation">)</span>
+
+  <span class="token comment">// 计算当前数组之和</span>
+  <span class="token keyword">function</span> <span class="token function">getSum</span><span class="token punctuation">(</span><span class="token parameter">arr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> arr<span class="token punctuation">.</span><span class="token function">reduce</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">prev<span class="token punctuation">,</span> sum</span><span class="token punctuation">)</span> <span class="token operator">=></span> prev <span class="token operator">+</span> sum<span class="token punctuation">,</span> <span class="token number">0</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+
+  <span class="token comment">// 查找当前数组中最大值索引</span>
+  <span class="token keyword">function</span> <span class="token function">findMaxValIndex</span><span class="token punctuation">(</span><span class="token parameter">arr</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">let</span> max <span class="token operator">=</span> <span class="token number">0</span>
+    <span class="token keyword">let</span> maxIdx <span class="token operator">=</span> <span class="token operator">-</span><span class="token number">1</span>
+    <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> arr<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span> <span class="token operator">></span> max<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        max <span class="token operator">=</span> arr<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+        maxIdx <span class="token operator">=</span> i
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    <span class="token keyword">return</span> maxIdx
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>最后测试一下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// [ 30, 30, 40 ]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">8</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// [ 17.65, 17.65, 23.53, 17.64, 23.53 ]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">4</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// [ 36.364, 36.363, 27.273 ]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">4</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// [ 100 ]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// [ 16.67, 16.67, 16.67, 16.67, 16.66, 16.66 ]</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">getPercentValue</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">30</span><span class="token punctuation">,</span> <span class="token number">20</span><span class="token punctuation">,</span> <span class="token number">6</span><span class="token punctuation">,</span> <span class="token number">1</span><span class="token punctuation">]</span><span class="token punctuation">,</span> <span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token comment">// [ 52.632, 35.088, 10.526, 1.754 ]</span></code></pre>
+
+<p>完美 ～～～</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/1b270b7a425f.html" title="重复请求优化"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 重复请求优化</span></a><a class="button is-default" href="/3fdebb2ba4a6.html" title="两周年啦！！"><span class="has-text-weight-semibold">下一页: 两周年啦！！</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

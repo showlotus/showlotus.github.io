@@ -1,0 +1,176 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>showlotus's blog</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/6247c0cb9321.html">最大余额法</a></h2><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><i class="tag post-item-tag">工具函数</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-10-01T00:11:13.000Z">2023/10/01 00:11</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">当开发一些图表类页面时，经常需要对一组数据求百分比，而像是常用的 Echarts 图表，在内部已经计算妥当了，保证一组数据在计算完百分比之后，这些百分比相加后仍然等于 100% 。而这种计算百分比的算法之一就是 —— 最大余额法。
+核心思想就是，根据每部分所占比例的大小，按照从高到低的顺序去分配剩余部分。
+
+比如，一组数据 [ 4, 4, 3 ]，所占百分比为 [ 36.363636363 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/3fdebb2ba4a6.html">两周年啦！！</a></h2><header><a href="/tags/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93"><i class="tag post-item-tag">年度总结</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-10-01T00:00:00.000Z">2023/10/01 00:00</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+这篇其实是中秋节那晚，在心情很糟糕的情况下，写了该篇。
+
+匆匆忙忙又一年时间过去了，这一年我愿称之为 “开源丰收年” ，累计写了 22 篇文章（去年才 12 篇），写了不少组件和小工具，例如（我要开始吟唱啦～～～）：
+
+Vue 指令：v-set-title-attr；
+ViewDesign 扩展组件：ivu-select-union；
+ViewDesign 扩展组件：ivu-input ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/63b240b52539.html">大数相乘</a></h2><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><i class="tag post-item-tag">工具函数</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-09-24T15:36:59.000Z">2023/09/24 15:36</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">由于 JS 最大整数为 2 ^ 53 - 1，最大长度也就是 16 位，当进行一些高精度计算时，容易造成精度丢失的问题。平常对于一些大数值的数据，一般都用 String 类型存储。而使用 String 类型，当进行四则运算时，就需要进行特殊处理，本篇就来实现一下两个大数的相乘。
+两个整数的大数相乘，这是一道经典的算法题了，参考力扣 43. 字符串相乘。而这里需要考虑小数的场景，思路其实很简 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/eed75cca7a1a.html">Turboui i18n 的心路历程</a></h2><time class="has-text-grey custom-date-font" datetime="2023-09-01T23:44:44.000Z">2023/09/01 23:44</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+历经一个月，从无到有，第一次尝试开发一个 VS Code 插件，迭代了 9 个版本，是时候完结撒花啦 🎉🎉。
+萌生这个想法是在一次新任务的开发中：要对代码中的某些提示类的字段进行整改，加上国际化配置。当时就敏锐地发现了一个问题：改成国际化配置后，对后期的开发以及维护很不友好。于是就开始想，有什么手段可以缓解这一痛点？
+最开始的想法是，通过对原有的国际化调用方法 $t 写一个类型扩展去 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/04d28093fddc.html">Windows 使用视频做为屏幕保护程序</a></h2><header><a href="/tags/screensaver"><i class="tag post-item-tag">screensaver</i></a><a href="/tags/Windows"><i class="tag post-item-tag">Windows</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-08-25T00:37:29.000Z">2023/08/25 00:37</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">最近在搭建 Mac 环境，然后翻到一个屏幕保护程序：Brooklyn，用 18 年苹果征集的各种 logo 做为屏幕保护程序，看起来十分好看，于是乎就整了一个。
+
+
+平时在家用 Mac，公司电脑是 Windows，最近打算把公司电脑加点 Mac 的特色。比如：字体。字体比较好改，可以用一个工具：noMeiryoUI，直接把系统字体都统一改了，贼方便。
+而最近新入坑的屏幕保护程序，就想着能不 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/97dd1aa5b16b.html">Turboui i18n：一个国际化提示插件</a></h2><header><a href="/tags/VS-Code-%E6%8F%92%E4%BB%B6"><i class="tag post-item-tag">VS Code 插件</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-08-14T23:00:00.000Z">2023/08/14 23:00</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+前段时间，项目在做国际化整改，即要把之前显示中文的地方，换成根据当前用户所选语言，展示成对应的文字。项目里也有用到国际化的插件，只需要把配置文件写好（当语言为中文时，展示什么文字；当语言为英语时，展示什么文字），放在 i18n 目录下，然后调用插件提供的方法，剩下的就无需操心啦。
+
+
+
+
+整改的过程中，也发现了一个问题：比如，有一个提示语场景，之前代码里直接写的是：&amp;quot;当前未选择 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/05320cebd912.html">VueMixinsLoader v1.0.2 release !</a></h2><header><a href="/tags/Loader"><i class="tag post-item-tag">Loader</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/Webpack"><i class="tag post-item-tag">Webpack</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-07-02T17:23:32.000Z">2023/07/02 17:23</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+昨天闲来无事，逛逛 GitHub，突然发现有人 star 了我的项目 vue-mixins-loader，可给我激动坏了。本着有一个人用，就要维护到底的原则，我准备给这个 Loader 做一次优化。在实际用的过程中发现一个问题：使用时，会把项目中所有 .vue 文件都给注入 mixins 。比如有些外部引入的 .vue 组件，这就完全没有必要去注入 mixins 。所以，计划再新增一个  ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/b5b87ccfb749.html">开发利器：Todo Tree</a></h2><header><a href="/tags/Dev-Tools"><i class="tag post-item-tag">Dev Tools</i></a><a href="/tags/VS-Code-%E6%8F%92%E4%BB%B6"><i class="tag post-item-tag">VS Code 插件</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-06-02T23:56:16.000Z">2023/06/02 23:56</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+最近换了一份新工作，也入职一段时间了，平时开发工具还是 VS Code ，但是公司内网没有开放一些外网权限，也就导致不能同步自己的账号，也就意味着我要手动去把之前用的插件挨个再下载一遍，emmmmm。不过也不是所有的都能下载，插件市场提供的都是公司自己阉割过的版本，有些版本低的离谱，不过平时开发也够用了。之前我都是用 TODO HighLight + Todo Tree ，使用关键词标记 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/2f85891a5103.html">VueMixinsLoader：类似 Mixin 功能的 Loader🦉</a></h2><header><a href="/tags/AST"><i class="tag post-item-tag">AST</i></a><a href="/tags/Babel"><i class="tag post-item-tag">Babel</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/Webpack"><i class="tag post-item-tag">Webpack</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-03-31T19:37:38.000Z">2023/03/31 19:37</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近要给项目用到的组件库里的所有组件都要加一个 prop ，总共 126 个组件，如果是手动加，emm，也不是不可以，但就是有点呆，更何况如果后续有变动的话，又得重新来一遍。于是就想，如何用一种全局的配置，去统一给所有组件加 prop （这里没有使用 Vue.mixin 去全局混入，下文会作解释）。最后打算开发一个 Webpack Loader 去实现这个功能，刚好之前也没写过 Lo ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/0ed07c1d813b.html">当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;</a></h2><header><a href="/tags/CSS"><i class="tag post-item-tag">CSS</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JSON"><i class="tag post-item-tag">JSON</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-01-18T12:19:53.000Z">2023/01/18 12:19</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+为了便于用户能直观地看到配置项的一些属性，于是把整个配置以一个 JSON 串的形式展示。本来打算以一个表格或者列表的形式展示，不过配置项中某些属性是 Object 类型，思来想去，还是 JSON 串更直观一点。但是当某个配置改变时，JSON 里的变动不是很明显（如下图所示）。当这个 JSON 里的属性太多时，就不容易能注意到是哪个配置变了。于是，就想能不能做一个属性变化的提示，当某个 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><a class="extend prev" rel="prev" href="/"><i class="iconfont icon-prev has-text-grey"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/"><i class="iconfont icon-next has-text-grey"></i></a></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><style>.search-widget .search-input {
+    border: none;
+    outline: none;
+    background: transparent;
+    color: var(--second-text-color);
+}
+.search-widget .search-content {
+    position: absolute;
+    left: 0;
+    top: calc(100% - 3px);
+    z-index: 2;
+
+    width: 100%;
+    height: 0;
+    max-height: 550px;
+
+    overflow: auto;
+    box-sizing: border-box;
+
+    background: var(--top-bar-bg-color);
+    backdrop-filter: blur(var(--backdropFilter));
+    -webkit-backdrop-filter: blur(var(--backdropFilter));
+
+    border-bottom-left-radius: var(--borderRadius);
+    border-bottom-right-radius: var(--borderRadius);
+    box-shadow: 0 12px 15px rgba(0, 0, 0, 0.08);
+}
+
+.search-widget .search-content a:hover h5 {
+    color: #3273dc!important;
+}
+</style><main class="aside-card-container search-widget is-relative"><label for="searchInput"><div class="is-flex px-4" id="searchButton"><i class="iconfont icon--search1 mr-1"></i><input class="search-input is-flex-grow-1" id="searchInput" placeholder="搜索内容.."></div></label><section class="search-content content" id="searchContent"></section></main><script>var searchDatabase = []
+var searchInputEl = document.getElementById('searchInput')
+var searchButtonEl = document.getElementById('searchButton')
+var searchResultEl = document.getElementById('searchContent')
+
+searchInputEl.oninput = function (evt) {
+    var searchValue = evt.srcElement.value
+    var haveSearchValue = Boolean(searchValue.trim())
+    if (!haveSearchValue) {
+        searchResultEl.style.height = 0
+        searchResultEl.innerHTML = null
+        return
+    }
+
+    var searchResults = searching(searchValue)
+
+    if (searchResults.length > 0) {
+        renderSearchResults(searchResults)
+    }
+}
+
+function renderSearchResults(results) {
+    searchResultEl.innerHTML = null
+    var fragment = document.createDocumentFragment()
+
+    results.forEach(function (item) {
+        var link = document.createElement('a')
+        var title = document.createElement('h5')
+        var content = document.createElement('p')
+
+        title.className = 'mb-1'
+        title.innerText = item.title
+        content.innerText = item.content
+
+        link.href = item.link
+        link.appendChild(title)
+        link.appendChild(content)
+        link.className = 'p-4 is-block'
+
+        fragment.appendChild(link)
+    })
+
+    searchResultEl.appendChild(fragment)
+    searchResultEl.style.height = 'auto'
+}
+
+function searching(inputText) {
+    var inputTexts = inputText.split(' ')
+    var searchResults = []
+    inputTexts.forEach(function (searchKey) {
+        var haveSearchValue = Boolean(searchKey.trim())
+        if (!haveSearchValue) return
+
+        var key = searchKey.toLowerCase()
+
+        for (var entry of searchDatabase) {
+            var title = entry.getElementsByTagName('title')[0].textContent
+            var link = entry.getElementsByTagName('link')[0].getAttribute('href')
+            var contentWithTags = entry.getElementsByTagName('content')[0].textContent
+            var rawContent = contentWithTags.trim().replace(/<[^>]+>/g, '').toLowerCase()
+
+            var LENGTH = 80
+            var finalContent = ''
+            var contentLength = rawContent.length
+            var searchResultIdx = rawContent.indexOf(key)
+
+            var startIdx = searchResultIdx - 20,
+                endIdx = startIdx + LENGTH
+
+            if (startIdx < 0) {
+                startIdx = 0
+                endIdx = 100
+            }
+
+            endIdx > contentLength && (endIdx = contentLength)
+
+            finalContent = rawContent.substring(startIdx, endIdx)
+
+            if (title.indexOf(key) > -1 || searchResultIdx > -1) {
+                searchResults.push({
+                    link: link,
+                    title: title,
+                    content: finalContent
+                })
+            }
+        }
+    })
+    return searchResults
+}
+
+searchButtonEl.onclick = function () {
+    if (searchDatabase.length > 0) return;
+
+    fetch(window.location.href + '/search.xml').then(res => res.text()).then(res => {
+        var domparser = new DOMParser
+        var doc = domparser.parseFromString(res, 'application/xml')
+        searchDatabase = doc.getElementsByTagName('search')[0].children
+    })
+}</script><main class="aside-card-container profile-widget"><!-- todo: 使用取色工具动态阴影--><section class="is-flex is-flex-direction-column is-justify-content-center is-align-items-center"><section class="is-flex is-justify-content-center avatar is-clipped skeleton"><!-- debug images "https://api.ixiaowai.cn/gqapi/gqapi.php"--><img class="js-img-fadeIn" src="/images/avatar.jpg" alt="user avatar"></section><h3 class="user-name">showlotus</h3><blockquote class="has-text-centered is-relative"><span style="margin-bottom: 5px; font-size: 15px; font-style: italic; font-family: sans-serif;">I hope one day, everyone is using my program.</span></blockquote></section><section class="sns-container is-flex is-justify-content-center is-align-items-center"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section></main><main class="aside-card-container tag-widget"><h3>标签</h3><section><a href="/tags/Antd"><span class="tag post-item-tag" style="margin-bottom: 5px;">Antd</span></a><a href="/tags/AST"><span class="tag post-item-tag" style="margin-bottom: 5px;">AST</span></a><a href="/tags/Babel"><span class="tag post-item-tag" style="margin-bottom: 5px;">Babel</span></a><a href="/tags/CSS"><span class="tag post-item-tag" style="margin-bottom: 5px;">CSS</span></a><a href="/tags/Dev-Tools"><span class="tag post-item-tag" style="margin-bottom: 5px;">Dev Tools</span></a><a href="/tags/ElementUI"><span class="tag post-item-tag" style="margin-bottom: 5px;">ElementUI</span></a><a href="/tags/Fiddler"><span class="tag post-item-tag" style="margin-bottom: 5px;">Fiddler</span></a><a href="/tags/IView"><span class="tag post-item-tag" style="margin-bottom: 5px;">IView</span></a><a href="/tags/ivu-0color-0picker"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-color-picker</span></a><a href="/tags/ivu-0extends"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-extends</span></a><a href="/tags/ivu-0input-0number"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-input-number</span></a><a href="/tags/ivu-0select"><span class="tag post-item-tag" style="margin-bottom: 5px;">ivu-select</span></a><a href="/tags/JavaScript"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript</span></a><a href="/tags/JavaScript-%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 权威指南</span></a><a href="/tags/JavaScript-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 正则表达式迷你书</span></a><a href="/tags/JavaScript-%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F%E4%B8%8E%E5%BC%80%E5%8F%91%E5%AE%9E%E8%B7%B5"><span class="tag post-item-tag" style="margin-bottom: 5px;">JavaScript 设计模式与开发实践</span></a><a href="/tags/JSON"><span class="tag post-item-tag" style="margin-bottom: 5px;">JSON</span></a><a href="/tags/Loader"><span class="tag post-item-tag" style="margin-bottom: 5px;">Loader</span></a><a href="/tags/Mac"><span class="tag post-item-tag" style="margin-bottom: 5px;">Mac</span></a><a href="/tags/node"><span class="tag post-item-tag" style="margin-bottom: 5px;">node</span></a><a href="/tags/NodeJS"><span class="tag post-item-tag" style="margin-bottom: 5px;">NodeJS</span></a><a href="/tags/npm"><span class="tag post-item-tag" style="margin-bottom: 5px;">npm</span></a><a href="/tags/Prettier"><span class="tag post-item-tag" style="margin-bottom: 5px;">Prettier</span></a><a href="/tags/React"><span class="tag post-item-tag" style="margin-bottom: 5px;">React</span></a><a href="/tags/Redux"><span class="tag post-item-tag" style="margin-bottom: 5px;">Redux</span></a><a href="/tags/Rollup"><span class="tag post-item-tag" style="margin-bottom: 5px;">Rollup</span></a><a href="/tags/screensaver"><span class="tag post-item-tag" style="margin-bottom: 5px;">screensaver</span></a><a href="/tags/tgz"><span class="tag post-item-tag" style="margin-bottom: 5px;">tgz</span></a><a href="/tags/TypeScript"><span class="tag post-item-tag" style="margin-bottom: 5px;">TypeScript</span></a><a href="/tags/ViewDesign"><span class="tag post-item-tag" style="margin-bottom: 5px;">ViewDesign</span></a><a href="/tags/VS-Code-%E6%8F%92%E4%BB%B6"><span class="tag post-item-tag" style="margin-bottom: 5px;">VS Code 插件</span></a><a href="/tags/Vue"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue</span></a><a href="/tags/Vue-%E6%8C%87%E4%BB%A4"><span class="tag post-item-tag" style="margin-bottom: 5px;">Vue 指令</span></a><a href="/tags/Webpack"><span class="tag post-item-tag" style="margin-bottom: 5px;">Webpack</span></a><a href="/tags/Windows"><span class="tag post-item-tag" style="margin-bottom: 5px;">Windows</span></a><a href="/tags/%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="tag post-item-tag" style="margin-bottom: 5px;">工具函数</span></a><a href="/tags/%E5%B9%B4%E5%BA%A6%E6%80%BB%E7%BB%93"><span class="tag post-item-tag" style="margin-bottom: 5px;">年度总结</span></a><a href="/tags/%E6%89%8B%E5%86%99%E7%BB%84%E4%BB%B6"><span class="tag post-item-tag" style="margin-bottom: 5px;">手写组件</span></a><a href="/tags/%E6%8A%93%E5%8C%85"><span class="tag post-item-tag" style="margin-bottom: 5px;">抓包</span></a><a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E8%84%9A%E6%9C%AC"><span class="tag post-item-tag" style="margin-bottom: 5px;">浏览器脚本</span></a><a href="/tags/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-Vue-js"><span class="tag post-item-tag" style="margin-bottom: 5px;">深入浅出 Vue js</span></a><a href="/tags/%E6%BA%90%E7%A0%81"><span class="tag post-item-tag" style="margin-bottom: 5px;">源码</span></a><a href="/tags/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="tag post-item-tag" style="margin-bottom: 5px;">环境搭建</span></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><span class="tag post-item-tag" style="margin-bottom: 5px;">转载</span></a></section></main></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>

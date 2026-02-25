@@ -1,0 +1,194 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>竞态函数过期</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+如上图所示，点击不同的 Tab 页签，Table 中展示不同的数据，这是一个很常见的页面交互逻辑。
+设想一下，当前的处理逻辑是：有三个 Tab 页签和一个 Table，每点击 Tab 后，都会发起一个请求，然后请求成功后，会对 Table 重新赋值。也即，不同的 Tab 切换，都会对这个唯一的 Table 进行重新赋值。
+
+仔细想一下，这会有问题吗？
+有的，这里隐藏着一个 “竞态” 问题。当点击 Tab 页签的操作过于频繁时，能保证当前 Table 里展示的数据是最后一次点击的 Tab 对应的数据吗？
+
+一顿操作之后，Table 的数据究竟来自哪个 Tab 页签，估计没一个人能说的清楚。如何解决这个问题呢？先来分析一下问题出现的原因。
+
+首先，因为发起请求是异步，不能保证请求一定是按照触发的顺序依次返回对.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">竞态函数过期</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><i class="tag post-item-tag">工具函数</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">竞态函数过期</h1><time class="has-text-grey custom-date-font" datetime="2024-06-01T15:12:11.000Z">2024/06/01 15:12</time><article class="mt-2 post-content"><p><img src="/835ff34dd8d8/intro.excalidraw.png" alt="intro.png"></p>
+<p>如上图所示，点击不同的 <code>Tab</code> 页签，<code>Table</code> 中展示不同的数据，这是一个很常见的页面交互逻辑。</p>
+<p>设想一下，当前的处理逻辑是：有三个 <code>Tab</code> 页签和一个 <code>Table</code>，每点击 <code>Tab</code> 后，都会发起一个请求，然后请求成功后，会对 <code>Table</code> 重新赋值。也即，不同的 <code>Tab</code> 切换，都会对这个唯一的 <code>Table</code> 进行重新赋值。</p>
+<p><img src="/835ff34dd8d8/update.excalidraw.png" alt="update.png"></p>
+<p>仔细想一下，这会有问题吗？</p>
+<p>有的，这里隐藏着一个 “竞态” 问题。当点击 <code>Tab</code> 页签的操作过于频繁时，能保证当前 <code>Table</code> 里展示的数据是最后一次点击的 <code>Tab</code> 对应的数据吗？</p>
+<p><img src="/835ff34dd8d8/update-unclear.excalidraw.png" alt="update-unclear.png"></p>
+<p>一顿操作之后，<code>Table</code> 的数据究竟来自哪个 <code>Tab</code> 页签，估计没一个人能说的清楚。如何解决这个问题呢？先来分析一下问题出现的原因。</p>
+<ul>
+<li>首先，因为发起请求是异步，不能保证请求一定是按照触发的顺序依次返回对应的结果，从而导致了数据的不确定性；</li>
+<li>其次，每次发起新请求后，之前的历史请求都已经 “过期” 了，不应该再用历史请求获取到的数据去更新表格，这是历史请求所带来的 “副作用”。</li>
+</ul>
+<p>解决问题的关键就是如何消除这种 “副作用”：<em>怎么让历史请求不再更新 <code>Table</code> 中的数据</em> 。</p>
+<blockquote>
+<p>规避这一问题还有一个更简单的方法：拆分数据。就是定义 3 个变量分别用来记录不同页签返回的数据，根据当前点击的 <code>Tab</code> 展示对应的数据。而在实际开发中，是采用拆分数据，还是共用同一份数据，需要依据具体场景具体分析。在这里，采用共用同一份数据的方式，作为解决竞态问题的前提，其他暂不考虑。</p>
+</blockquote>
+<p>按照这个解决思路，每当有新请求发起时，就给历史请求打上 “过期” 的标记，等当前请求成功后判断是否过期，只有未过期的请求才去更新 <code>Table</code>。那么如何将一个历史请求标记为 “过期” 呢？不妨借鉴一下 <em>Vue</em> 中 <code>onCleanup</code> 的原理来实现。</p>
+<p><em>Vue3</em> 中 <code>watch</code> 方法的回调函数 <code>WatchCallback</code>，相较于以往的 <code>newValue</code> 和 <code>oldValue</code>，新增了一个参数 <code>onCleanup</code>，用以清理过期的回调函数，<a target="_blank" rel="noopener" href="https://github.com/vuejs/core/blob/cf8cd1d97ec1de139a68ba9adfb207625cd2fe2d/packages/runtime-core/src/apiWatch.ts#L358">👉 源码地址</a>。每次 <code>WatchCallback</code> 执行时，都会先执行 <code>onCleanup</code> 里的回调函数。用法如下：</p>
+<details open>
+<summary>js</summary>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token function">watch</span><span class="token punctuation">(</span>id<span class="token punctuation">,</span> <span class="token keyword">async</span> <span class="token punctuation">(</span><span class="token parameter">newVal<span class="token punctuation">,</span> oldVal<span class="token punctuation">,</span> onCleanup</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 用一个标识记录当前回调是否过期</span>
+  <span class="token keyword">let</span> expired <span class="token operator">=</span> <span class="token boolean">false</span>
+  <span class="token comment">// cleanup 执行时，将标识置为 true</span>
+  <span class="token function">onCleanup</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    expired <span class="token operator">=</span> <span class="token boolean">true</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/xxx/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>id<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token comment">// 判断当前回调是否过期，未过期才会打印 data</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>expired<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>data<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+</details>
+
+<p>上述代码是如何运作的：</p>
+<ul>
+<li><code>watch</code> 内部执行 <code>WatchCallback</code> 时会先判断是否有 <code>cleanup</code>，若有则执行，随后再执行 <code>WatchCallback</code> 内部的逻辑。首次执行 <code>WatchCallback</code> 时，<code>cleanup</code> 为空；</li>
+<li>每次 <code>WatchCallback</code> 执行时，都会在内部定义一个 <code>expired</code> 变量，同时向 <code>onCleanup</code> 注册一个回调 <code>cleanup</code>，用以将 <code>expired</code> 赋值为 <code>false</code>；</li>
+<li>当本轮 <code>WatchCallback</code> 还未执行完毕，又触发新一轮的 <code>WatchCallback</code> 时，此时，<code>cleanup</code> 有值，执行 <code>cleanup</code> 后，会将上一轮 <code>WatchCallback</code> 中的 <code>expired</code> 置为 <code>false</code>；</li>
+<li>当上一轮的 <code>WatchCallback</code> 中的 <code>fetch</code> 执行完后，此时 <code>expired</code> 已被置为 <code>false</code>，因此不会打印 <code>data</code>；</li>
+<li>而当最新的 <code>WatchCallback</code> 中的 <code>fetch</code> 执行完后，此时 <code>expired</code> 还是 <code>true</code>，因此会打印 <code>data</code>。</li>
+</ul>
+<p>按照这个思路，先来实现一个监听普通回调函数的版本：</p>
+<details open>
+<summary>js</summary>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">/**
+ * 监听回调函数是否过期
+ * @param &#123;(args: Array&lt;any>, onCleanup: () => void) => any&#125; callback
+ * @return &#123;(...args: Array&lt;any>) => ReturnType&lt;callback>&#125;
+ */</span>
+<span class="token keyword">function</span> <span class="token function">watchExpiredCallback</span><span class="token punctuation">(</span><span class="token parameter">callback</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">let</span> cleanup
+  <span class="token keyword">const</span> <span class="token function-variable function">onCleanup</span> <span class="token operator">=</span> <span class="token parameter">fn</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    cleanup <span class="token operator">=</span> fn
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">return</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter"><span class="token operator">...</span>args</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    cleanup<span class="token operator">?.</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token comment">// 原函数的入参，通过 args 透传进去</span>
+    <span class="token comment">// 新增入参 onCleanup</span>
+    <span class="token keyword">return</span> <span class="token function">callback</span><span class="token punctuation">.</span><span class="token function">apply</span><span class="token punctuation">(</span><span class="token keyword">this</span><span class="token punctuation">,</span> <span class="token punctuation">[</span>args<span class="token punctuation">,</span> onCleanup<span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+</details>
+
+<p>用法如下：</p>
+<details open>
+<summary>js</summary>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 原本的异步函数</span>
+<span class="token keyword">const</span> <span class="token function-variable function">request</span> <span class="token operator">=</span> <span class="token parameter">id</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token parameter">resolve</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+      <span class="token function">resolve</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+    <span class="token punctuation">&#125;</span><span class="token punctuation">,</span> <span class="token number">1000</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token comment">// 可监听是否过期的异步函数</span>
+<span class="token keyword">const</span> newRequest <span class="token operator">=</span> <span class="token function">watchExpiredCallback</span><span class="token punctuation">(</span><span class="token keyword">async</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">args<span class="token punctuation">,</span> onCleanup</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">let</span> expired <span class="token operator">=</span> <span class="token boolean">false</span>
+  <span class="token function">onCleanup</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+    expired <span class="token operator">=</span> <span class="token boolean">true</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+  <span class="token keyword">const</span> id <span class="token operator">=</span> args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+  <span class="token keyword">const</span> data <span class="token operator">=</span> <span class="token keyword">await</span> <span class="token function">request</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+  <span class="token keyword">if</span> <span class="token punctuation">(</span><span class="token operator">!</span>expired<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> data
+  <span class="token punctuation">&#125;</span> <span class="token keyword">else</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> Promise<span class="token punctuation">.</span><span class="token function">reject</span><span class="token punctuation">(</span><span class="token string">"request expired"</span><span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token function">newRequest</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">newRequest</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">newRequest</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>res<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+</details>
+
+<p>执行结果如下：</p>
+<p><img src="/835ff34dd8d8/code-v1.png" alt="code-v1"></p>
+<p>连续调用了三次 <code>newRequest</code>，只有最后一次打印了结果，前两次都当作 “过期” 处理。竞态问题就这样轻松解决啦～</p>
+<p>但是呢，现在这还不够好，前两次请求已经过期了，可还是发起请求并获取了响应结果，有点浪费资源，应该把过期的请求都取消掉才合理。而取消请求可以借助原生 <em>JS</em> 的 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/AbortController">AbortController</a> 类实现，而且 <a target="_blank" rel="noopener" href="https://github.com/axios/axios">axios</a> 自 <code>v0.22.0</code> 后也支持这一特性，很是方便。</p>
+<p>再把 <code>request</code> 和 <code>newRequest</code> 改造一下：</p>
+<details open>
+<summary>js</summary>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> <span class="token function-variable function">request</span> <span class="token operator">=</span> <span class="token parameter">id</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> controller <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">AbortController</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> response <span class="token operator">=</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token string">"/"</span><span class="token punctuation">,</span> <span class="token punctuation">&#123;</span>
+    <span class="token literal-property property">signal</span><span class="token operator">:</span> controller<span class="token punctuation">.</span>signal
+  <span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> <span class="token function-variable function">cancel</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> controller<span class="token punctuation">.</span><span class="token function">abort</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">fetch id(</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">$&#123;</span>id<span class="token interpolation-punctuation punctuation">&#125;</span></span><span class="token string">) is canceled.</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token keyword">return</span> <span class="token punctuation">&#123;</span> response<span class="token punctuation">,</span> cancel <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span>
+
+<span class="token keyword">const</span> newRequest <span class="token operator">=</span> <span class="token function">watchExpiredCallback</span><span class="token punctuation">(</span><span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">args<span class="token punctuation">,</span> onCleanup</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token keyword">const</span> id <span class="token operator">=</span> args<span class="token punctuation">[</span><span class="token number">0</span><span class="token punctuation">]</span>
+  <span class="token keyword">const</span> <span class="token punctuation">&#123;</span> response<span class="token punctuation">,</span> cancel <span class="token punctuation">&#125;</span> <span class="token operator">=</span> <span class="token function">request</span><span class="token punctuation">(</span>id<span class="token punctuation">)</span>
+  <span class="token function">onCleanup</span><span class="token punctuation">(</span>cancel<span class="token punctuation">)</span>
+  <span class="token keyword">return</span> response
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+
+<span class="token function">newRequest</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"from 1"</span><span class="token punctuation">,</span> res<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">newRequest</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"from 2"</span><span class="token punctuation">,</span> res<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span>
+<span class="token function">newRequest</span><span class="token punctuation">(</span><span class="token number">3</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">then</span><span class="token punctuation">(</span><span class="token parameter">res</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token string">"from 3"</span><span class="token punctuation">,</span> res<span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+</details>
+
+<p>改造后的 <code>newRequest</code> 代码逻辑更简洁了，执行结果如下：</p>
+<p><img src="/835ff34dd8d8/code-v2.png" alt="code-v2"></p>
+<p>可以看到前两次请求已经被取消啦，完美！</p>
+<blockquote>
+<p>2024&#x2F;08&#x2F;22 更新：实际开发中发现参数使用起来很奇怪，改成下面这种参数结构更加方便一点。</p>
+</blockquote>
+<details open>
+<summary>js</summary>
+
+<pre class="language-diff" data-language="diff"><code class="language-diff">function watchExpiredCallback(callback) &#123;
+<span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> let cleanup
+</span><span class="token prefix unchanged"> </span><span class="token line"> const onCleanup = fn => &#123;
+</span><span class="token prefix unchanged"> </span><span class="token line">   cleanup = fn
+</span><span class="token prefix unchanged"> </span><span class="token line"> &#125;
+</span><span class="token prefix unchanged"> </span><span class="token line"> return function (...args) &#123;
+</span><span class="token prefix unchanged"> </span><span class="token line">   cleanup?.()
+</span></span><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line">   return callback.apply(this, [args, onCleanup])
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line">   return callback.apply(this, [onCleanup, ...args])
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line"> &#125;
+</span></span>&#125;</code></pre>
+
+</details>
+
+<p>用起来就是下面这样：</p>
+<details open>
+<summary>js</summary>
+
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> const newRequest = watchExpiredCallback(function (args, onCleanup) &#123;
+</span><span class="token prefix deleted">-</span><span class="token line"> const id = args[0]
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> const newRequest = watchExpiredCallback(function (onCleanup, id) &#123;
+</span></span><span class="token unchanged"><span class="token prefix unchanged"> </span><span class="token line">   const &#123; response, cancel &#125; = request(id)
+</span><span class="token prefix unchanged"> </span><span class="token line">   onCleanup(cancel)
+</span><span class="token prefix unchanged"> </span><span class="token line">   return response
+</span><span class="token prefix unchanged"> </span><span class="token line"> &#125;)</span></span></code></pre>
+
+</details>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/3b6191ac9bf6.html" title="Omit | Pick | PickAndOmit"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: Omit | Pick | PickAndOmit</span></a><a class="button is-default" href="/6d3a4b0222af.html" title="React + Antd 搭建一个词云在线生成网站"><span class="has-text-weight-semibold">下一页: React + Antd 搭建一个词云在线生成网站</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

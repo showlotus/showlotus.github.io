@@ -1,0 +1,474 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>正则学习笔记 + 案例</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+「JavaScript 正则表达式迷你书.pdf」https://www.aliyundrive.com/s/i77Fq6HocdT
+
+匹配 16 进制颜色
+匹配 6 位的 16 进制
+const regex = /#[0-9a-fA-F]{6}/
+
+
+
+颜色也有可能是 3 位的，由于管道符也是贪婪匹配，所以需要先匹配 6 位再匹配 3 位
+const regex = /#[0-9a-fA-F]{6}|[0-9a-fA-F]{3}/
+
+匹配时间
+匹配小时，00-19，20-23
+const regex = /([01][0-9]|2[0-3])/
+
+匹配分钟，00-59
+const regex = /[0-5][0-9]/
+
+最终结果
+const regex = /^([01][0-9]|2[0-3].."><meta name="generator" content="Hexo 5.4.2"><style>mjx-container[jax="SVG"] {
+  direction: ltr;
+}
+
+mjx-container[jax="SVG"] > svg {
+  overflow: visible;
+}
+
+mjx-container[jax="SVG"][display="true"] {
+  display: block;
+  text-align: center;
+  margin: 1em 0;
+}
+
+mjx-container[jax="SVG"][justify="left"] {
+  text-align: left;
+}
+
+mjx-container[jax="SVG"][justify="right"] {
+  text-align: right;
+}
+
+g[data-mml-node="merror"] > g {
+  fill: red;
+  stroke: red;
+}
+
+g[data-mml-node="merror"] > rect[data-background] {
+  fill: yellow;
+  stroke: none;
+}
+
+g[data-mml-node="mtable"] > line[data-line] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > rect[data-frame] {
+  stroke-width: 70px;
+  fill: none;
+}
+
+g[data-mml-node="mtable"] > .mjx-dashed {
+  stroke-dasharray: 140;
+}
+
+g[data-mml-node="mtable"] > .mjx-dotted {
+  stroke-linecap: round;
+  stroke-dasharray: 0,140;
+}
+
+g[data-mml-node="mtable"] > svg {
+  overflow: visible;
+}
+
+[jax="SVG"] mjx-tool {
+  display: inline-block;
+  position: relative;
+  width: 0;
+  height: 0;
+}
+
+[jax="SVG"] mjx-tool > mjx-tip {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+mjx-tool > mjx-tip {
+  display: inline-block;
+  padding: .2em;
+  border: 1px solid #888;
+  font-size: 70%;
+  background-color: #F8F8F8;
+  color: black;
+  box-shadow: 2px 2px 5px #AAAAAA;
+}
+
+g[data-mml-node="maction"][data-toggle] {
+  cursor: pointer;
+}
+
+mjx-status {
+  display: block;
+  position: fixed;
+  left: 1em;
+  bottom: 1em;
+  min-width: 25%;
+  padding: .2em .4em;
+  border: 1px solid #888;
+  font-size: 90%;
+  background-color: #F8F8F8;
+  color: black;
+}
+
+foreignObject[data-mjx-xml] {
+  font-family: initial;
+  line-height: normal;
+  overflow: visible;
+}
+
+.MathJax path {
+  stroke-width: 3;
+}
+
+mjx-container[display="true"] {
+  overflow: auto hidden;
+}
+
+mjx-container[display="true"] + br {
+  display: none;
+}
+</style></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">正则学习笔记 + 案例</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D-16-%E8%BF%9B%E5%88%B6%E9%A2%9C%E8%89%B2"><span class="toc-text">匹配 16 进制颜色</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E6%97%B6%E9%97%B4"><span class="toc-text">匹配时间</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E6%97%A5%E6%9C%9F"><span class="toc-text">匹配日期</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E6%96%87%E4%BB%B6%E8%B7%AF%E5%BE%84"><span class="toc-text">匹配文件路径</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%95%B0%E5%AD%97%E5%8D%83%E5%88%86%E4%BD%8D%E5%88%86%E9%9A%94%E7%AC%A6"><span class="toc-text">数字千分位分隔符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AA%8C%E8%AF%81%E5%AF%86%E7%A0%81"><span class="toc-text">验证密码</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A0%BC%E5%BC%8F%E5%8C%96%E6%97%A5%E6%9C%9F%EF%BC%88%E5%88%86%E7%BB%84%E5%BC%95%E7%94%A8%EF%BC%89"><span class="toc-text">格式化日期（分组引用）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%A4%9A%E7%A7%8D%E6%97%A5%E6%9C%9F%E6%A0%BC%E5%BC%8F%EF%BC%88%E5%8F%8D%E5%90%91%E5%BC%95%E7%94%A8%EF%BC%89"><span class="toc-text">匹配多种日期格式（反向引用）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E6%8B%9F%E5%AD%97%E7%AC%A6%E4%B8%B2-trim-%E6%96%B9%E6%B3%95"><span class="toc-text">模拟字符串 trim 方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8D%95%E8%AF%8D%E9%A6%96%E5%AD%97%E6%AF%8D%E5%A4%A7%E5%86%99"><span class="toc-text">单词首字母大写</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%A9%BC%E5%B3%B0%E5%8C%96"><span class="toc-text">驼峰化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%9F%AD%E6%9D%A0%E5%8C%96"><span class="toc-text">短杠化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E6%88%90%E5%AF%B9%E6%A0%87%E7%AD%BE"><span class="toc-text">匹配成对标签</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9C%80%E8%A6%81%E8%BD%AC%E4%B9%89%E7%9A%84%E5%85%83%E5%AD%97%E7%AC%A6"><span class="toc-text">需要转义的元字符</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D-IPV4-%E5%9C%B0%E5%9D%80"><span class="toc-text">匹配 IPV4 地址</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E5%9B%BA%E5%AE%9A%E7%94%B5%E8%AF%9D"><span class="toc-text">匹配固定电话</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8C%B9%E9%85%8D%E6%B5%AE%E7%82%B9%E6%95%B0"><span class="toc-text">匹配浮点数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%8F%90%E5%8D%87%E6%95%88%E7%8E%87"><span class="toc-text">提升效率</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#replace-%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-text">replace 的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E5%BD%93%E5%89%8D%E6%97%A5%E6%9C%9F%EF%BC%88yyyy-MM-dd-HH-mm-ss%EF%BC%89"><span class="toc-text">获取当前日期（yyyy-MM-dd HH:mm:ss）</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%A8%A1%E6%8B%9F-getElementByClassName"><span class="toc-text">模拟 getElementByClassName</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%81%E8%A3%85%E4%B8%80%E4%B8%AA%E7%B1%BB%E5%9E%8B%E6%A3%80%E9%AA%8C%E5%B7%A5%E5%85%B7%E5%87%BD%E6%95%B0"><span class="toc-text">封装一个类型检验工具函数</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%8E%8B%E7%BC%A9%E5%AD%97%E7%AC%A6%E4%B8%B2"><span class="toc-text">压缩字符串</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript-%E6%AD%A3%E5%88%99%E8%A1%A8%E8%BE%BE%E5%BC%8F%E8%BF%B7%E4%BD%A0%E4%B9%A6"><i class="tag post-item-tag">JavaScript 正则表达式迷你书</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">正则学习笔记 + 案例</h1><time class="has-text-grey custom-date-font" datetime="2022-08-13T15:47:15.000Z">2022/08/13 15:47</time><article class="mt-2 post-content"><img src="/1b3ec3018bbe/banner.jpg" class="">
+
+<blockquote>
+<p>「JavaScript 正则表达式迷你书.pdf」<a target="_blank" rel="noopener" href="https://www.aliyundrive.com/s/i77Fq6HocdT">https://www.aliyundrive.com/s/i77Fq6HocdT</a></p>
+</blockquote>
+<h4 id="匹配-16-进制颜色"><a href="#匹配-16-进制颜色" class="headerlink" title="匹配 16 进制颜色"></a>匹配 16 进制颜色</h4><ul>
+<li><p>匹配 6 位的 16 进制</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">#[0-9a-fA-F]{6}</span><span class="token regex-delimiter">/</span></span></code></pre>
+
+<b>
+</b></li>
+<li><p>颜色也有可能是 3 位的，由于管道符也是贪婪匹配，所以需要先匹配 6 位再匹配 3 位</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">#[0-9a-fA-F]{6}|[0-9a-fA-F]{3}</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<h4 id="匹配时间"><a href="#匹配时间" class="headerlink" title="匹配时间"></a>匹配时间</h4><ul>
+<li><p>匹配小时，00-19，20-23</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">([01][0-9]|2[0-3])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>匹配分钟，00-59</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[0-5][0-9]</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>最终结果</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^([01][0-9]|2[0-3]):[0-5][0-9]$</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<h4 id="匹配日期"><a href="#匹配日期" class="headerlink" title="匹配日期"></a>匹配日期</h4><ul>
+<li><p>匹配年份，0000-xxxx</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\d{4}</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>匹配月份，01-12</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(0[1-9]|1[0-2])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>匹配日，01-31</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">0[0-9]|[12][0-9]|3[01]</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>最终结果</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<h4 id="匹配文件路径"><a href="#匹配文件路径" class="headerlink" title="匹配文件路径"></a>匹配文件路径</h4><ul>
+<li><p>匹配磁盘</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[a-zA-Z]:\\</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>匹配文件夹</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[^\\:*&lt;&gt;|"?\r\n/]+\\</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>完整路径</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^[a-zA-Z]:\\([^\\:*&lt;&gt;|"?\r\n/]+\\)*([^\\:*&lt;&gt;|"?\r\n/]+?$)</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<blockquote>
+<p>位置：</p>
+<ul>
+<li><code>^</code>: 开头</li>
+<li><code>$</code>: 结尾</li>
+<li><code>\b</code>: 单词边界，<code>\w</code> 与 <code>\W</code> 之间的位置（<code>\w</code> === <code>[0-9a-zA-Z_]</code> 数字字母下划线）</li>
+<li><code>\B</code>: 非单词的边界，</li>
+<li><code>(?=p)</code>: 以 p 结尾</li>
+<li><code>(?!p)</code>: 不以 p 结尾</li>
+</ul>
+</blockquote>
+<h4 id="数字千分位分隔符"><a href="#数字千分位分隔符" class="headerlink" title="数字千分位分隔符"></a>数字千分位分隔符</h4><ul>
+<li><p>添加最后一位的逗号</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token string">"123456789"</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">?=\d{3}$</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; "123456,789"</span></code></pre>
+</li>
+<li><p>添加所有逗号</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token string">"123456789"</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?=(\d{3})+$)</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; ",123,456,789"</span></code></pre>
+</li>
+<li><p>去除开头的逗号</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token string">"123456789"</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?!^)(?=(\d{3})+$)</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; "123,456,789"</span></code></pre>
+</li>
+<li><p>多组数字格式化</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token string">"123456789 123456789"</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?!\b)(?=(\d{3})+\b)</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">)</span>
+<span class="token comment">// 等价于 =&gt;</span>
+<span class="token string">"123456789 123456789"</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\B(?=(\d{3})+\b)</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">","</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; "123,456,789 123,456,789"</span></code></pre></li>
+</ul>
+<h4 id="验证密码"><a href="#验证密码" class="headerlink" title="验证密码"></a>验证密码</h4><ul>
+<li><p>必须包含数字</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?=.*[0-9])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>必须包含汉字</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?=.*[\u4e00-\u9fa5])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>必须包含数字和字母</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?=.*[0-9])(?=.*[a-zA-Z])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>必须包含数字和汉字</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?=.*[0-9])(?=.*[\u4e00-\u9fa5])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>必须包含字母和汉字</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?=.*[a-zA-Z])(?=.*[\u4e00-\u9fa5])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>必须包含数字、字母和汉字，且至少包含两种字符，两两组合，那么组合数就是 <mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.685ex;" xmlns="http://www.w3.org/2000/svg" width="2.825ex" height="2.572ex" role="img" focusable="false" viewBox="0 -833.9 1248.8 1136.7"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msubsup"><g data-mml-node="mi"><path data-c="1D436" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path></g><g data-mml-node="TeXAtom" transform="translate(845.3,363) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(748,-287.2) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="33" d="M127 463Q100 463 85 480T69 524Q69 579 117 622T233 665Q268 665 277 664Q351 652 390 611T430 522Q430 470 396 421T302 350L299 348Q299 347 308 345T337 336T375 315Q457 262 457 175Q457 96 395 37T238 -22Q158 -22 100 21T42 130Q42 158 60 175T105 193Q133 193 151 175T169 130Q169 119 166 110T159 94T148 82T136 74T126 70T118 67L114 66Q165 21 238 21Q293 21 321 74Q338 107 338 175V195Q338 290 274 322Q259 328 213 329L171 330L168 332Q166 335 166 348Q166 366 174 366Q202 366 232 371Q266 376 294 413T322 525V533Q322 590 287 612Q265 626 240 626Q208 626 181 615T143 592T132 580H135Q138 579 143 578T153 573T165 566T175 555T183 540T186 520Q186 498 172 481T127 463Z"></path></g></g></g></g></g></svg></mjx-container>，三种情况</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?=.*[0-9])(?=.*[a-zA-Z])|(?=.*[0-9])(?=.*[\u4e00-\u9fa5])|(?=.*[a-zA-Z])(?=.*[\u4e00-\u9fa5])</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>再加一个位数限制：最低 6 位，最高 20 位</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">((?=.*[0-9])(?=.*[a-zA-Z])|(?=.*[0-9])(?=.*[\u4e00-\u9fa5])|(?=.*[a-zA-Z])(?=.*[\u4e00-\u9fa5]))^[0-9a-zA-Z\u4e00-\u9fa5]{6,20}</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>如果再加两种字符：下划线( <code>_</code> )、短杠( <code>-</code> )，要是采用和上面相同的方式：两两组合，<mjx-container class="MathJax" jax="SVG"><svg style="vertical-align: -0.687ex;" xmlns="http://www.w3.org/2000/svg" width="2.825ex" height="2.573ex" role="img" focusable="false" viewBox="0 -833.9 1248.8 1137.4"><g stroke="currentColor" fill="currentColor" stroke-width="0" transform="scale(1,-1)"><g data-mml-node="math"><g data-mml-node="msubsup"><g data-mml-node="mi"><path data-c="1D436" d="M50 252Q50 367 117 473T286 641T490 704Q580 704 633 653Q642 643 648 636T656 626L657 623Q660 623 684 649Q691 655 699 663T715 679T725 690L740 705H746Q760 705 760 698Q760 694 728 561Q692 422 692 421Q690 416 687 415T669 413H653Q647 419 647 422Q647 423 648 429T650 449T651 481Q651 552 619 605T510 659Q484 659 454 652T382 628T299 572T226 479Q194 422 175 346T156 222Q156 108 232 58Q280 24 350 24Q441 24 512 92T606 240Q610 253 612 255T628 257Q648 257 648 248Q648 243 647 239Q618 132 523 55T319 -22Q206 -22 128 53T50 252Z"></path></g><g data-mml-node="TeXAtom" transform="translate(845.3,363) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="32" d="M109 429Q82 429 66 447T50 491Q50 562 103 614T235 666Q326 666 387 610T449 465Q449 422 429 383T381 315T301 241Q265 210 201 149L142 93L218 92Q375 92 385 97Q392 99 409 186V189H449V186Q448 183 436 95T421 3V0H50V19V31Q50 38 56 46T86 81Q115 113 136 137Q145 147 170 174T204 211T233 244T261 278T284 308T305 340T320 369T333 401T340 431T343 464Q343 527 309 573T212 619Q179 619 154 602T119 569T109 550Q109 549 114 549Q132 549 151 535T170 489Q170 464 154 447T109 429Z"></path></g></g><g data-mml-node="TeXAtom" transform="translate(748,-287.9) scale(0.707)" data-mjx-texclass="ORD"><g data-mml-node="mn"><path data-c="35" d="M164 157Q164 133 148 117T109 101H102Q148 22 224 22Q294 22 326 82Q345 115 345 210Q345 313 318 349Q292 382 260 382H254Q176 382 136 314Q132 307 129 306T114 304Q97 304 95 310Q93 314 93 485V614Q93 664 98 664Q100 666 102 666Q103 666 123 658T178 642T253 634Q324 634 389 662Q397 666 402 666Q410 666 410 648V635Q328 538 205 538Q174 538 149 544L139 546V374Q158 388 169 396T205 412T256 420Q337 420 393 355T449 201Q449 109 385 44T229 -22Q148 -22 99 32T50 154Q50 178 61 192T84 210T107 214Q132 214 148 197T164 157Z"></path></g></g></g></g></g></svg></mjx-container> == 10，意味着要写 10 种情况，工程量可想而知。换个角度，至少包含两种字符的对立事件就是：不能全都是数字、字母和汉字</p>
+<ul>
+<li><p>不能全为数字</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?!^[0-9]+$)</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>不能全都是数字、字母和汉字</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?!^[0-9]+$)(?!^[a-zA-Z]+$)(?!^[\u4e00-\u9fa5]+$)</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>最终版</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?!^[0-9]{6,20}$)(?!^[a-zA-Z]{6,20}$)(?!^[\u4e00-\u9fa5]{6,20}$)(?!^-{6,20}$)(?!^_{6,20}$)^[0-9a-zA-Z\u4e00-\u9fa5\-_]{6,20}</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+</li>
+</ul>
+<h4 id="格式化日期（分组引用）"><a href="#格式化日期（分组引用）" class="headerlink" title="格式化日期（分组引用）"></a>格式化日期（分组引用）</h4><ul>
+<li><p><code>yyyy-mm-dd</code> 格式化成 <code>mm/dd/yyyy</code></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(\d{4})-(\d{2})-(\d{2})</span><span class="token regex-delimiter">/</span></span>
+<span class="token keyword">const</span> date <span class="token operator">=</span> <span class="token string">"2022-08-10"</span>
+<span class="token keyword">const</span> result <span class="token operator">=</span> date<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>regex<span class="token punctuation">,</span> <span class="token string">"$2/$3/$1"</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; "08/10/2022"</span>
+
+<span class="token comment">// 等价于 =&gt;</span>
+<span class="token keyword">const</span> result <span class="token operator">=</span> date<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>regex<span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>RegExp<span class="token punctuation">.</span>$2<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>RegExp<span class="token punctuation">.</span>$3<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>RegExp<span class="token punctuation">.</span>$1<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+<span class="token comment">// 等价于 =&gt;</span>
+<span class="token keyword">const</span> result <span class="token operator">=</span> date<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span>regex<span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">match<span class="token punctuation">,</span> year<span class="token punctuation">,</span> month<span class="token punctuation">,</span> day</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>month<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>day<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>year<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre></li>
+</ul>
+<h4 id="匹配多种日期格式（反向引用）"><a href="#匹配多种日期格式（反向引用）" class="headerlink" title="匹配多种日期格式（反向引用）"></a>匹配多种日期格式（反向引用）</h4><ul>
+<li><p>要匹配：<code>yyyy.mm.dd</code>、<code>yyyy-mm-dd</code> 和 <code>yyyy/mm/dd</code></p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\d{4}(\.|-|\/)\d{2}\1\d{2}</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<blockquote>
+<ul>
+<li><code>\10</code> 表示第 <code>10</code> 个分组，若想匹配 <code>\1</code> 和 <code>0</code>，请使用 <code>(?:\1)0</code> 或者 <code>\1(?:0)</code>（<code>(?:p)</code> 表示非捕获括号，不会对括号中的内容进行分组）；</li>
+<li>若分组 <code>\5</code> 不存在，则匹配 <code>"\5"</code>，相当于对 <code>"5"</code> 进行了转义；</li>
+<li>若分组后带有量词，则匹配最后一次捕获的结果。</li>
+</ul>
+</blockquote>
+<h4 id="模拟字符串-trim-方法"><a href="#模拟字符串-trim-方法" class="headerlink" title="模拟字符串 trim 方法"></a>模拟字符串 <code>trim</code> 方法</h4><ul>
+<li><p>匹配开头结尾的空白符，然后替换为空（效率更高）</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">trim</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^\s+|\s+$</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">""</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+</li>
+<li><p>匹配整个字符串，然后用引用的部分替换整体</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">trim</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^\s*(.*?)\s*$</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token string">"$1"</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre></li>
+</ul>
+<h4 id="单词首字母大写"><a href="#单词首字母大写" class="headerlink" title="单词首字母大写"></a>单词首字母大写</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">firstUppercase</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(?:^|\s)\w</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token parameter">c</span> <span class="token operator">=&gt;</span> c<span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+<span class="token comment">// =&gt; 如果添加修饰符 `g`，则是将所有单词首字母大写</span>
+<span class="token comment">// =&gt; 如果不加修饰符 `g`，则只会将第一个单词的首字母大写</span></code></pre>
+
+<h4 id="驼峰化"><a href="#驼峰化" class="headerlink" title="驼峰化"></a>驼峰化</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">camelize</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[-_\s]+(.)?</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">match<span class="token punctuation">,</span> c</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token keyword">return</span> c <span class="token operator">?</span> c<span class="token punctuation">.</span><span class="token function">toUpperCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">:</span> <span class="token string">""</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+
+<h4 id="短杠化"><a href="#短杠化" class="headerlink" title="短杠化"></a>短杠化</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">kebablize</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> str
+    <span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">([A-Z])</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">"-$1"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">[-_\s]+</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">"-"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">toLowerCase</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+
+<h4 id="匹配成对标签"><a href="#匹配成对标签" class="headerlink" title="匹配成对标签"></a>匹配成对标签</h4><ul>
+<li><p>匹配开标签</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">&lt;[^&gt;]+&gt;</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>匹配闭标签</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">&lt;\/[^&gt;]+&gt;</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>完整正则</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">&lt;([^&gt;]+)&gt;[\s\S]*&lt;\/\1&gt;</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<h4 id="需要转义的元字符"><a href="#需要转义的元字符" class="headerlink" title="需要转义的元字符"></a>需要转义的元字符</h4><p><code>^</code>、<code>$</code>、<code>.</code>、<code>*</code>、<code>+</code>、<code>?</code>、<code>|</code>、<code>\</code>、<code>/</code>、<code>(</code>、<code>)</code>、<code>[</code>、<code>]</code>、<code>{</code>、<code>}</code>、<code>=</code>、<code>!</code>、<code>:</code>、<code>-</code>、<code>,</code>，这些字符串匹配时要加 <code>\</code></p>
+<h4 id="匹配-IPV4-地址"><a href="#匹配-IPV4-地址" class="headerlink" title="匹配 IPV4 地址"></a>匹配 IPV4 地址</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^((0{0,2}\d|0?\d{2}|1\d{2}|2[0-4]\d|25[0-5])\.){3}(0{0,2}\d|0?\d{2}|1\d{2}|2[0-4]\d|25[0-5])$</span><span class="token regex-delimiter">/</span></span></code></pre>
+
+<h4 id="匹配固定电话"><a href="#匹配固定电话" class="headerlink" title="匹配固定电话"></a>匹配固定电话</h4><p>要匹配：<code>055188888888</code>、<code>0551-88888888</code> 和 <code>(0551)88888888</code>，前四位为区号，后八位为号码</p>
+<ul>
+<li><p>第一种的匹配规则</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">0\d{3}[1-9]{8}</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>第二种的匹配规则</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">0\d{3}-[1-9]{8}</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>第三种的匹配规则</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\(0\d{3}\)[1-9]{8}</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>结合第一种和第二种</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">0\d{3}-?[1-9]{8}</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>三种结合的最终匹配规则</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(0\d{3}-?|\(0\d{3}\))[1-9]{8}</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<h4 id="匹配浮点数"><a href="#匹配浮点数" class="headerlink" title="匹配浮点数"></a>匹配浮点数</h4><p>要匹配：</p>
+<ul>
+<li><p>情况一：<code>1.22</code>、<code>+1.22</code>、<code>-1.22</code></p>
+</li>
+<li><p>情况二：<code>10</code>、<code>+10</code>、<code>-10</code></p>
+</li>
+<li><p>情况三：<code>.2</code>、<code>+.2</code>、<code>-.2</code></p>
+</li>
+<li><p>情况一：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^[+-]?\d+\.\d*$</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>情况二：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^[+-]?\d+$</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>情况三：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^[+-]?\.\d+$</span><span class="token regex-delimiter">/</span></span></code></pre>
+</li>
+<li><p>最终结果</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">^[+-]?(\d+\.\d*|\d+|\.\d+)$</span><span class="token regex-delimiter">/</span></span></code></pre></li>
+</ul>
+<h4 id="提升效率"><a href="#提升效率" class="headerlink" title="提升效率"></a>提升效率</h4><ul>
+<li><p>使用具体型字符组来代替通配符，消除回溯</p>
+<p>匹配 <code>123"456"789</code> 中的 <code>"456"</code></p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> /".*"/
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> /"[^"]*/</span></span></code></pre>
+</li>
+<li><p>使用非捕获分组</p>
+<p>捕获分组，意味着需要额外的内存来保存分组的结果，对于不需要分组引用或反向引用的采用非捕获分组</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> /^\d+("[^"]*")\d+$/
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> /^\d+(?:"[^"]*")\d+$/</span></span></code></pre>
+</li>
+<li><p>独立出确定字符：可以减少回溯，加快匹配速度</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> /a+/
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> /aa*/</span></span></code></pre>
+</li>
+<li><p>提取分支公共部分</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> /^abc|^def/
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> /^(?:abc|def)/
+</span></span>
+<span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> /this|that/
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> /th(?:is|at)/</span></span></code></pre>
+</li>
+<li><p>减少分支数量，缩小它们的范围，不过降低了可读性</p>
+<pre class="language-diff" data-language="diff"><code class="language-diff"><span class="token deleted-sign deleted"><span class="token prefix deleted">-</span><span class="token line"> /red|read/
+</span></span><span class="token inserted-sign inserted"><span class="token prefix inserted">+</span><span class="token line"> /rea?d/</span></span></code></pre></li>
+</ul>
+<h4 id="replace-的应用"><a href="#replace-的应用" class="headerlink" title="replace 的应用"></a><code>replace</code> 的应用</h4><ul>
+<li><p>当第二个参数是字符串时，以下字符有特殊含义</p>
+<table>
+<thead>
+<tr>
+<th align="left">属性</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><em><span>$</span>1,<span>$</span>2,···,<span>$</span>99</em></strong></td>
+<td align="left">匹配第 <code>1-99</code> 个分组里捕获的文本</td>
+</tr>
+<tr>
+<td align="left"><strong><em>$&amp;</em></strong></td>
+<td align="left">匹配到的字符文本</td>
+</tr>
+<tr>
+<td align="left"><strong><em>$`</em></strong></td>
+<td align="left">匹配到的字符左边文本</td>
+</tr>
+<tr>
+<td align="left"><strong><em>$’</em></strong></td>
+<td align="left">匹配到的字符右边文本</td>
+</tr>
+<tr>
+<td align="left"><strong><em>$$</em></strong></td>
+<td align="left">美元符号</td>
+</tr>
+</tbody></table>
+</li>
+<li><p>当第二个参数是函数时，函数里的回调参数与使用 <code>match(非全局匹配)</code> 匹配到的结果类似</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token string">"123abc456"</span><span class="token punctuation">.</span><span class="token function">match</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(\d+)[^\d]*(\d+)</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">)</span>
+
+<span class="token comment">// =&gt; ['123abc456', '123', '456', index: 0, input: '123abc456', groups: undefined]</span>
+
+<span class="token comment">// 第一个参数：匹配到的结果</span>
+<span class="token comment">// 第二个参数：分组一的结果</span>
+<span class="token comment">// 第三个参数：分组二的结果</span>
+<span class="token comment">// 若还有多个分组，则列完分组结果...</span>
+
+<span class="token comment">// 倒数第三个参数：匹配的开始索引</span>
+<span class="token comment">// 倒数第二个参数：原字符串</span>
+<span class="token comment">// 倒数第一个参数：没有修饰符 g，所以为 undefined</span></code></pre>
+
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token string">"123abc456"</span><span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">(\d+)[^\d]*(\d+)</span><span class="token regex-delimiter">/</span></span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">match<span class="token punctuation">,</span> $1<span class="token punctuation">,</span> $2<span class="token punctuation">,</span> index<span class="token punctuation">,</span> input</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token punctuation">[</span>match<span class="token punctuation">,</span> $1<span class="token punctuation">,</span> $2<span class="token punctuation">,</span> index<span class="token punctuation">,</span> input<span class="token punctuation">]</span><span class="token punctuation">)</span>
+  <span class="token comment">// =&gt; ['123abc456', '123', '456', 0, '123abc456']</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span></code></pre></li>
+</ul>
+<h5 id="获取当前日期（yyyy-MM-dd-HH-mm-ss）"><a href="#获取当前日期（yyyy-MM-dd-HH-mm-ss）" class="headerlink" title="获取当前日期（yyyy-MM-dd HH:mm:ss）"></a>获取当前日期（yyyy-MM-dd HH:mm:ss）</h5><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">getCurrentDate</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Date</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">toLocaleString</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\/(\d)(?=(\/|\s))</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">"-0$1"</span><span class="token punctuation">)</span>
+    <span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">\/</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token string">"-"</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span></code></pre>
+
+<h4 id="模拟-getElementByClassName"><a href="#模拟-getElementByClassName" class="headerlink" title="模拟 getElementByClassName"></a>模拟 <code>getElementByClassName</code></h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">getElementByClassName</span><span class="token punctuation">(</span><span class="token parameter">className</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> elements <span class="token operator">=</span> document<span class="token punctuation">.</span><span class="token function">getElementByTagName</span><span class="token punctuation">(</span><span class="token string">"*"</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> regex <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">RegExp</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">(^|\\s)</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>className<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">(\\s|$)</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">let</span> i <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">;</span> i <span class="token operator">&lt;</span> element<span class="token punctuation">.</span>length<span class="token punctuation">;</span> i<span class="token operator">++</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">const</span> element <span class="token operator">=</span> elements<span class="token punctuation">[</span>i<span class="token punctuation">]</span>
+    <span class="token keyword">if</span> <span class="token punctuation">(</span>regex<span class="token punctuation">.</span><span class="token function">test</span><span class="token punctuation">(</span>element<span class="token punctuation">.</span>className<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+      result<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span>element<span class="token punctuation">)</span>
+    <span class="token punctuation">}</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> result
+<span class="token punctuation">}</span></code></pre>
+
+<h4 id="封装一个类型检验工具函数"><a href="#封装一个类型检验工具函数" class="headerlink" title="封装一个类型检验工具函数"></a>封装一个类型检验工具函数</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> utils <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+<span class="token string">"Boolean|String|Number|Function|Array|Date|RegExp|Object|Error"</span><span class="token punctuation">.</span><span class="token function">split</span><span class="token punctuation">(</span><span class="token string">"|"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">forEach</span><span class="token punctuation">(</span><span class="token parameter">item</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  utils<span class="token punctuation">[</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">is</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>item<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token parameter">obj</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">.</span><span class="token function">call</span><span class="token punctuation">(</span>obj<span class="token punctuation">)</span> <span class="token operator">===</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">[object </span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>item<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">]</span><span class="token template-punctuation string">`</span></span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>utils<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">,</span><span class="token number">2</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// true</span>
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>utils<span class="token punctuation">.</span><span class="token function">isArray</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">// false</span></code></pre>
+
+<h4 id="压缩字符串"><a href="#压缩字符串" class="headerlink" title="压缩字符串"></a>压缩字符串</h4><pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">function</span> <span class="token function">compress</span><span class="token punctuation">(</span><span class="token parameter">str</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> keys <span class="token operator">=</span> <span class="token punctuation">{</span><span class="token punctuation">}</span>
+  str<span class="token punctuation">.</span><span class="token function">replace</span><span class="token punctuation">(</span><span class="token regex"><span class="token regex-delimiter">/</span><span class="token regex-source language-regex">([^=&amp;]+)=([^&amp;]*)</span><span class="token regex-delimiter">/</span><span class="token regex-flags">g</span></span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">full<span class="token punctuation">,</span> key<span class="token punctuation">,</span> value</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    keys<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token punctuation">(</span>keys<span class="token punctuation">[</span>key<span class="token punctuation">]</span> <span class="token operator">?</span> <span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>keys<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">,</span><span class="token template-punctuation string">`</span></span> <span class="token operator">:</span> <span class="token string">""</span><span class="token punctuation">)</span> <span class="token operator">+</span> value
+  <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token punctuation">[</span><span class="token punctuation">]</span>
+  <span class="token keyword">for</span> <span class="token punctuation">(</span><span class="token keyword">const</span> key <span class="token keyword">in</span> keys<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    result<span class="token punctuation">.</span><span class="token function">push</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>key<span class="token interpolation-punctuation punctuation">}</span></span><span class="token string">=</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>keys<span class="token punctuation">[</span>key<span class="token punctuation">]</span><span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> result<span class="token punctuation">.</span><span class="token function">join</span><span class="token punctuation">(</span><span class="token string">"&amp;"</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span>
+
+console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span><span class="token function">compress</span><span class="token punctuation">(</span><span class="token string">"a=1&amp;b=2&amp;a=3&amp;b=4"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token comment">// =&gt; "a=1,3&amp;b=2,4"</span></code></pre>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/b7223ac0b473.html" title="ColorPicker 扩展指令 v-modify-opacity &lt;W1&gt;"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: ColorPicker 扩展指令 v-modify-opacity &lt;W1&gt;</span></a><a class="button is-default" href="/790474d02aa4.html" title="Windows 终端美化 + 使用 Code 命令用 VSCode 打开文件夹"><span class="has-text-weight-semibold">下一页: Windows 终端美化 + 使用 Code 命令用 VSCode 打开文件夹</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

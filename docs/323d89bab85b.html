@@ -1,0 +1,408 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+  概述
+  
+    前面的小节我们已经介绍了两种组件间通信的方法：provide / inject 和 dispatch /
+    broadcast。它们有各自的使用场景和局限，比如前者多用于子组件获取父组件的状态，后者常用于父子组件间通过自定义事件通信。
+  
+  
+    本节将介绍第 3 种组件通信方法，也就是 findComponents 系列方法，它并非 Vue.js
+    内置，而是需要自行实现，以工具函数的形式来使用，它是一系列的函数，可以说是组件通信的终极方案。findComponents
+    系列方法最终都是返回组件的实例，进而可以读取或调用该组件的数据和方法。
+  
+  它适用于以下场景：
+  
+    由一个组件，向上找到最近的指定组件；
+    由一个组件，向上找到.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">实现</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向上找到最近的指定组件——findComponentUpward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向上找到所有的指定组件——findComponentsUpward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向下找到最近的指定组件——findComponentDownward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">向下找到所有指定的组件——findComponentsDownward</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-text">找到指定组件的兄弟组件——findBrothersComponents</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">扩展阅读</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</h1><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:06.000Z">2022/03/01 14:59</time><article class="mt-2 post-content">
+<div class="markdown-body">
+  <h2 data-id="heading-1">概述</h2>
+  <p>
+    前面的小节我们已经介绍了两种组件间通信的方法：provide / inject 和 dispatch /
+    broadcast。它们有各自的使用场景和局限，比如前者多用于子组件获取父组件的状态，后者常用于父子组件间通过自定义事件通信。
+  </p>
+  <p>
+    本节将介绍第 3 种组件通信方法，也就是 findComponents 系列方法，它并非 Vue.js
+    内置，而是需要自行实现，以工具函数的形式来使用，它是一系列的函数，可以说是组件通信的终极方案。findComponents
+    系列方法最终都是返回组件的实例，进而可以读取或调用该组件的数据和方法。
+  </p>
+  <p>它适用于以下场景：</p>
+  <ul>
+    <li>由一个组件，向上找到最近的指定组件；</li>
+    <li>由一个组件，向上找到所有的指定组件；</li>
+    <li>由一个组件，向下找到最近的指定组件；</li>
+    <li>由一个组件，向下找到所有指定的组件；</li>
+    <li>由一个组件，找到指定组件的兄弟组件。</li>
+  </ul>
+  <p>5 个不同的场景，对应 5 个不同的函数，实现原理也大同小异。</p>
+  <h2 data-id="heading-2">实现</h2>
+  <p>
+    5 个函数的原理，都是通过递归、遍历，找到指定组件的
+    <code>name</code> 选项匹配的组件实例并返回。
+  </p>
+  <blockquote>
+    <p>本节以及后续章节，都是基于上一节的工程来完成，后续不再重复说明。</p>
+    <p>
+      完整源码地址：<a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Ficarusion%2Fvue-component-book"
+        title="https://github.com/icarusion/vue-component-book"
+        ref="nofollow noopener noreferrer"
+        >github.com/icarusion/v…</a
+      >
+    </p>
+  </blockquote>
+  <p>
+    在目录 <code>src</code> 下新建文件夹
+    <code>utils</code> 用来放置工具函数，并新建文件
+    <code>assist.js</code>，本节所有函数都在这个文件里完成，每个函数都通过
+    <code>export</code> 对外提供（如果你不了解 export，请查看扩展阅读1）。
+  </p>
+  <h3 data-id="heading-3">向上找到最近的指定组件——findComponentUpward</h3>
+  <p>先看代码：</p>
+  <pre><code lang="js" class=""><span>// assist.js</span>
+<span>// 由一个组件，向上找到最近的指定组件</span>
+<span><span>function</span> <span>findComponentUpward</span> (<span>context, componentName</span>) </span>&#123;
+  <span>let</span> parent = context.$parent;
+  <span>let</span> name = parent.$options.name;
+
+  <span>while</span> (parent &amp;&amp; (!name || [componentName].indexOf(name) &lt; <span>0</span>)) &#123;
+    parent = parent.$parent;
+    <span>if</span> (parent) name = parent.$options.name;
+  &#125;
+  <span>return</span> parent;
+&#125;
+<span>export</span> &#123; findComponentUpward &#125;;
+</code></pre>
+  <p>
+    findComponentUpward
+    接收两个参数，第一个是当前上下文，比如你要基于哪个组件来向上寻找，一般都是基于当前的组件，也就是传入
+    <code>this</code>；第二个参数是要找的组件的 <code>name</code> 。
+  </p>
+  <p>
+    findComponentUpward 方法会在 while 语句里不断向上覆盖当前的
+    <code>parent</code> 对象，通过判断组件（即 parent）的 name 与传入的
+    componentName 是否一致，直到直到最近的一个组件为止。
+  </p>
+  <p>
+    与 dispatch 不同的是，findComponentUpward
+    是直接拿到组件的实例，而非通过事件通知组件。比如下面的示例，有组件 A 和组件
+    B，A 是 B 的父组件，在 B 中获取和调用 A 中的数据和方法：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- component-a.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 A
+    <span>&lt;<span>component-b</span>&gt;</span><span>&lt;/<span>component-b</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> componentB <span>from</span> <span>'./component-b.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'componentA'</span>,
+    <span>components</span>: &#123; componentB &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>name</span>: <span>'Aresn'</span>
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      sayHello () &#123;
+        <span>console</span>.log(<span>'Hello, Vue.js'</span>);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <pre><code lang="html" class=""><span>&lt;!-- component-b.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 B
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> &#123; findComponentUpward &#125; <span>from</span> <span>'../utils/assist.js'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'componentB'</span>,
+    mounted () &#123;
+      <span>const</span> comA = findComponentUpward(<span>this</span>, <span>'componentA'</span>);
+      
+      <span>if</span> (comA) &#123;
+        <span>console</span>.log(comA.name);  <span>// Aresn</span>
+        comA.sayHello();  <span>// Hello, Vue.js</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    使用起来很简单，只要在需要的地方调用 findComponentUpward
+    方法就行，第一个参数一般都是传入 this，即当前组件的上下文（实例）。
+  </p>
+  <p>
+    上例的 comA，保险起见，加了一层 <code>if (comA)</code> 来判断是否找到了组件
+    A，如果没有指定的组件而调用的话，是会报错的。
+  </p>
+  <p>
+    findComponentUpward
+    只会找到最近的一个组件实例，如果要找到全部符合要求的组件，就需要用到下面的这个方法。
+  </p>
+  <h3 data-id="heading-4">向上找到所有的指定组件——findComponentsUpward</h3>
+  <p>代码如下：</p>
+  <pre><code lang="js" class=""><span>// assist.js</span>
+<span>// 由一个组件，向上找到所有的指定组件</span>
+<span><span>function</span> <span>findComponentsUpward</span> (<span>context, componentName</span>) </span>&#123;
+  <span>let</span> parents = [];
+  <span>const</span> parent = context.$parent;
+
+  <span>if</span> (parent) &#123;
+    <span>if</span> (parent.$options.name === componentName) parents.push(parent);
+    <span>return</span> parents.concat(findComponentsUpward(parent, componentName));
+  &#125; <span>else</span> &#123;
+    <span>return</span> [];
+  &#125;
+&#125;
+<span>export</span> &#123; findComponentsUpward &#125;;
+</code></pre>
+  <p>
+    与 findComponentUpward 不同的是，findComponentsUpward
+    返回的是一个数组，包含了所有找到的组件实例（注意函数名称中多了一个“s”）。
+  </p>
+  <p>
+    findComponentsUpward
+    的使用场景较少，一般只用在递归组件里面（后面小节会介绍），因为这个函数是一直向上寻找父级（parent）的，只有递归组件的父级才是自身。事实上，iView
+    在使用这个方法也都是用在递归组件的场景，比如菜单组件 Menu。由于递归组件在
+    Vue.js 组件里面并不常用，那自然 findComponentsUpward 也不常用了。
+  </p>
+  <h3 data-id="heading-5">向下找到最近的指定组件——findComponentDownward</h3>
+  <p>代码如下：</p>
+  <pre><code lang="js" class=""><span>// assist.js</span>
+<span>// 由一个组件，向下找到最近的指定组件</span>
+<span><span>function</span> <span>findComponentDownward</span> (<span>context, componentName</span>) </span>&#123;
+  <span>const</span> childrens = context.$children;
+  <span>let</span> children = <span>null</span>;
+
+  <span>if</span> (childrens.length) &#123;
+    <span>for</span> (<span>const</span> child <span>of</span> childrens) &#123;
+      <span>const</span> name = child.$options.name;
+
+      <span>if</span> (name === componentName) &#123;
+        children = child;
+        <span>break</span>;
+      &#125; <span>else</span> &#123;
+        children = findComponentDownward(child, componentName);
+        <span>if</span> (children) <span>break</span>;
+      &#125;
+    &#125;
+  &#125;
+  <span>return</span> children;
+&#125;
+<span>export</span> &#123; findComponentDownward &#125;;
+</code></pre>
+  <p>
+    <code>context.$children</code>
+    得到的是当前组件的全部子组件，所以需要遍历一遍，找到有没有匹配到的组件
+    <code>name</code>，如果没找到，继续递归找每个 $children 的
+    $children，直到找到最近的一个为止。
+  </p>
+  <p>来看个示例，仍然是 A、B 两个组件，A 是 B 的父组件，在 A 中找到 B：</p>
+  <pre><code lang="html" class=""><span>&lt;!-- component-b.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 B
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'componentB'</span>,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>name</span>: <span>'Aresn'</span>
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      sayHello () &#123;
+        <span>console</span>.log(<span>'Hello, Vue.js'</span>);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <pre><code lang="html" class=""><span>&lt;!-- component-a.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 A
+    <span>&lt;<span>component-b</span>&gt;</span><span>&lt;/<span>component-b</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> componentB <span>from</span> <span>'./component-b.vue'</span>;
+  <span>import</span> &#123; findComponentDownward &#125; <span>from</span> <span>'../utils/assist.js'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'componentA'</span>,
+    <span>components</span>: &#123; componentB &#125;,
+    mounted () &#123;
+      <span>const</span> comB = findComponentDownward(<span>this</span>, <span>'componentB'</span>);
+      <span>if</span> (comB) &#123;
+        <span>console</span>.log(comB.name);  <span>// Aresn</span>
+        comB.sayHello();  <span>// Hello, Vue.js</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    示例中的 A 和 B 是父子关系，因此也可以直接用
+    <code>ref</code> 来访问，但如果不是父子关系，中间间隔多代，用它就很方便了。
+  </p>
+  <h3 data-id="heading-6">向下找到所有指定的组件——findComponentsDownward</h3>
+  <p>
+    如果要向下找到所有的指定组件，要用到 findComponentsDownward 函数，代码如下：
+  </p>
+  <pre><code lang="js" class=""><span>// assist.js</span>
+<span>// 由一个组件，向下找到所有指定的组件</span>
+<span><span>function</span> <span>findComponentsDownward</span> (<span>context, componentName</span>) </span>&#123;
+  <span>return</span> context.$children.reduce(<span>(<span>components, child</span>) =&gt;</span> &#123;
+    <span>if</span> (child.$options.name === componentName) components.push(child);
+    <span>const</span> foundChilds = findComponentsDownward(child, componentName);
+    <span>return</span> components.concat(foundChilds);
+  &#125;, []);
+&#125;
+<span>export</span> &#123; findComponentsDownward &#125;;
+</code></pre>
+  <p>
+    这个函数实现的方式有很多，这里巧妙使用
+    <code>reduce</code>
+    做累加器，并用递归将找到的组件合并为一个数组并返回，代码量较少，但理解起来稍困难。
+  </p>
+  <p>用法与 findComponentDownward 大同小异，就不再写用例了。</p>
+  <h3 data-id="heading-7">找到指定组件的兄弟组件——findBrothersComponents</h3>
+  <p>代码如下：</p>
+  <pre><code lang="js" class=""><span>// assist.js</span>
+<span>// 由一个组件，找到指定组件的兄弟组件</span>
+<span><span>function</span> <span>findBrothersComponents</span> (<span>context, componentName, exceptMe = true</span>) </span>&#123;
+  <span>let</span> res = context.$parent.$children.filter(<span><span>item</span> =&gt;</span> &#123;
+    <span>return</span> item.$options.name === componentName;
+  &#125;);
+  <span>let</span> index = res.findIndex(<span><span>item</span> =&gt;</span> item._uid === context._uid);
+  <span>if</span> (exceptMe) res.splice(index, <span>1</span>);
+  <span>return</span> res;
+&#125;
+<span>export</span> &#123; findBrothersComponents &#125;;
+</code></pre>
+  <p>
+    相比其它 4 个函数，findBrothersComponents 多了一个参数
+    <code>exceptMe</code>，是否把本身除外，默认是
+    true。寻找兄弟组件的方法，是先获取
+    <code>context.$parent.$children</code
+    >，也就是父组件的全部子组件，这里面当前包含了本身，所有也会有第三个参数
+    exceptMe。Vue.js 在渲染组件时，都会给每个组件加一个内置的属性
+    <code>_uid</code>，这个 _uid
+    是不会重复的，借此我们可以从一系列兄弟组件中把自己排除掉。
+  </p>
+  <p>
+    举个例子，组件 A 是组件 B 的父级，在 B 中找到所有在 A
+    中的兄弟组件（也就是所有在 A 中的 B 组件）：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- component-a.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 A
+    <span>&lt;<span>component-b</span>&gt;</span><span>&lt;/<span>component-b</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> componentB <span>from</span> <span>'./component-b.vue'</span>;
+  
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'componentA'</span>,
+    <span>components</span>: &#123; componentB &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <pre><code lang="html" class=""><span>&lt;!-- component-b.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 B
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> &#123; findBrothersComponents &#125; <span>from</span> <span>'../utils/assist.js'</span>;
+  
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'componentB'</span>,
+    mounted () &#123;
+      <span>const</span> comsB = findBrothersComponents(<span>this</span>, <span>'componentB'</span>);
+      <span>console</span>.log(comsB);  <span>// ① []，空数组</span>
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    在 ① 的位置，打印出的内容为空数组，原因是当前 A 中只有一个 B，而
+    findBrothersComponents 的第三个参数默认是 true，也就是将自己除外。如果在 A
+    中再写一个 B：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- component-a.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    组件 A
+    <span>&lt;<span>component-b</span>&gt;</span><span>&lt;/<span>component-b</span>&gt;</span>
+    <span>&lt;<span>component-b</span>&gt;</span><span>&lt;/<span>component-b</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+</code></pre>
+  <p>
+    这时就会打印出
+    <code>[VueComponent]</code
+    >，有一个组件了，但要注意在控制台会打印两遍，因为在 A 中写了两个 B，而
+    <code>console.log</code> 是在 B
+    中定义的，所以两个都会执行到。如果你看懂了这里，那应该明白打印的两遍
+    <code>[VueComponent]</code>，分别是另一个
+    <code>&lt;component-b&gt;</code>（如果没有搞懂，要仔细琢磨琢磨哦）。
+  </p>
+  <p>如果将 B 中 findBrothersComponents 的第三个参数设置为 false：</p>
+  <pre><code lang="js" class=""><span>// component-b.vue</span>
+<span>export</span> <span>default</span> &#123;
+  <span>name</span>: <span>'componentB'</span>,
+  mounted () &#123;
+    <span>const</span> comsB = findBrothersComponents(<span>this</span>, <span>'componentB'</span>, <span>false</span>);
+    <span>console</span>.log(comsB);
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    此时就会打印出 <code>[VueComponent, VueComponent]</code>，也就是包含自身了。
+  </p>
+  <p>
+    以上就是 5 个函数的详细介绍，get 到这 5 个，以后就再也不用担心组件通信了。
+  </p>
+  <h2 data-id="heading-8">结语</h2>
+  <p>只有你认真开发过 Vue.js 独立组件，才会明白这 5 个函数的强大之处。</p>
+  <h2 data-id="heading-9">扩展阅读</h2>
+  <ul>
+    <li>
+      <a
+        target="_blank"
+        href="https://link.juejin.cn?target=http%3A%2F%2Fes6.ruanyifeng.com%2F%23docs%2Fmodule"
+        title="http://es6.ruanyifeng.com/#docs/module"
+        ref="nofollow noopener noreferrer"
+        >ES6 Module 的语法</a
+      >
+    </li>
+  </ul>
+  <p>
+    注：本节部分代码参考
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fiview%2Fiview%2Fblob%2F2.0%2Fsrc%2Futils%2Fassist.js"
+      title="https://github.com/iview/iview/blob/2.0/src/utils/assist.js"
+      ref="nofollow noopener noreferrer"
+      >iView</a
+    >。
+  </p>
+</div>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/04cbc97d6481.html" title="【掘金小册·Vue组件精讲-7】实战 2：组合多选框组件——CheckboxGroup &amp; Checkbox"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 【掘金小册·Vue组件精讲-7】实战 2：组合多选框组件——CheckboxGroup &amp; Checkbox</span></a><a class="button is-default" href="/be59c6512284.html" title="【掘金小册·Vue组件精讲-5】实战 1：具有数据校验功能的表单组件——Form"><span class="has-text-weight-semibold">下一页: 【掘金小册·Vue组件精讲-5】实战 1：具有数据校验功能的表单组件——Form</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

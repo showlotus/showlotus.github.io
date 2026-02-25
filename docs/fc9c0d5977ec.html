@@ -1,0 +1,95 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-20】写在最后</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+  
+    亲爱的读者，到这里本小册就要结束了，你是否从中学习到了属于你的知识呢？我们来回顾一下小册的内容吧。
+  
+  
+    Vue.js 在开发独立组件时，由于它的特殊性，无法使用 Vuex、Bus
+    这样的第三方插件来做组件通信，因此小册提到了 3
+    种组件间的通信方法，都是支持跨多级的：
+  
+  
+    
+      provide / inject：由父组件通过
+      provide 向下提供一个数据，子组件在需要时，通过
+      inject 注入这个依赖，就可以直接访问父级的数据了。
+    
+    
+      dispatch / broadcast：组件向上派发或向下广播一个自定义事件，组件通过
+      $on 来监听。
+    
+    
+  .."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-20】写在最后</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile is-hidden"></div><div class="column is-9"><header class="my-4"><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-20】写在最后</h1><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:20.000Z">2022/03/01 14:59</time><article class="mt-2 post-content">
+<div class="markdown-body">
+  <p>
+    亲爱的读者，到这里本小册就要结束了，你是否从中学习到了属于你的知识呢？我们来回顾一下小册的内容吧。
+  </p>
+  <p>
+    Vue.js 在开发独立组件时，由于它的特殊性，无法使用 Vuex、Bus
+    这样的第三方插件来做组件通信，因此小册提到了 3
+    种组件间的通信方法，都是支持跨多级的：
+  </p>
+  <ol>
+    <li>
+      provide / inject：由父组件通过
+      <code>provide</code> 向下提供一个数据，子组件在需要时，通过
+      <code>inject</code> 注入这个依赖，就可以直接访问父级的数据了。
+    </li>
+    <li>
+      dispatch / broadcast：组件向上派发或向下广播一个自定义事件，组件通过
+      <code>$on</code> 来监听。
+    </li>
+    <li>
+      findComponents 系列：共包含 5 个方法，通过组件的
+      <code>name</code>
+      选项，遍历找到对应的实例，这是组件通信的终极方案，适用于所有场景。
+    </li>
+  </ol>
+  <p>本册总共讲解了 7 个组件的实例：</p>
+  <ol>
+    <li>具有数据校验功能的 Form 组件，它用到了第 1 种组件通信；</li>
+    <li>组合多选框 Checkbox 组件，它用到了第 2 种和第 3 种组件通信；</li>
+    <li>Display 组件，它利用 Vue.js 的构造器 extend 和手动挂载 $mount API；</li>
+    <li>
+      全局通知 $Alert 组件，也是利用了 $mount API，与传统组件不同的是，它基于
+      Vue.js 组件开发，但却是以 JavaScript 的形式调用的，并且组件会在 body
+      节点下渲染；
+    </li>
+    <li>
+      表格组件 Table，典型的数据驱动型组件，使用了函数式组件（Functional
+      Render）来自定义列模板；
+    </li>
+    <li>
+      表格组件 Table，与上例不同的是，它的自定义列模板使用了
+      <code>slot-scope</code>；
+    </li>
+    <li>
+      树形控件 Tree，典型的数据驱动型组件，也是典型的递归组件，其中利用 computed
+      做父子节点联动是精髓。
+    </li>
+  </ol>
+  <p>
+    最后的拓展部分，对 Vue.js 组件的常见 API 做了详细介绍，以及常见的 Vue.js
+    面试题分析和对开源的一些见解。
+  </p>
+  <p>
+    Vue.js 组件开发，归根到底拼的是 JavaScript 的功底，Vue.js
+    在其中只是决定了开发模式，所以，打好 JavaScript 基础才是最重要的。
+  </p>
+  <p>最后，祝愿亲爱的读者能在编程的道路上越走越远。</p>
+  <p>
+    <strong
+      >另外，如果您有关于 Vue.js 或其它前端相关的问题，可以通过
+      <a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fdev.iviewui.com%2Fissues"
+        title="https://dev.iviewui.com/issues"
+        ref="nofollow noopener noreferrer"
+        >iView 社区</a
+      >
+      付费向笔者提问，希望能对一部分人有所帮助。</strong
+    >
+  </p>
+</div>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/099ef0fda68d.html" title="Vue风格指南（选项、属性顺序）"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: Vue风格指南（选项、属性顺序）</span></a><a class="button is-default" href="/a01654586660.html" title="【掘金小册·Vue组件精讲-19】拓展：如何做好一个开源项目（下篇）"><span class="has-text-weight-semibold">下一页: 【掘金小册·Vue组件精讲-19】拓展：如何做好一个开源项目（下篇）</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

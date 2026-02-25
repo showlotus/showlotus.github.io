@@ -1,0 +1,113 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>Vue 中如何取消 ViewDesign 中组件内部的指令 &lt;W13&gt;</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+
+最近需要做这样一个功能：当展开下拉框或者日期选择器的浮层面板后，点击某个区域，不会让浮层消失。如果有了解过组件库内部源码的话，这种浮层的点击外部后隐藏，大多数组件内部都是通过一个 clickOutside 的指令来实现，而目标功能就是需要实现一块 “禁区”，当点击 “禁区” 时不会触发 clickOutside。本文就是基于该功能的实现对这个指令进行探索，记录自己实现这个功能的全过程，望以后少踩点坑。
+
+走过的弯路一开始，我想到的是：如何将这个 clickOutside 指令失效，因为点击浮层外部，然后隐藏浮层，就是因为有这个指令才导致的。于是摸索出了几种方案（反面教材）：
+1. 修改组件源码最简单暴力的方法就是，先复制一份使用的组件到项目下，然后把组件中引入资源的 相对路径 都改为 绝对路径。
+
+下.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">Vue 中如何取消 ViewDesign 中组件内部的指令 &lt;W13&gt;</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%B5%B0%E8%BF%87%E7%9A%84%E5%BC%AF%E8%B7%AF"><span class="toc-text">走过的弯路</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E4%BF%AE%E6%94%B9%E7%BB%84%E4%BB%B6%E6%BA%90%E7%A0%81"><span class="toc-text">1. 修改组件源码</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E7%A6%81%E7%94%A8%E6%8C%87%E4%BB%A4%E7%BB%91%E5%AE%9A%E7%9A%84%E5%9B%9E%E8%B0%83"><span class="toc-text">2. 禁用指令绑定的回调</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-%E6%89%8B%E5%8A%A8%E8%A7%A6%E5%8F%91-unbind-%E9%92%A9%E5%AD%90"><span class="toc-text">3. 手动触发 unbind 钩子</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B0%B1%E4%B8%80%E8%A1%8C%E4%BB%A3%E7%A0%81%E7%9A%84%E4%BA%8B"><span class="toc-text">就一行代码的事</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%89%A9%E5%B1%95%E5%B0%8F%E7%9F%A5%E8%AF%86"><span class="toc-text">扩展小知识</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">Vue 中如何取消 ViewDesign 中组件内部的指令 &lt;W13&gt;</h1><time class="has-text-grey custom-date-font" datetime="2022-11-25T20:27:02.000Z">2022/11/25 20:27</time><article class="mt-2 post-content"><img src="/5a84071bd45a/banner.jpg" class="">
+
+<blockquote>
+<p>最近需要做这样一个功能：当展开下拉框或者日期选择器的浮层面板后，点击某个区域，不会让浮层消失。如果有了解过组件库内部源码的话，这种浮层的点击外部后隐藏，大多数组件内部都是通过一个 <code>clickOutside</code> 的指令来实现，而目标功能就是需要实现一块 “禁区”，当点击 “禁区” 时不会触发 <code>clickOutside</code>。本文就是基于该功能的实现对这个指令进行探索，记录自己实现这个功能的全过程，望以后少踩点坑。</p>
+</blockquote>
+<h4 id="走过的弯路"><a href="#走过的弯路" class="headerlink" title="走过的弯路"></a>走过的弯路</h4><p>一开始，我想到的是：如何将这个 <code>clickOutside</code> 指令失效，因为点击浮层外部，然后隐藏浮层，就是因为有这个指令才导致的。于是摸索出了几种<del>方案</del>（反面教材）：</p>
+<h5 id="1-修改组件源码"><a href="#1-修改组件源码" class="headerlink" title="1. 修改组件源码"></a>1. 修改组件源码</h5><p>最简单暴力的方法就是，先复制一份使用的组件到项目下，然后把组件中引入资源的 <big>相对路径</big> 都改为 <big>绝对路径</big>。</p>
+<blockquote>
+<p>下方以 <em>ViewDesign</em> 的 <em>Poptip</em> 为例，<a target="_blank" rel="noopener" href="https://github1s.com/view-design/ViewUI/blob/HEAD/src/components/poptip/poptip.vue">戳这里查看组件源码</a>。</p>
+</blockquote>
+<img src="/5a84071bd45a/1.png" class="">
+
+<p>这样保证组件可以正式使用，然后找到绑定 <code>clickOutside</code> 指令的地方，删了就行。</p>
+<img src="/5a84071bd45a/2.png" class="">
+
+<p>是不是很简单，不过这种操作源代码的代价太大，意味着风险越高，建议谨慎使用。那么有没有不操作源码的方案呢？有的，接着往下看。</p>
+<h5 id="2-禁用指令绑定的回调"><a href="#2-禁用指令绑定的回调" class="headerlink" title="2. 禁用指令绑定的回调"></a>2. 禁用指令绑定的回调</h5><p>再想想，还可以让 <code>clickOutside</code> 绑定的回调方法不执行也能达到相同的目的，也就是 “禁用” <code>handleClose</code>。</p>
+<p>然后写了下面这段代码：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">// 在组件上绑定一个 ref，通过 ref 获取组件实例</span>
+<span class="token keyword">const</span> poptip <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$refs<span class="token punctuation">.</span>poptip
+poptip<span class="token punctuation">.</span><span class="token function-variable function">handleClose</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=></span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+poptip<span class="token punctuation">.</span><span class="token function">$forceUpdate</span><span class="token punctuation">(</span><span class="token punctuation">)</span></code></pre>
+
+<p>将内部的 <code>handleClose</code> 重写为一个空函数。这一步的前提是确保 <code>handleClose</code> 只有在 <code>clickOutside</code> 中有用到，事实也正是如此，那么就可以放心重写了。这样就可以吗？No No No ~ 你会发现不起任何作用。</p>
+<p>关于这个问题，首先需要了解一下 <code>clickOutside</code> 指令的内部逻辑，源码如下：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">export</span> <span class="token keyword">default</span> <span class="token punctuation">&#123;</span>
+  <span class="token function">bind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding<span class="token punctuation">,</span> vnode</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">function</span> <span class="token function">documentHandler</span><span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>el<span class="token punctuation">.</span><span class="token function">contains</span><span class="token punctuation">(</span>e<span class="token punctuation">.</span>target<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token boolean">false</span>
+      <span class="token punctuation">&#125;</span>
+      <span class="token keyword">if</span> <span class="token punctuation">(</span>binding<span class="token punctuation">.</span>expression<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        binding<span class="token punctuation">.</span><span class="token function">value</span><span class="token punctuation">(</span>e<span class="token punctuation">)</span>
+      <span class="token punctuation">&#125;</span>
+    <span class="token punctuation">&#125;</span>
+    el<span class="token punctuation">.</span>__vueClickOutside__ <span class="token operator">=</span> documentHandler
+    document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span> documentHandler<span class="token punctuation">)</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">update</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token function">unbind</span><span class="token punctuation">(</span><span class="token parameter">el<span class="token punctuation">,</span> binding</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    document<span class="token punctuation">.</span><span class="token function">removeEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span> el<span class="token punctuation">.</span>__vueClickOutside__<span class="token punctuation">)</span>
+    <span class="token keyword">delete</span> el<span class="token punctuation">.</span>__vueClickOutside__
+  <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span></code></pre>
+
+<p>注意看，它只有两个有效的钩子函数：<code>bind</code> 与 <code>unbind</code>。当首次绑定指令时，会往 <code>document</code> 上添加一个 <code>click</code> 事件监听，回调方法是经过处理后的 <code>handleClose</code>。也即只有当前点击元素不是指令绑定元素或者指令绑定元素的后代元素时，才会触发 <code>handleClose</code>。</p>
+<p>而当我们重写 <code>handleClose</code> 方法后，虽然会触发指令的 <code>update</code> 钩子，但是它是空的，压根不会对 <code>document</code> 上绑定的方法有任何影响，绑定的依然是最开始的 <code>handleClose</code>，不是当前最新的 <code>handleClose</code>。那么，如果在 <code>update</code> 钩子里，先触发 <code>unbind</code>，再触发 <code>bind</code> 是不是就能绑定最新的 <code>handleClose</code> 了？其实还能再简单的，或许我们可以直接解绑这个指令，也就是下面要介绍的方法，手动触发 <code>unbind</code> 钩子。</p>
+<h5 id="3-手动触发-unbind-钩子"><a href="#3-手动触发-unbind-钩子" class="headerlink" title="3. 手动触发 unbind 钩子"></a>3. 手动触发 <code>unbind</code> 钩子</h5><p>首先，需要得到这个指令，每个组件上配置的属性都可以在 <code>$options</code> 上找到，而注册的指令对应的就是 <code>$options.directives</code> 中。</p>
+<p>于是，就可以写出下面的代码：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">const</span> el <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$refs<span class="token punctuation">.</span>poptip<span class="token punctuation">.</span>$el
+<span class="token keyword">const</span> clickOutside <span class="token operator">=</span> <span class="token keyword">this</span><span class="token punctuation">.</span>$refs<span class="token punctuation">.</span>poptip<span class="token punctuation">.</span>$options<span class="token punctuation">.</span>directives<span class="token punctuation">.</span>clickOutside
+clickOutside<span class="token punctuation">.</span><span class="token function">unbind</span><span class="token punctuation">(</span>el<span class="token punctuation">)</span></code></pre>
+
+<p>如此一来，指令就被卸载了，无论怎么点击浮层外的区域都不会让浮层消失。</p>
+<p>但是，这与最初想要的 “禁区” 有些不一样，“禁区” 是某块区域内点击时不会关闭浮层，而现在除了浮层外的所有区域都是 “禁区” 了，也不能满足最终的功能要求。</p>
+<p>上述的三种方法，都不如以满足功能需求，都是自己在摸索过程中走的一些弯路。有些倒是挺有趣的，扩展了知识面，也算是积累经验了吧。下面的才是可靠的解决方案，就一句代码，这也印证了那句：一个功能应该实现起来越简单越好，如果很复杂，那么可能实现方式有问题。先将复杂的问题简单化，再逐个击破。</p>
+<h4 id="就一行代码的事"><a href="#就一行代码的事" class="headerlink" title="就一行代码的事"></a>就一行代码的事</h4><p>先展示结果，戳一戳下面，体验一波。</p>
+<div class="iframe-codepen" src="https://codepen.io/olderk/full/QWxxWZw" width="100%" height="500"></div>
+
+<p>其实就是，阻止禁区元素的 <code>click</code> 事件向上冒泡就可以了。用 <em>Vue</em> 的写法就是下面这样：</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript"><span class="token operator">&lt;</span>div @click<span class="token punctuation">.</span>stop<span class="token operator">></span>禁区<span class="token operator">&lt;</span><span class="token operator">/</span>div<span class="token operator">></span></code></pre>
+
+<p>是的，就这么简单。是不是感觉上面说的一大堆方案看起来好傻，哈哈。</p>
+<p>关于事件的冒泡，这就要聊聊 <em>JS</em> 中 <em>DOM</em> 元素事件的传播方式，主要有两种：<big>捕获</big> 和 <big>冒泡</big>，先看下图。</p>
+<img src="/5a84071bd45a/event.png" class="">
+
+<p>关于这两个名词，先看看官方的解释：</p>
+<ul>
+<li><p>捕获阶段：事件对象通过目标的祖先从 <em>Window</em> 传播到目标的父级。</p>
+</li>
+<li><p>冒泡阶段：事件对象以相反的顺序传播到目标的祖先，从目标的父级开始，到 <em>Window</em> 结束。</p>
+</li>
+</ul>
+<p>简单点说：捕获是自上而下传播，冒泡是自下而上传播。冒泡是默认开启的，而捕获时默认关闭的。</p>
+<p>这是捕获：</p>
+<img src="/5a84071bd45a/capture.gif" class="">
+
+<p>这是冒泡：</p>
+<img src="/5a84071bd45a/bubble.gif" class="">
+
+<p>这也就解释了，为什么 <code>clickOutside</code> 在 <code>document</code> 上绑定点击事件，点击某个元素时，也会触发这个 <code>click</code> 事件。</p>
+<p>如果想阻止冒泡就可以通过事件对象的 <code>stopPropagation</code> 方法来实现。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span><span class="token string">"click"</span><span class="token punctuation">,</span> <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+  <span class="token comment">// 点击时触发</span>
+  e<span class="token punctuation">.</span><span class="token function">stopPropagation</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+<span class="token punctuation">&#125;</span><span class="token punctuation">)</span></code></pre>
+
+<p>如果想开启捕获，可以在注册事件时，携带第三个参数 <code>useCapture</code>。</p>
+<pre class="language-javascript" data-language="javascript"><code class="language-javascript">document<span class="token punctuation">.</span><span class="token function">addEventListener</span><span class="token punctuation">(</span>
+  <span class="token string">"click"</span><span class="token punctuation">,</span>
+  <span class="token keyword">function</span> <span class="token punctuation">(</span><span class="token parameter">e</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">// 点击时触发</span>
+  <span class="token punctuation">&#125;</span><span class="token punctuation">,</span>
+  <span class="token boolean">true</span>
+<span class="token punctuation">)</span></code></pre>
+
+<blockquote>
+<p>更多详细内容，可以查阅 <a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/API/EventTarget/addEventListener"><em>MDN</em></a>。</p>
+</blockquote>
+<h4 id="扩展小知识"><a href="#扩展小知识" class="headerlink" title="扩展小知识"></a>扩展小知识</h4><p><em>ViewDesign</em> 中带浮层的组件有很多，而且并不是所有都能只通过关闭 “禁区” 元素的冒泡实现。如果想给其他携带浮层的组件添加 “禁区”，先仔细阅读组件官方文档的 <em>API</em> ，如果 <em>props</em> 中有下面这一项：</p>
+<img src="/5a84071bd45a/4.png" class="">
+
+<p>也即会默认开启 <code>capture</code> 模式。因为是自上而下传递，如果仅仅只是在 “禁区” 元素上阻止冒泡是不行的，“禁区” 元素的祖先元素同样会触发事件，依然会关闭浮层，所以还需要将 <code>capture</code> 模式关闭，方才可行。</p>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/c57af76d99fd.html" title="用 npm-pack-all 批量生成 .tgz 文件 &lt;W14&gt;"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 用 npm-pack-all 批量生成 .tgz 文件 &lt;W14&gt;</span></a><a class="button is-default" href="/a9732faecdfe.html" title="拦截网页请求并处理数据 &lt;W12&gt;"><span class="has-text-weight-semibold">下一页: 拦截网页请求并处理数据 &lt;W12&gt;</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

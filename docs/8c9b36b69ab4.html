@@ -1,0 +1,384 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-3】组件的通信 1：provide &amp; inject</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+  
+    上一节中我们说到，ref 和
+    $parent / $children
+    在跨级通信时是有弊端的。当组件 A 和组件 B
+    中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus
+    这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js
+    内置的 provide / inject 接口。
+  
+  什么是 provide / inject
+  
+    provide / inject 是 Vue.js 2.2.0 版本后新增的
+    API，在文档中这样介绍 ：
+  
+  
+    
+      cn.vuejs.org/v2/api/#pro…
+    
+    
+      这对选项需要一起使用，以允.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-3】组件的通信 1：provide &amp; inject</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">什么是 provide &#x2F; inject</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">替代 Vuex</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">进阶技巧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">独立组件中使用</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-3】组件的通信 1：provide &amp; inject</h1><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:03.000Z">2022/03/01 14:59</time><article class="mt-2 post-content">
+<div class="markdown-body">
+  <p>
+    上一节中我们说到，<code>ref</code> 和
+    <code>$parent / $children</code>
+    在<strong>跨级</strong>通信时是有弊端的。当组件 A 和组件 B
+    中间隔了数代（甚至不确定具体级别）时，以往会借助 Vuex 或 Bus
+    这样的解决方案，不得不引入三方库来支持。本小节则介绍一种无依赖的组件通信方法：Vue.js
+    内置的 provide / inject 接口。
+  </p>
+  <h2 data-id="heading-1">什么是 provide / inject</h2>
+  <p>
+    <code>provide / inject</code> 是 Vue.js 2.2.0 版本后新增的
+    API，在文档中这样介绍 ：
+  </p>
+  <blockquote>
+    <p>
+      <a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fcn.vuejs.org%2Fv2%2Fapi%2F%23provide-inject"
+        title="https://cn.vuejs.org/v2/api/#provide-inject"
+        ref="nofollow noopener noreferrer"
+        >cn.vuejs.org/v2/api/#pro…</a
+      >
+    </p>
+    <p>
+      这对选项需要一起使用，以允许一个祖先组件向其所有子孙后代注入一个依赖，不论组件层次有多深，并在起上下游关系成立的时间里始终生效。如果你熟悉
+      React，这与 React 的上下文特性很相似。
+    </p>
+  </blockquote>
+  <p>并且文档中有如下提示：</p>
+  <blockquote>
+    <p>
+      provide 和 inject
+      主要为高阶插件/组件库提供用例。并不推荐直接用于应用程序代码中。
+    </p>
+  </blockquote>
+  <p>
+    看不懂上面的介绍没有关系，不过上面的这句提示应该明白，就是说 Vue.js
+    不建议在业务中使用这对 API，而是在插件 / 组件库（比如 iView，事实上 iView
+    的很多组件都在用）。<strong
+      >不过建议归建议，如果你用好了，这个 API 会非常有用。</strong
+    >
+  </p>
+  <p>
+    我们先来看一下这个 API 怎么用，假设有两个组件： <strong>A.vue</strong> 和
+    <strong>B.vue</strong>，B 是 A 的子组件。
+  </p>
+  <pre><code lang="js" class=""><span>// A.vue</span>
+<span>export</span> <span>default</span> &#123;
+  <span>provide</span>: &#123;
+    <span>name</span>: <span>'Aresn'</span>
+  &#125;
+&#125;
+
+<span>// B.vue</span>
+<span>export</span> <span>default</span> &#123;
+  <span>inject</span>: [<span>'name'</span>],
+  mounted () &#123;
+    <span>console</span>.log(<span>this</span>.name);  <span>// Aresn</span>
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    可以看到，在 A.vue 里，我们设置了一个 <strong>provide: name</strong>，值为
+    Aresn，它的作用就是将
+    <strong>name</strong> 这个变量提供给它的所有子组件。而在 B.vue 中，通过
+    <code>inject</code> 注入了从 A 组件中提供的
+    <strong>name</strong> 变量，那么在组件 B 中，就可以直接通过
+    <strong
+      ><a
+        target="_blank"
+        href="https://link.juejin.cn?target=http%3A%2F%2Fthis.name"
+        title="http://this.name"
+        ref="nofollow noopener noreferrer"
+        >this.name</a
+      ></strong
+    >
+    访问这个变量了，它的值也是 Aresn。这就是 provide / inject API 最核心的用法。
+  </p>
+  <p>需要注意的是：</p>
+  <blockquote>
+    <p>
+      provide 和 inject
+      绑定并<strong>不是可响应</strong>的。这是刻意为之的。然而，如果你传入了一个可监听的对象，那么其对象的属性还是可响应的。
+    </p>
+  </blockquote>
+  <p>
+    所以，上面 A.vue 的 name 如果改变了，B.vue 的
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=http%3A%2F%2Fthis.name"
+      title="http://this.name"
+      ref="nofollow noopener noreferrer"
+      >this.name</a
+    >
+    是不会改变的，仍然是 Aresn。
+  </p>
+  <h2 data-id="heading-2">替代 Vuex</h2>
+  <p>
+    我们知道，在做 Vue 大型项目时，可以使用 Vuex 做状态管理，它是一个专为 Vue.js
+    开发的<strong>状态管理模式</strong>，用于集中式存储管理应用的所有组件的状态，并以相应的规则保证状态以一种可预测的方式发生变化。
+  </p>
+  <p>
+    那了解了 provide / inject 的用法，下面来看怎样替代
+    Vuex。当然，我们的目的并不是为了替代
+    Vuex，它还是有相当大的用处，这里只是介绍另一种可行性。
+  </p>
+  <p>
+    使用
+    Vuex，最主要的目的是跨组件通信、全局数据维护、多人协同开发。需求比如有：用户的登录信息维护、通知信息维护等全局的状态和数据。
+  </p>
+  <p>
+    一般在 webpack 中使用 Vue.js，都会有一个入口文件
+    <strong>main.js</strong>，里面通常导入了 Vue、VueRouter、iView
+    等库，通常也会导入一个入口组件 <code>app.vue</code> 作为根组件。一个简单的
+    app.vue 可能只有以下代码：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>router-view</span>&gt;</span><span>&lt;/<span>router-view</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>使用 provide / inject 替代 Vuex，就是在这个 app.vue 文件上做文章。</p>
+  <p>
+    我们把 app.vue
+    理解为一个最外层的根组件，用来存储所有需要的全局数据和状态，甚至是计算属性（computed）、方法（methods）等。因为你的项目中所有的组件（包含路由），它的父组件（或根组件）都是
+    app.vue，所以我们<strong
+      >把整个 app.vue 实例通过 <code>provide</code> 对外提供</strong
+    >。
+  </p>
+  <p><em>app.vue：</em></p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>router-view</span>&gt;</span><span>&lt;/<span>router-view</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    provide () &#123;
+      <span>return</span> &#123;
+        <span>app</span>: <span>this</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    上面，我们把整个 app.vue 的实例 <code>this</code> 对外提供，命名为
+    <strong>app</strong>（这个名字可以自定义，推荐使用
+    app，使用这个名字后，子组件不能再使用它作为局部属性）。接下来，任何组件（或路由）只要通过
+    <code>inject</code> 注入 app.vue 的 app 的话，都可以直接通过
+    <strong
+      ><a
+        target="_blank"
+        href="https://link.juejin.cn?target=http%3A%2F%2Fthis.app.xxx"
+        title="http://this.app.xxx"
+        ref="nofollow noopener noreferrer"
+        >this.app.xxx</a
+      ></strong
+    >
+    来访问 app.vue 的 <code>data</code>、<code>computed</code>、<code
+      >methods</code
+    >
+    等内容。
+  </p>
+  <p>
+    app.vue
+    是整个项目第一个被渲染的组件，而且只会渲染一次（即使切换路由，app.vue
+    也不会被再次渲染），利用这个特性，很适合做一次性全局的状态数据管理，例如，我们将用户的登录信息保存起来：
+  </p>
+  <p><em>app.vue，部分代码省略：</em></p>
+  <pre><code lang="html" class=""><span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    provide () &#123;
+      <span>return</span> &#123;
+        <span>app</span>: <span>this</span>
+      &#125;
+    &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>userInfo</span>: <span>null</span>
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      getUserInfo () &#123;
+        <span>// 这里通过 ajax 获取用户信息后，赋值给 this.userInfo，以下为伪代码</span>
+        $.ajax(<span>'/user/info'</span>, (data) =&gt; &#123;
+          <span>this</span>.userInfo = data;
+        &#125;);
+      &#125;
+    &#125;,
+    mounted () &#123;
+      <span>this</span>.getUserInfo();
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    这样，任何页面或组件，只要通过 <code>inject</code> 注入
+    <code>app</code> 后，就可以直接访问 <code>userInfo</code> 的数据了，比如：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    &#123;&#123; app.userInfo &#125;&#125;
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>inject</span>: [<span>'app'</span>]
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    是不是很简单呢。除了直接使用数据，还可以调用方法。比如在某个页面里，修改了个人资料，这时一开始在
+    <code>app.vue</code> 里获取的
+    <code>userInfo</code> 已经不是最新的了，需要重新获取。可以这样使用：
+  </p>
+  <p><em>某个页面：</em></p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    &#123;&#123; app.userInfo &#125;&#125;
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>inject</span>: [<span>'app'</span>],
+    <span>methods</span>: &#123;
+      changeUserInfo () &#123;
+        <span>// 这里修改完用户数据后，通知 app.vue 更新，以下为伪代码</span>
+        $.ajax(<span>'/user/update'</span>, () =&gt; &#123;
+          <span>// 直接通过 this.app 就可以调用 app.vue 里的方法</span>
+          <span>this</span>.app.getUserInfo();
+        &#125;)
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    同样非常简单。只要理解了 <code>this.app</code> 是直接获取整个
+    <code>app.vue</code> 的实例后，使用起来就得心应手了。想一想，配置复杂的 Vuex
+    的全部功能，现在是不是都可以通过 <code>provide / inject</code> 来实现了呢？
+  </p>
+  <h2 data-id="heading-3">进阶技巧</h2>
+  <p>
+    如果你的项目足够复杂，或需要多人协同开发时，在
+    <code>app.vue</code> 里会写非常多的代码，多到结构复杂难以维护。这时可以使用
+    Vue.js 的混合 <code>mixins</code>，将不同的逻辑分开到不同的 js 文件里。
+  </p>
+  <p>比如上面的用户信息，就可以放到混合里：</p>
+  <p><em>user.js：</em></p>
+  <pre><code lang="js" class=""><span>export</span> <span>default</span> &#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>userInfo</span>: <span>null</span>
+    &#125;
+  &#125;,
+  <span>methods</span>: &#123;
+    getUserInfo () &#123;
+      <span>// 这里通过 ajax 获取用户信息后，赋值给 this.userInfo，以下为伪代码</span>
+      $.ajax(<span>'/user/info'</span>, (data) =&gt; &#123;
+        <span>this</span>.userInfo = data;
+      &#125;);
+    &#125;
+  &#125;,
+  mounted () &#123;
+    <span>this</span>.getUserInfo();
+  &#125;
+&#125;
+</code></pre>
+  <p>然后在 <code>app.vue</code> 中混合：</p>
+  <p><em>app.vue：</em></p>
+  <pre><code lang="html" class=""><span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> mixins_user <span>from</span> <span>'../mixins/user.js'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>mixins</span>: [mixins_user],
+    data () &#123;
+      <span>return</span> &#123;
+
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    这样，跟用户信息相关的逻辑，都可以在
+    <code>user.js</code> 里维护，或者由某个人来维护，<code>app.vue</code>
+    也就很容易维护了。
+  </p>
+  <h2 data-id="heading-4">独立组件中使用</h2>
+  <p>
+    如果你顾忌 Vue.js 文档中所说，provide / inject
+    不推荐直接在应用程序中使用，那没有关系，仍然使用你熟悉的 Vuex 或 Bus
+    来管理你的项目就好。我们介绍的这对 API，主要还是在独立组件中发挥作用的。
+  </p>
+  <p>
+    只要一个组件使用了
+    <code>provide</code> 向下提供数据，那其下所有的子组件都可以通过
+    <code>inject</code>
+    来注入，不管中间隔了多少代，而且可以注入多个来自不同父级提供的数据。需要注意的是，一旦注入了某个数据，比如上面示例中的
+    <code>app</code>，那这个组件中就不能再声明
+    <code>app</code> 这个数据了，因为它已经被父级占有。
+  </p>
+  <p>
+    独立组件使用 provide / inject
+    的场景，主要是具有联动关系的组件，比如接下来很快会介绍的第一个实战：具有数据校验功能的表单组件
+    Form。它其实是两个组件，一个是 Form，一个是 FormItem，FormItem 是 Form
+    的子组件，它会依赖 Form 组件上的一些特性（props），所以就需要得到父组件
+    Form，这在 Vue.js 2.2.0 版本以前，是没有 provide / inject 这对 API 的，而
+    Form 和 FormItem
+    不一定是父子关系，中间很可能间隔了其它组件，所以不能单纯使用
+    <code>$parent</code> 来向上获取实例。在 Vue.js 2.2.0
+    之前，一种比较可行的方案是用计算属性动态获取：
+  </p>
+  <pre><code lang="js" class="">computed: &#123;
+  form () &#123;
+    <span>let</span> parent = <span>this</span>.$parent;
+    <span>while</span> (parent.$options.name !== <span>'Form'</span>) &#123;
+      parent = parent.$parent;
+    &#125;
+    <span>return</span> parent;
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    每个组件都可以设置
+    <code>name</code>
+    选项，作为组件名的标识，利用这个特点，通过向上遍历，直到找到需要的组件。这个方法可行，但相比一个
+    <code>inject</code> 来说，太费劲了，而且不那么优雅和 native。如果用
+    inject，可能只需要一行代码：
+  </p>
+  <pre><code lang="js" class=""><span>export</span> <span>default</span> &#123;
+  <span>inject</span>: [<span>'form'</span>]
+&#125;
+</code></pre>
+  <p>不过，这一切的前提是你使用 Vue.js 2.2.0 以上版本。</p>
+  <h2 data-id="heading-5">结语</h2>
+  <p>
+    如果这是你第一次听说 provide / inject 这对
+    API，一定觉得它太神奇了，至少笔者第一时间知晓时是这样的。它解决了独立组件间通信的问题，用好了还有出乎意料的效果。笔者在开发
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fdev.iviewui.com"
+      title="https://dev.iviewui.com"
+      ref="nofollow noopener noreferrer"
+      >iView Developer</a
+    >
+    时，全站就是使用这种方法来做全局数据的管理的，如果你有机会一个人做一个项目时，不妨试试这种方法。
+  </p>
+  <p>
+    下一节，将介绍另一种组件间通信的方法，不同于 provide / inject 的是，它们不是
+    Vue.js 内置的 API。
+  </p>
+</div>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/b18ba3212f76.html" title="【掘金小册·Vue组件精讲-4】组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 【掘金小册·Vue组件精讲-4】组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法</span></a><a class="button is-default" href="/e656ddb2b6d8.html" title="【掘金小册·Vue组件精讲-2】基础：Vue.js 组件的三个 API：prop、event、slot"><span class="has-text-weight-semibold">下一页: 【掘金小册·Vue组件精讲-2】基础：Vue.js 组件的三个 API：prop、event、slot</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>

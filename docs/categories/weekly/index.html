@@ -1,0 +1,69 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>showlotus's blog</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/widget-post-list.css"><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><span>分类 · 每周一篇</span></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><article class="post-container is-flex is-justify-content-center section container is-max-widescreen pt-4 px-2"><div class="columns is-variable is-1-tablet is-3-desktop-only is-2-widescreen is-full-width"><section class="column"><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/0ed07c1d813b.html">当 JSON 字符串更新时添加提示动画🦄 &lt;W17&gt;</a></h2><header><a href="/tags/CSS"><i class="tag post-item-tag">CSS</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JSON"><i class="tag post-item-tag">JSON</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><time class="has-text-grey custom-date-font" datetime="2023-01-18T12:19:53.000Z">2023/01/18 12:19</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+为了便于用户能直观地看到配置项的一些属性，于是把整个配置以一个 JSON 串的形式展示。本来打算以一个表格或者列表的形式展示，不过配置项中某些属性是 Object 类型，思来想去，还是 JSON 串更直观一点。但是当某个配置改变时，JSON 里的变动不是很明显（如下图所示）。当这个 JSON 里的属性太多时，就不容易能注意到是哪个配置变了。于是，就想能不能做一个属性变化的提示，当某个 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/95404f938c1c.html">给 ViewDesign 加个主题换肤💖 &lt;W16&gt;</a></h2><header><a href="/tags/CSS"><i class="tag post-item-tag">CSS</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-12-21T10:55:12.000Z">2022/12/21 10:55</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近要做主题换肤的功能，项目用的 UI 框架是 ViewDesign ，只支持定制主题，不支持动态主题。查了好多资料，比如：用 less 变量更换、预设几种主题的 CSS 的文件，再动态切换 link 标签的引入资源路径等等。这些方案的应用场景是，对项目中完全自主开发的模块的颜色进行切换。也即，你自己开发了一个导航栏（Menu）和顶部（Header），这俩你是完全控制的，用上述提到的 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/73cc260bac47.html">开发一个 Prettier 插件：全局替换资源引入路径 &lt;W15&gt;</a></h2><header><a href="/tags/AST"><i class="tag post-item-tag">AST</i></a><a href="/tags/Babel"><i class="tag post-item-tag">Babel</i></a><a href="/tags/Prettier"><i class="tag post-item-tag">Prettier</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-12-10T14:35:46.000Z">2022/12/10 14:35</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近在迁移项目，对于一些资源的引用路径，需要换成一个新的路径。还好之前都把资源引用的方式，改成以 @/.. 别名引入的方式，替换起来还算简单。先把新旧路径列出来，然后用 VSCode 的全局替换，因为就只有三种，CV 三次就好了。这种方法，在当时我认为是比较好的了，其实也有打算整个什么脚本啥的，但不知道从何做起。直到当天晚些时候，看到了神光大佬最新发布的一篇文章：写一个同事见了会打你 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/c57af76d99fd.html">用 npm-pack-all 批量生成 .tgz 文件 &lt;W14&gt;</a></h2><header><a href="/tags/node"><i class="tag post-item-tag">node</i></a><a href="/tags/npm"><i class="tag post-item-tag">npm</i></a><a href="/tags/tgz"><i class="tag post-item-tag">tgz</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-12-03T23:41:22.000Z">2022/12/03 23:41</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近，组内的一位同学咨询我：能不能离线下载 npm 包，我的回答是：据我所知，应该不行。然后他发来一个链接，说是按照这个操作，最后一步报错。emm，又涨知识了。点开大概看了看，用到了 npm-pack-all 这个工具，可以将 node_modules 中的依赖生成一份 .tgz 文件，再使用 npm install 安装这个 .tgz 文件就好了。感觉挺有意思，不过如果一步一步生成 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/5a84071bd45a.html">Vue 中如何取消 ViewDesign 中组件内部的指令 &lt;W13&gt;</a></h2><header><a href="/tags/ViewDesign"><i class="tag post-item-tag">ViewDesign</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-25T20:27:02.000Z">2022/11/25 20:27</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近需要做这样一个功能：当展开下拉框或者日期选择器的浮层面板后，点击某个区域，不会让浮层消失。如果有了解过组件库内部源码的话，这种浮层的点击外部后隐藏，大多数组件内部都是通过一个 clickOutside 的指令来实现，而目标功能就是需要实现一块 “禁区”，当点击 “禁区” 时不会触发 clickOutside。本文就是基于该功能的实现对这个指令进行探索，记录自己实现这个功能的全过程 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/a9732faecdfe.html">拦截网页请求并处理数据 &lt;W12&gt;</a></h2><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/%E6%B5%8F%E8%A7%88%E5%99%A8%E8%84%9A%E6%9C%AC"><i class="tag post-item-tag">浏览器脚本</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-20T15:07:56.000Z">2022/11/20 15:07</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+有时候需要拦截网页的某个请求，收集响应数据，单个请求直接操作就好了；如果是多个相同 API 的请求，如果有个批处理数据的工具岂不美哉。于是，它来了。本来打算弄成一个油猴插件，但是浏览器总是会把插件的打印日志给 “吞掉”，那就先直接在控制台运行脚本，更简单明了。
+
+介绍用到了一个插件 ajaxhook，官方是这样介绍的：
+在 XMLHttpRequest 对象发起请求之前、收到响应内容 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/e7cef8a1b722.html">CSS实现曲线导航菜单 &lt;W11&gt;</a></h2><header><a href="/tags/CSS"><i class="tag post-item-tag">CSS</i></a><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-12T16:32:58.000Z">2022/11/12 16:32</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近看到一个这样的效果，挺有意思的，打算自己动手试一试。
+
+
+
+拆解首先，看到这个缺口，心里想，这玩意要怎么弄，一头雾水。不过，对于这种形状怪异的，大多数都可以通过多个图形组合做出来，对于这个，可以拆成由下面三部分组成。
+
+
+↓ ↓ ↓
+
+
+
+对于左右两边的，可以通过圆角半径实现，重点是中间部分：缺口是个半圆的图形。在脑海里迅速头脑风暴一下，CSS 中可以实现一个圆形缺口有关的方案。 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/73e1f0916820.html">JS中的类型转换 &lt;W10&gt;</a></h2><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/JavaScript-%E6%9D%83%E5%A8%81%E6%8C%87%E5%8D%97"><i class="tag post-item-tag">JavaScript 权威指南</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-11-03T12:50:11.000Z">2022/11/03 12:50</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+JS 中的数据类型基础数据类型（又称为原始值）：null 、undefined 、boolean 、string 、number 。
+
+声明时：用栈存储，栈中存放的是对应的值；
+赋值时：生成一块相同值的栈，两个变量对应不同的地址。
+
+动态数据类型：Array 、Object 、Set 、Map 等。
+
+声明时：值存放在堆中，栈中存放指向堆的地址；
+赋值时：将栈中的地址赋给另一个变量，也 ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/039b4a276713.html">如何实现状态的「伪更新」? &lt;W9&gt;</a></h2><header><a href="/tags/JavaScript"><i class="tag post-item-tag">JavaScript</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-29T12:41:45.000Z">2022/10/29 12:41</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+最近要做一个与颜色选择器有关功能：当用户在颜色面板里预选颜色时，需要同时更新当前画布的颜色；如果取消选择，则将画布背景重置为初始颜色；如果确定了颜色，则更新当前画布颜色。比较容易想到的方法是，用两个变量分别记录初始值 originValue 与当前值 value ：如果只是选择，那就用去更新 value ；如果取消选择，重置为 originValue ；如果选中，将 originVa ...</p><!-- TAG 隐藏【更多】按钮--></section></article><article class="post-item-card"><section class="content post-card-content p-4 pb-5"><h2 class="mt-4 mb-0 is-family-serif"><a href="/9cc2e610b92e.html">Vue：beforeCreate -&gt; created &lt;W8&gt;</a></h2><header><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BA-Vue-js"><i class="tag post-item-tag">深入浅出 Vue js</i></a><a href="/tags/%E6%BA%90%E7%A0%81"><i class="tag post-item-tag">源码</i></a></header><time class="has-text-grey custom-date-font" datetime="2022-10-22T15:21:59.000Z">2022/10/22 15:21</time><!-- TAG 更改介绍文字字数、手机端隐藏描述--><p class="is-flex-grow-2 mt-2 is-hidden-mobile">
+
+
+如上图所示，Vue 在 beforeCreate -&amp;gt; created 阶段，按这个步骤进行初始化操作。按照这个顺序，也就意味着后者初始化的时候，可以使用前者已经初始化的变量。例如：在 data 中可以使用 methods 里定义的方法，也可以用 props 引入的属性进行初始化。
+
+initInjectionsinject 的使用请参考官方文档。
+
+先获取当前实例上注册的 i ...</p><!-- TAG 隐藏【更多】按钮--></section></article><section class="paginator is-flex is-justify-content-flex-end is-flex-wrap-wrap mt-5"><span class="page-number current">1</span><a class="page-number" href="/categories/weekly/page/2/">2</a><a class="extend next" rel="next" href="/categories/weekly/page/2/"><i class="iconfont icon-next has-text-grey"></i></a></section></section><aside class="column is-hidden-mobile is-4-tablet is-3-widescreen"><div style="position: sticky; top: 50px;"><main class="aside-card-container categories-widget category-page"><h3>分类</h3><section><ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8E%98%E9%87%91%E5%B0%8F%E5%86%8C%C2%B7Vue%E7%BB%84%E4%BB%B6%E7%B2%BE%E8%AE%B2/">掘金小册·Vue组件精讲</a><span class="category-list-count">20</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/%E6%8E%A2%E7%B4%A2/">探索</a><span class="category-list-count">1</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/daily/">日常</a><span class="category-list-count">28</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/weekly/">每周一篇</a><span class="category-list-count">17</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/note/">笔记</a><span class="category-list-count">5</span></li></ul></section></main></div></aside></div></article><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script>$claudia.fadeInImage(null, $claudia.blurBackdropImg)
+
+window.addEventListener('resize', $claudia.throttle(function () {
+    var images = document.querySelectorAll('.js-img-fadeIn')
+
+    images.forEach($claudia.blurBackdropImg)
+}, 150))</script></body></html>

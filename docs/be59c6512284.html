@@ -1,0 +1,821 @@
+<!DOCTYPE html><html class="appearance-light" lang="zh-CN"><head><meta charset="UTF-8"><title>【掘金小册·Vue组件精讲-5】实战 1：具有数据校验功能的表单组件——Form</title><meta name="description" content="I hope one day, everyone is using my program."><meta name="viewport" content="width=device-width, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, initial-scale=1"><!-- Google Analytics --><!-- End Google Analytics -->
+<!-- Baidu Analytics --><!-- End Baidu Analytics --><link rel="icon" href="/images/favicon.png"><link rel="stylesheet" href="/style/common/bulma.css"><link rel="stylesheet" href="/style/base.css"><link rel="stylesheet" href="/style/common/helper.css"><script src="/js/common.js"></script><link rel="stylesheet" href="/style/post.css"><link rel="stylesheet" href="/style/themes/highlight-theme-light.css"><script src="/js/highlight.pack.js"></script><meta name="description" content="
+
+  
+    在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide / inject 和
+    dispatch / broadcast，前者是 Vue.js
+    内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Form。
+  
+  Form 组件概览
+  
+    表单类组件在项目中会大量使用，比如输入框（Input）、单选（Radio）、多选（Checkbox）、下拉选择器（Select）等。在使用表单类组件时，也会经常用到数据校验，如果每次都写校验程序来对每一个表单控件校验，会很低效，因此需要一个能够校验基础表单控件的组件，也就.."><meta name="generator" content="Hexo 5.4.2"></head><body class="is-flex is-flex-direction-column"><header class="header-widget is-flex-shrink-0 is-hidden-mobile"><div class="container is-fullhd is-flex is-justify-content-space-between is-align-items-center is-full-height"><section class="is-hidden-mobile is-flex-shrink-0"><h2><a href="/">showlotus's blog</a></h2></section><h3 class="is-hidden-mobile is-family-serif is-full-height is-flex is-align-items-center is-flex-shrink-0"><div class="is-full-height" id="postTopic"><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">【掘金小册·Vue组件精讲-5】实战 1：具有数据校验功能的表单组件——Form</p><p class="is-full-height is-flex-shrink-0 is-flex is-align-items-center is-justify-content-center">点击返回顶部</p></div></h3><aside class="is-flex-shrink-0"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></aside></div></header><header class="is-flex header-widget is-flex-shrink-0 is-align-items-center is-justify-content-center is-hidden-tablet"><h3 class="is-inline-block"><a href="/">首页</a></h3><h3 class="is-inline-block"><a href="/archives">归档</a></h3></header><main><main class="container is-max-widescreen content section post-page pt-4 px-4"><div class="columns is-flex-desktop is-justify-content-center is-flex-direction-row-reverse"><div class="column is-3 is-hidden-mobile"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">Form 组件概览</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">接口设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">在 Form 中缓存 FormItem 实例</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">触发校验</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">结语</span></a></li><li class="toc-item toc-level-2"><a class="toc-link"><span class="toc-text">扩展阅读</span></a></li></ol></div><div class="column is-9"><header class="my-4"><a href="/tags/IView"><i class="tag post-item-tag">IView</i></a><a href="/tags/Vue"><i class="tag post-item-tag">Vue</i></a><a href="/tags/%E8%BD%AC%E8%BD%BD"><i class="tag post-item-tag">转载</i></a></header><h1 class="mt-0 mb-1 is-family-serif" id="postTitle">【掘金小册·Vue组件精讲-5】实战 1：具有数据校验功能的表单组件——Form</h1><time class="has-text-grey custom-date-font" datetime="2022-03-01T14:59:05.000Z">2022/03/01 14:59</time><article class="mt-2 post-content">
+<div class="markdown-body">
+  <p>
+    在第 3 节和第 4 节中，我们介绍了组件间的两种通信方法：provide / inject 和
+    dispatch / broadcast，前者是 Vue.js
+    内置的，主要用于子组件获取父组件（包括跨级）的状态；后者是自行实现的一种混合，用于父子组件（包括跨级）间通过自定义事件通信。本小节则基于这两种通信方法，来实现一个具有数据校验功能的表单组件——Form。
+  </p>
+  <h2 data-id="heading-1">Form 组件概览</h2>
+  <p>
+    表单类组件在项目中会大量使用，比如输入框（Input）、单选（Radio）、多选（Checkbox）、下拉选择器（Select）等。在使用表单类组件时，也会经常用到数据校验，如果每次都写校验程序来对每一个表单控件校验，会很低效，因此需要一个能够校验基础表单控件的组件，也就是本节要完成的
+    Form 组件。一般的组件库都提供了这个组件，比如 iView，它能够校验内置的 15
+    种控件，且支持校验自定义组件，如下图所示：
+  </p>
+  <p>
+    （也可以在线访问本示例体验：<a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Frun.iviewui.com%2FjwrqnFss"
+      title="https://run.iviewui.com/jwrqnFss"
+      ref="nofollow noopener noreferrer"
+      >run.iviewui.com/jwrqnFss</a
+    >）
+  </p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/30/166c3b75c37ef9a8~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    Form 组件分为两个部分，一个是外层的
+    <code>Form</code> 表单域组件，一组表单控件只有一个 Form，而内部包含了多个
+    <code>FormItem</code> 组件，每一个表单控件都被一个 FormItem
+    包裹。基本的结构看起来像：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>i-form</span>&gt;</span>
+  <span>&lt;<span>i-form-item</span>&gt;</span>
+    <span>&lt;<span>i-input</span> <span>v-model</span>=<span>"form.name"</span>&gt;</span><span>&lt;/<span>i-input</span>&gt;</span>
+  <span>&lt;/<span>i-form-item</span>&gt;</span>
+  <span>&lt;<span>i-form-item</span>&gt;</span>
+    <span>&lt;<span>i-input</span> <span>v-model</span>=<span>"form.mail"</span>&gt;</span><span>&lt;/<span>i-input</span>&gt;</span>
+  <span>&lt;/<span>i-form-item</span>&gt;</span>
+<span>&lt;/<span>i-form</span>&gt;</span>
+</code></pre>
+  <p>
+    Form 要用到数据校验，并在对应的 FormItem
+    中给出校验失败的提示，校验我们会用到一个开源库：<a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fyiminghe%2Fasync-validator"
+      title="https://github.com/yiminghe/async-validator"
+      ref="nofollow noopener noreferrer"
+      >async-validator</a
+    >，基本主流的组件库都是基于它做的校验。使用它很简单，只需按要求写好一个校验规则就好，比如：
+  </p>
+  <pre><code lang="js" class="">[
+  &#123; <span>required</span>: <span>true</span>, <span>message</span>: <span>'邮箱不能为空'</span>, <span>trigger</span>: <span>'blur'</span> &#125;,
+  &#123; <span>type</span>: <span>'email'</span>, <span>message</span>: <span>'邮箱格式不正确'</span>, <span>trigger</span>: <span>'blur'</span> &#125;
+]
+</code></pre>
+  <p>
+    这个代表要校验的数据先判断是否为空（required:
+    true），如果为空，则提示“邮箱不能为空”，触发校验的事件为失焦（trigger:
+    'blur'），如果第一条满足要求，再进行第二条的验证，判断是否为邮箱格式（type:
+    'email'）等等，还支持自定义校验规则。更详细的用法可以参看它的文档。
+  </p>
+  <h2 data-id="heading-2">接口设计</h2>
+  <p>
+    我们先使用最新的 Vue CLI 3 创建一个空白的项目（如果你还不清楚 Vue CLI 3
+    的用法，需要先补习一下了，可以阅读文末的扩展阅读 1），并使用
+    <code>vue-router</code> 插件，同时安装好 <code>async-validator</code> 库。
+  </p>
+  <p>
+    在 <code>src/components</code> 下新建一个
+    <code>form</code> 文件夹，并初始化两个组件 <code>form.vue</code> 和
+    <code>form-item.vue</code
+    >，然后初始化项目，配置路由，创建一个页面能够被访问到。
+  </p>
+  <blockquote>
+    <p>
+      本节所有代码可以在
+      <a
+        target="_blank"
+        href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Ficarusion%2Fvue-component-book"
+        title="https://github.com/icarusion/vue-component-book"
+        ref="nofollow noopener noreferrer"
+        >github.com/icarusion/v…</a
+      >
+      中查看，你可以一边看源码，一边阅读本节；也可以边阅读，边动手实现一遍，遇到问题再参考完整的源码。
+    </p>
+  </blockquote>
+  <p>
+    第 2 节我们介绍到，编写一个 Vue.js 组件，最重要的是设计好它的接口，一个
+    Vue.js 组件的接口来自三个部分：props、slots、events。而 Form 和 FormItem
+    两个组件主要做数据校验，用不到 events。Form 的 slot 就是一系列的
+    FormItem，FormItem 的 slot 就是具体的表单控件，比如输入框
+    <code>&lt;i-input&gt;</code> 。那主要设计的就是 props 了。
+  </p>
+  <p>在 <code>Form</code> 组件中，定义两个 props：</p>
+  <ul>
+    <li>
+      model：表单控件绑定的数据对象，在校验或重置时会访问该数据对象下对应的表单数据，类型为
+      Object。
+    </li>
+    <li>
+      rules：表单验证规则，即上面介绍的 async-validator 所使用的校验规则，类型为
+      Object。
+    </li>
+  </ul>
+  <p>在 <code>FormItem</code> 组件中，也定义两个 props：</p>
+  <ul>
+    <li>
+      label：单个表单组件的标签文本，类似原生的
+      <code>&lt;label&gt;</code> 元素，类型为 String。
+    </li>
+    <li>
+      prop：对应表单域 Form 组件 model
+      里的字段，用于在校验或重置时访问表单组件绑定的数据，类型为 String。
+    </li>
+  </ul>
+  <p>定义好 props，就可以写出大概的用例了：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>i-form</span> <span>:model</span>=<span>"formValidate"</span> <span>:rules</span>=<span>"ruleValidate"</span>&gt;</span>
+      <span>&lt;<span>i-form-item</span> <span>label</span>=<span>"用户名"</span> <span>prop</span>=<span>"name"</span>&gt;</span>
+        <span>&lt;<span>i-input</span> <span>v-model</span>=<span>"formValidate.name"</span>&gt;</span><span>&lt;/<span>i-input</span>&gt;</span>
+      <span>&lt;/<span>i-form-item</span>&gt;</span>
+      <span>&lt;<span>i-form-item</span> <span>label</span>=<span>"邮箱"</span> <span>prop</span>=<span>"mail"</span>&gt;</span>
+        <span>&lt;<span>i-input</span> <span>v-model</span>=<span>"formValidate.mail"</span>&gt;</span><span>&lt;/<span>i-input</span>&gt;</span>
+      <span>&lt;/<span>i-form-item</span>&gt;</span>
+    <span>&lt;/<span>i-form</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> iForm <span>from</span> <span>'../components/form/form.vue'</span>;
+  <span>import</span> iFormItem <span>from</span> <span>'../components/form/form-item.vue'</span>;
+  <span>import</span> iInput <span>from</span> <span>'../components/input/input.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; iForm, iFormItem, iInput &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>formValidate</span>: &#123;
+          <span>name</span>: <span>''</span>,
+          <span>mail</span>: <span>''</span>
+        &#125;,
+        <span>ruleValidate</span>: &#123;
+          <span>name</span>: [
+            &#123; <span>required</span>: <span>true</span>, <span>message</span>: <span>'用户名不能为空'</span>, <span>trigger</span>: <span>'blur'</span> &#125;
+          ],
+          <span>mail</span>: [
+            &#123; <span>required</span>: <span>true</span>, <span>message</span>: <span>'邮箱不能为空'</span>, <span>trigger</span>: <span>'blur'</span> &#125;,
+            &#123; <span>type</span>: <span>'email'</span>, <span>message</span>: <span>'邮箱格式不正确'</span>, <span>trigger</span>: <span>'blur'</span> &#125;
+          ],
+        &#125;
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>有两点需要注意的是：</p>
+  <ol>
+    <li>
+      这里的 <code>&lt;i-input&gt;</code> 并不是原生的
+      <code>&lt;input&gt;</code>
+      输入框，而是一个特制的输入框组件，之后会介讲解的功能和代码；
+    </li>
+    <li>
+      <code>&lt;i-form-item&gt;</code> 的属性
+      <code>prop</code> 是字符串，所以它前面没有冒号（即不是
+      <code>:prop="name"</code>）。
+    </li>
+  </ol>
+  <p>
+    当前的两个组件只是个框框，还没有实现任何功能，不过万事开头难，定义好接口，剩下的就是补全组件的逻辑，而对于使用者，知道了
+    props、events、slots，就已经能写出上例的使用代码了。
+  </p>
+  <p>到此，Form 和 FormItem 的代码如下：</p>
+  <pre><code lang="html" class=""><span>&lt;!-- form.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>form</span>&gt;</span>
+    <span>&lt;<span>slot</span>&gt;</span><span>&lt;/<span>slot</span>&gt;</span>
+  <span>&lt;/<span>form</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'iForm'</span>,
+    <span>props</span>: &#123;
+      <span>model</span>: &#123;
+        <span>type</span>: <span>Object</span>
+      &#125;,
+      <span>rules</span>: &#123;
+        <span>type</span>: <span>Object</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <pre><code lang="html" class=""><span>&lt;!-- form-item.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>label</span> <span>v-if</span>=<span>"label"</span>&gt;</span>&#123;&#123; label &#125;&#125;<span>&lt;/<span>label</span>&gt;</span>
+    <span>&lt;<span>div</span>&gt;</span>
+      <span>&lt;<span>slot</span>&gt;</span><span>&lt;/<span>slot</span>&gt;</span>
+    <span>&lt;/<span>div</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'iFormItem'</span>,
+    <span>props</span>: &#123;
+      <span>label</span>: &#123;
+        <span>type</span>: <span>String</span>,
+        <span>default</span>: <span>''</span>
+      &#125;,
+      <span>prop</span>: &#123;
+        <span>type</span>: <span>String</span>
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <h2 data-id="heading-3">在 Form 中缓存 FormItem 实例</h2>
+  <p>
+    <code>Form</code> 组件的核心功能是数据校验，一个 Form 中包含了多个
+    FormItem，当点击提交按钮时，要逐一对每个 FormItem
+    内的表单组件校验，而校验是由使用者发起，并通过
+    <code>Form</code> 来调用每一个
+    <code>FormItem</code> 的验证方法，再将校验结果汇总后，通过
+    <code>Form</code> 返回出去。大致的流程如下图所示：
+  </p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/30/166c3b7f124cb84a~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>
+    因为要在 Form 中逐一调用 FormItem 的验证方法，而 Form 和 FormItem
+    是独立的，需要预先将 FormItem 的每个实例缓存在 Form 中，这个操作就需要用到第
+    4 节的组件通信方法。当每个 FormItem 渲染时，将其自身（this）作为参数通过
+    <code>dispatch</code> 派发到 Form 组件中，然后通过一个数组缓存起来；同理当
+    FormItem 销毁时，将其从 Form 缓存的数组中移除。相关代码如下：
+  </p>
+  <pre><code lang="js" class=""><span>// form-item.vue，部分代码省略</span>
+
+<span>import</span> Emitter <span>from</span> <span>'../../mixins/emitter.js'</span>;
+
+<span>export</span> <span>default</span> &#123;
+  <span>name</span>: <span>'iFormItem'</span>,
+  <span>mixins</span>: [ Emitter ],
+  <span>// 组件渲染时，将实例缓存在 Form 中</span>
+  mounted () &#123;
+    <span>// 如果没有传入 prop，则无需校验，也就无需缓存</span>
+    <span>if</span> (<span>this</span>.prop) &#123;
+      <span>this</span>.dispatch(<span>'iForm'</span>, <span>'on-form-item-add'</span>, <span>this</span>);
+    &#125;
+  &#125;,
+  <span>// 组件销毁前，将实例从 Form 的缓存中移除</span>
+  beforeDestroy () &#123;
+    <span>this</span>.dispatch(<span>'iForm'</span>, <span>'on-form-item-remove'</span>, <span>this</span>);
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    注意，Vue.js 的组件渲染顺序是由内而外的，所以 FormItem 要先于 Form 渲染，在
+    FormItem 的 mounted 触发时，我们向 Form 派发了事件
+    <code>on-form-item-add</code>，并将当前 FormItem 的实例（this）传递给了
+    Form，而此时，Form 的 mounted 尚未触发，因为 Form 在最外层，如果在 Form 的
+    mounted 里监听事件，是不可以的，所以要在其 created 内监听自定义事件，Form 的
+    created 要先于 FormItem 的 mounted。所以 Form 的相关代码为：
+  </p>
+  <pre><code lang="js" class=""><span>// form.vue，部分代码省略</span>
+<span>export</span> <span>default</span> &#123;
+  <span>name</span>: <span>'iForm'</span>,
+  data () &#123;
+    <span>return</span> &#123;
+      <span>fields</span>: []
+    &#125;;
+  &#125;,
+  created () &#123;
+    <span>this</span>.$on(<span>'on-form-item-add'</span>, (field) =&gt; &#123;
+      <span>if</span> (field) <span>this</span>.fields.push(field);
+    &#125;);
+    <span>this</span>.$on(<span>'on-form-item-remove'</span>, (field) =&gt; &#123;
+      <span>if</span> (field.prop) <span>this</span>.fields.splice(<span>this</span>.fields.indexOf(field), <span>1</span>);
+    &#125;);
+  &#125;
+&#125;
+</code></pre>
+  <p>定义的数据 <code>fields</code> 就是用来缓存所有 FormItem 实例的。</p>
+  <h2 data-id="heading-4">触发校验</h2>
+  <p>Form 支持两种事件来触发校验：</p>
+  <ul>
+    <li>
+      <strong>blur</strong>：失去焦点时触发，常见的有输入框失去焦点时触发校验；
+    </li>
+    <li>
+      <strong>change</strong
+      >：实时输入时触发或选择时触发，常见的有输入框实时输入时触发校验、下拉选择器选择项目时触发校验等。
+    </li>
+  </ul>
+  <p>
+    以上两个事件，都是有具体的表单组件来触发的，我们先来编写一个简单的输入框组件
+    <code>i-input</code>。在 <code>components</code> 下新建目录
+    <code>input</code>，并创建文件 <code>input.vue</code>：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- input.vue --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>input</span>
+         <span>type</span>=<span>"text"</span>
+         <span>:value</span>=<span>"currentValue"</span>
+         @<span>input</span>=<span>"handleInput"</span>
+         @<span>blur</span>=<span>"handleBlur"</span>
+         /&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> Emitter <span>from</span> <span>'../../mixins/emitter.js'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>name</span>: <span>'iInput'</span>,
+    <span>mixins</span>: [ Emitter ],
+    <span>props</span>: &#123;
+      <span>value</span>: &#123;
+        <span>type</span>: <span>String</span>,
+        <span>default</span>: <span>''</span>
+      &#125;,
+    &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>currentValue</span>: <span>this</span>.value
+      &#125;
+    &#125;,
+    <span>watch</span>: &#123;
+      value (val) &#123;
+        <span>this</span>.currentValue = val;
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      handleInput (event) &#123;
+        <span>const</span> value = event.target.value;
+        <span>this</span>.currentValue = value;
+        <span>this</span>.$emit(<span>'input'</span>, value);
+        <span>this</span>.dispatch(<span>'iFormItem'</span>, <span>'on-form-change'</span>, value);
+      &#125;,
+      handleBlur () &#123;
+        <span>this</span>.dispatch(<span>'iFormItem'</span>, <span>'on-form-blur'</span>, <span>this</span>.currentValue);
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>
+    Input 组件中，绑定在 <code>&lt;input&gt;</code> 元素上的原生事件
+    <code>@input</code>，每当输入一个字符，都会调用句柄
+    <code>handleInput</code>，并通过 <code>dispatch</code> 方法向上级的 FormItem
+    组件派发自定义事件 <code>on-form-change</code>；同理，绑定的原生事件
+    <code>@blur</code> 会在 input 失焦时触发，并传递事件
+    <code>on-form-blur</code>。
+  </p>
+  <p>
+    基础组件有了，接下来要做的，是在 FormItem 中监听来自 Input
+    组件派发的自定义事件。这里可以在 mounted
+    中监听，因为你的手速远赶不上组件渲染的速度，不过在 created
+    中监听也是没任何问题的。相关代码如下：
+  </p>
+  <pre><code lang="js" class=""><span>// form-item.vue，部分代码省略</span>
+<span>export</span> <span>default</span> &#123;
+  <span>methods</span>: &#123;
+    setRules () &#123;
+      <span>this</span>.$on(<span>'on-form-blur'</span>, <span>this</span>.onFieldBlur);
+      <span>this</span>.$on(<span>'on-form-change'</span>, <span>this</span>.onFieldChange);
+    &#125;,
+  &#125;,
+  mounted () &#123;
+    <span>if</span> (<span>this</span>.prop) &#123;
+      <span>this</span>.dispatch(<span>'iForm'</span>, <span>'on-form-item-add'</span>, <span>this</span>);
+      <span>this</span>.setRules();
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>
+    通过调用
+    <code>setRules</code> 方法，监听表单组件的两个事件，并绑定了句柄函数
+    <code>onFieldBlur</code> 和 <code>onFieldChange</code>，分别对应 blur 和
+    change 两种事件类型。当 onFieldBlur 或 onFieldChange 函数触发时，就意味着
+    FormItem
+    要对<strong>当前的数据</strong>进行一次校验。当前的数据，指的就是通过表单域
+    Form 中定义的 props：model，结合当前 FormItem 定义的 props：prop
+    来确定的数据，可以回顾上文写过的用例。
+  </p>
+  <p>
+    因为 FormItem 中只定义了数据源的某个 key 名称（即属性 prop），要拿到 Form 中
+    model 里的数据，需要用到第 3 节的通信方法 provide / inject。所以在 Form
+    中，把整个实例（this）向下提供，并在 FormItem 中注入：
+  </p>
+  <pre><code lang="js" class=""><span>// form.vue，部分代码省略</span>
+<span>export</span> <span>default</span> &#123;
+  provide() &#123;
+    <span>return</span> &#123;
+      <span>form</span> : <span>this</span>
+    &#125;;
+  &#125;
+&#125;
+</code></pre>
+  <pre><code lang="js" class=""><span>// form-item.vue，部分代码省略</span>
+<span>export</span> <span>default</span> &#123;
+  <span>inject</span>: [<span>'form'</span>]
+&#125;
+</code></pre>
+  <p>
+    准备好这些，接着就是最核心的校验功能了。blur 和 change
+    事件都会触发校验，它们调用同一个方法，只是参数不同。相关代码如下：
+  </p>
+  <pre><code lang="js" class=""><span>// form-item.vue，部分代码省略</span>
+<span>import</span> AsyncValidator <span>from</span> <span>'async-validator'</span>;
+
+<span>export</span> <span>default</span> &#123;
+  <span>inject</span>: [<span>'form'</span>],
+  <span>props</span>: &#123;
+    <span>prop</span>: &#123;
+      <span>type</span>: <span>String</span>
+    &#125;,
+  &#125;,
+  data () &#123;
+    <span>return</span> &#123;
+      <span>validateState</span>: <span>''</span>,  <span>// 校验状态</span>
+      validateMessage: <span>''</span>,  <span>// 校验不通过时的提示信息</span>
+    &#125;
+  &#125;,
+  <span>computed</span>: &#123;
+    <span>// 从 Form 的 model 中动态得到当前表单组件的数据</span>
+    fieldValue () &#123;
+      <span>return</span> <span>this</span>.form.model[<span>this</span>.prop];
+    &#125;
+  &#125;,
+  <span>methods</span>: &#123;
+    <span>// 从 Form 的 rules 属性中，获取当前 FormItem 的校验规则</span>
+    getRules () &#123;
+      <span>let</span> formRules = <span>this</span>.form.rules;
+
+      formRules = formRules ? formRules[<span>this</span>.prop] : [];
+
+      <span>return</span> [].concat(formRules || []);
+    &#125;,
+    <span>// 只支持 blur 和 change，所以过滤出符合要求的 rule 规则</span>
+    getFilteredRule (trigger) &#123;
+      <span>const</span> rules = <span>this</span>.getRules();
+      <span>return</span> rules.filter(<span><span>rule</span> =&gt;</span> !rule.trigger || rule.trigger.indexOf(trigger) !== <span>-1</span>);
+    &#125;,
+    <span>/**
+     * 校验数据
+     * @param trigger 校验类型
+     * @param callback 回调函数
+     */</span>
+    validate(trigger, callback = <span><span>function</span> (<span></span>) </span>&#123;&#125;) &#123;
+      <span>let</span> rules = <span>this</span>.getFilteredRule(trigger);
+
+      <span>if</span> (!rules || rules.length === <span>0</span>) &#123;
+        <span>return</span> <span>true</span>;
+      &#125;
+
+      <span>// 设置状态为校验中</span>
+      <span>this</span>.validateState = <span>'validating'</span>;
+
+      <span>// 以下为 async-validator 库的调用方法</span>
+      <span>let</span> descriptor = &#123;&#125;;
+      descriptor[<span>this</span>.prop] = rules;
+
+      <span>const</span> validator = <span>new</span> AsyncValidator(descriptor);
+      <span>let</span> model = &#123;&#125;;
+
+      model[<span>this</span>.prop] = <span>this</span>.fieldValue;
+
+      validator.validate(model, &#123; <span>firstFields</span>: <span>true</span> &#125;, errors =&gt; &#123;
+        <span>this</span>.validateState = !errors ? <span>'success'</span> : <span>'error'</span>;
+        <span>this</span>.validateMessage = errors ? errors[<span>0</span>].message : <span>''</span>;
+
+        callback(<span>this</span>.validateMessage);
+      &#125;);
+    &#125;,
+    onFieldBlur() &#123;
+      <span>this</span>.validate(<span>'blur'</span>);
+    &#125;,
+    onFieldChange() &#123;
+      <span>this</span>.validate(<span>'change'</span>);
+    &#125;
+  &#125;
+&#125;
+</code></pre>
+  <p>在 FormItem 的 <code>validate()</code> 方法中，最终做了两件事：</p>
+  <ol>
+    <li>
+      设置了当前的校验状态 <code>validateState</code> 和校验不通过提示信息
+      <code>validateMessage</code>（通过值为空）；
+    </li>
+    <li>
+      将 validateMessage 通过回调 callback 传递给调用者，这里的调用者是
+      onFieldBlur 和 onFieldChange，它们只传入了第一个参数
+      <code>trigger</code>，callback
+      并未传入，因此也不会触发回调，而这个回调主要是给 Form 用的，因为 Form
+      中可以通过提交按钮一次性校验所有的
+      FormItem（后文会介绍）这里只是表单组件触发事件时，对当前 FormItem 做校验。
+    </li>
+  </ol>
+  <p>
+    除了校验，还可以对当前数据进行重置。重置是指将表单组件的数据还原到最初绑定的值，而不是清空，因此需要预先缓存一份初始值。同时我们将校验信息也显示在模板中，并加一些样式。相关代码如下：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;!-- form-item.vue，部分代码省略 --&gt;</span>
+<span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>label</span> <span>v-if</span>=<span>"label"</span> <span>:class</span>=<span>"&#123; 'i-form-item-label-required': isRequired &#125;"</span>&gt;</span>&#123;&#123; label &#125;&#125;<span>&lt;/<span>label</span>&gt;</span>
+    <span>&lt;<span>div</span>&gt;</span>
+      <span>&lt;<span>slot</span>&gt;</span><span>&lt;/<span>slot</span>&gt;</span>
+      <span>&lt;<span>div</span> <span>v-if</span>=<span>"validateState === 'error'"</span> <span>class</span>=<span>"i-form-item-message"</span>&gt;</span>&#123;&#123; validateMessage &#125;&#125;<span>&lt;/<span>div</span>&gt;</span>
+    <span>&lt;/<span>div</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>props</span>: &#123;
+      <span>label</span>: &#123;
+        <span>type</span>: <span>String</span>,
+        <span>default</span>: <span>''</span>
+      &#125;,
+      <span>prop</span>: &#123;
+        <span>type</span>: <span>String</span>
+      &#125;,
+    &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>isRequired</span>: <span>false</span>,  <span>// 是否为必填</span>
+        validateState: <span>''</span>,  <span>// 校验状态</span>
+        validateMessage: <span>''</span>,  <span>// 校验不通过时的提示信息</span>
+      &#125;
+    &#125;,
+    mounted () &#123;
+      <span>// 如果没有传入 prop，则无需校验，也就无需缓存</span>
+      <span>if</span> (<span>this</span>.prop) &#123;
+        <span>this</span>.dispatch(<span>'iForm'</span>, <span>'on-form-item-add'</span>, <span>this</span>);
+
+        <span>// 设置初始值，以便在重置时恢复默认值</span>
+        <span>this</span>.initialValue = <span>this</span>.fieldValue;
+
+        <span>this</span>.setRules();
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      setRules () &#123;
+        <span>let</span> rules = <span>this</span>.getRules();
+        <span>if</span> (rules.length) &#123;
+          rules.every(<span>(<span>rule</span>) =&gt;</span> &#123;
+            <span>// 如果当前校验规则中有必填项，则标记出来</span>
+            <span>this</span>.isRequired = rule.required;
+          &#125;);
+        &#125;
+
+        <span>this</span>.$on(<span>'on-form-blur'</span>, <span>this</span>.onFieldBlur);
+        <span>this</span>.$on(<span>'on-form-change'</span>, <span>this</span>.onFieldChange);
+      &#125;,
+      <span>// 从 Form 的 rules 属性中，获取当前 FormItem 的校验规则</span>
+      getRules () &#123;
+        <span>let</span> formRules = <span>this</span>.form.rules;
+
+        formRules = formRules ? formRules[<span>this</span>.prop] : [];
+
+        <span>return</span> [].concat(formRules || []);
+      &#125;,
+      <span>// 重置数据</span>
+      resetField () &#123;
+        <span>this</span>.validateState = <span>''</span>;
+        <span>this</span>.validateMessage = <span>''</span>;
+
+        <span>this</span>.form.model[<span>this</span>.prop] = <span>this</span>.initialValue;
+      &#125;,
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+<span>&lt;<span>style</span>&gt;</span><span>
+  <span>.i-form-item-label-required</span><span>:before</span> &#123;
+    <span>content</span>: <span>'*'</span>;
+    <span>color</span>: red;
+  &#125;
+  <span>.i-form-item-message</span> &#123;
+    <span>color</span>: red;
+  &#125;
+</span><span>&lt;/<span>style</span>&gt;</span>
+</code></pre>
+  <p>
+    至此，FormItem
+    代码已经完成，不过它只具有单独校验的功能，也就是说，只能对自己的一个表单组件验证，不能对一个表单域里的所有组件一次性全部校验。而实现全部校验和全部重置的功能，要在
+    Form 中完成。
+  </p>
+  <p>
+    上文已经介绍到，在 <code>Form</code> 组件中，预先缓存了全部的 FormItem
+    实例，自然也能在 Form
+    中调用它们。通过点击提交按钮全部校验，或点击重置按钮全部重置数据，只需要在
+    Form 中，逐一调用缓存的 FormItem 实例中的 <code>validate</code> 或
+    <code>resetField</code> 方法。相关代码如下：
+  </p>
+  <pre><code lang="js" class=""><span>// form.vue，部分代码省略</span>
+<span>export</span> <span>default</span> &#123;
+  data () &#123;
+    <span>return</span> &#123;
+      <span>fields</span>: []
+    &#125;;
+  &#125;,
+  <span>methods</span>: &#123;
+    <span>// 公开方法：全部重置数据</span>
+    resetFields() &#123;
+      <span>this</span>.fields.forEach(<span><span>field</span> =&gt;</span> &#123;
+        field.resetField();
+      &#125;);
+    &#125;,
+    <span>// 公开方法：全部校验数据，支持 Promise</span>
+    validate(callback) &#123;
+      <span>return</span> <span>new</span> <span>Promise</span>(<span><span>resolve</span> =&gt;</span> &#123;
+        <span>let</span> valid = <span>true</span>;
+        <span>let</span> count = <span>0</span>;
+        <span>this</span>.fields.forEach(<span><span>field</span> =&gt;</span> &#123;
+          field.validate(<span>''</span>, errors =&gt; &#123;
+            <span>if</span> (errors) &#123;
+              valid = <span>false</span>;
+            &#125;
+            <span>if</span> (++count === <span>this</span>.fields.length) &#123;
+              <span>// 全部完成</span>
+              resolve(valid);
+              <span>if</span> (<span>typeof</span> callback === <span>'function'</span>) &#123;
+                callback(valid);
+              &#125;
+            &#125;
+          &#125;);
+        &#125;);
+      &#125;);
+    &#125;
+  &#125;,
+&#125;
+</code></pre>
+  <p>
+    虽然说 Vue.js 的 API 只来自 prop、event、slot
+    这三个部分，但一些场景下，需要通过
+    <code>ref</code> 来访问这个组件，调用它的一些内置方法，比如上面的
+    <code>validate</code> 和
+    <code>resetFields</code> 方法，就需要使用者来主动调用。
+  </p>
+  <p>
+    resetFields 很简单，就是通过循环逐一调用 FormItem 的 resetField
+    方法来重置数据。validate
+    稍显复杂，它支持两种使用方法，一种是普通的回调，比如：
+  </p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>i-form</span> <span>ref</span>=<span>"form"</span>&gt;</span><span>&lt;/<span>i-form</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleSubmit"</span>&gt;</span>提交<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>export</span> <span>default</span> &#123;
+    <span>methods</span>: &#123;
+      handleSubmit () &#123;
+        <span>this</span>.$refs.form.validate(<span>(<span>valid</span>) =&gt;</span> &#123;
+          <span>if</span> (valid) &#123;
+            <span>window</span>.alert(<span>'提交成功'</span>);
+          &#125; <span>else</span> &#123;
+            <span>window</span>.alert(<span>'表单校验失败'</span>);
+          &#125;
+        &#125;)
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>同时也支持 Promise，例如：</p>
+  <pre><code lang="js" class="">handleSubmit () &#123;
+  <span>const</span> validate = <span>this</span>.$refs.form.validate();
+  
+  validate.then(<span>(<span>valid</span>) =&gt;</span> &#123;
+    <span>if</span> (valid) &#123;
+      <span>window</span>.alert(<span>'提交成功'</span>);
+    &#125; <span>else</span> &#123;
+      <span>window</span>.alert(<span>'表单校验失败'</span>);
+    &#125;
+  &#125;)
+&#125;
+</code></pre>
+  <p>
+    在 Form 组件定义的 Promise 中，只调用了 resolve(valid)，没有调用
+    reject()，因此不能直接使用
+    <code>.catch()</code> ，不过聪明的你稍作修改，肯定能够支持到！
+  </p>
+  <p>完整的用例如下：</p>
+  <pre><code lang="html" class=""><span>&lt;<span>template</span>&gt;</span>
+  <span>&lt;<span>div</span>&gt;</span>
+    <span>&lt;<span>h3</span>&gt;</span>具有数据校验功能的表单组件——Form<span>&lt;/<span>h3</span>&gt;</span>
+    <span>&lt;<span>i-form</span> <span>ref</span>=<span>"form"</span> <span>:model</span>=<span>"formValidate"</span> <span>:rules</span>=<span>"ruleValidate"</span>&gt;</span>
+      <span>&lt;<span>i-form-item</span> <span>label</span>=<span>"用户名"</span> <span>prop</span>=<span>"name"</span>&gt;</span>
+        <span>&lt;<span>i-input</span> <span>v-model</span>=<span>"formValidate.name"</span>&gt;</span><span>&lt;/<span>i-input</span>&gt;</span>
+      <span>&lt;/<span>i-form-item</span>&gt;</span>
+      <span>&lt;<span>i-form-item</span> <span>label</span>=<span>"邮箱"</span> <span>prop</span>=<span>"mail"</span>&gt;</span>
+        <span>&lt;<span>i-input</span> <span>v-model</span>=<span>"formValidate.mail"</span>&gt;</span><span>&lt;/<span>i-input</span>&gt;</span>
+      <span>&lt;/<span>i-form-item</span>&gt;</span>
+    <span>&lt;/<span>i-form</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleSubmit"</span>&gt;</span>提交<span>&lt;/<span>button</span>&gt;</span>
+    <span>&lt;<span>button</span> @<span>click</span>=<span>"handleReset"</span>&gt;</span>重置<span>&lt;/<span>button</span>&gt;</span>
+  <span>&lt;/<span>div</span>&gt;</span>
+<span>&lt;/<span>template</span>&gt;</span>
+<span>&lt;<span>script</span>&gt;</span><span>
+  <span>import</span> iForm <span>from</span> <span>'../components/form/form.vue'</span>;
+  <span>import</span> iFormItem <span>from</span> <span>'../components/form/form-item.vue'</span>;
+  <span>import</span> iInput <span>from</span> <span>'../components/input/input.vue'</span>;
+
+  <span>export</span> <span>default</span> &#123;
+    <span>components</span>: &#123; iForm, iFormItem, iInput &#125;,
+    data () &#123;
+      <span>return</span> &#123;
+        <span>formValidate</span>: &#123;
+          <span>name</span>: <span>''</span>,
+          <span>mail</span>: <span>''</span>
+        &#125;,
+        <span>ruleValidate</span>: &#123;
+          <span>name</span>: [
+            &#123; <span>required</span>: <span>true</span>, <span>message</span>: <span>'用户名不能为空'</span>, <span>trigger</span>: <span>'blur'</span> &#125;
+          ],
+          <span>mail</span>: [
+            &#123; <span>required</span>: <span>true</span>, <span>message</span>: <span>'邮箱不能为空'</span>, <span>trigger</span>: <span>'blur'</span> &#125;,
+            &#123; <span>type</span>: <span>'email'</span>, <span>message</span>: <span>'邮箱格式不正确'</span>, <span>trigger</span>: <span>'blur'</span> &#125;
+          ],
+        &#125;
+      &#125;
+    &#125;,
+    <span>methods</span>: &#123;
+      handleSubmit () &#123;
+        <span>this</span>.$refs.form.validate(<span>(<span>valid</span>) =&gt;</span> &#123;
+          <span>if</span> (valid) &#123;
+            <span>window</span>.alert(<span>'提交成功'</span>);
+          &#125; <span>else</span> &#123;
+            <span>window</span>.alert(<span>'表单校验失败'</span>);
+          &#125;
+        &#125;)
+      &#125;,
+      handleReset () &#123;
+        <span>this</span>.$refs.form.resetFields();
+      &#125;
+    &#125;
+  &#125;
+</span><span>&lt;/<span>script</span>&gt;</span>
+</code></pre>
+  <p>运行效果：</p>
+  <p></p>
+  <figure>
+    <img
+      src="https://p1-jj.byteimg.com/tos-cn-i-t2oaga2asx/gold-user-assets/2018/10/30/166c3b8a77e382ec~tplv-t2oaga2asx-watermark.awebp"
+      loading="lazy"
+      class="medium-zoom-image"
+    />
+    <figcaption></figcaption>
+  </figure>
+  <p></p>
+  <p>完整的示例源码可通过 GitHub 查看：</p>
+  <p>
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Ficarusion%2Fvue-component-book"
+      title="https://github.com/icarusion/vue-component-book"
+      ref="nofollow noopener noreferrer"
+      >github.com/icarusion/v…</a
+    >
+  </p>
+  <blockquote>
+    <p>项目基于 Vue CLI 3 构建，下载安装依赖后，通过 npm run serve 可访问。</p>
+  </blockquote>
+  <h2 data-id="heading-5">结语</h2>
+  <p>
+    组件最终的效果看起来有点
+    “low”，但它实现的功能却不简单。通过这个实战，你或许已经感受到本小册一开始说的，组件写到最后，都是在拼
+    JavaScript 功底。的确，Vue.js
+    组件为我们提供了一种新的代码组织形式，但归根到底，是离不开 JS 的。
+  </p>
+  <p>
+    这个实战，你应该对独立组件间的通信用法有进一步的认知了吧，不过，这还不是组件通信的终极方案，下一节，我们就来看看适用于任何场景的组件通信方案。
+  </p>
+  <p>
+    注：本节部分代码参考
+    <a
+      target="_blank"
+      href="https://link.juejin.cn?target=https%3A%2F%2Fgithub.com%2Fiview%2Fiview%2Ftree%2F2.0%2Fsrc%2Fcomponents%2Fform"
+      title="https://github.com/iview/iview/tree/2.0/src/components/form"
+      ref="nofollow noopener noreferrer"
+      >iView</a
+    >。
+  </p>
+  <h2 data-id="heading-6">扩展阅读</h2>
+  <ul>
+    <li>
+      <a
+        target="_blank"
+        href="https://juejin.cn/post/6844903714017247246"
+        title="https://juejin.cn/post/6844903714017247246"
+        >一份超级详细的Vue-cli3.0使用教程</a
+      >
+    </li>
+  </ul>
+</div>
+</article><section class="jump-container is-flex is-justify-content-space-between my-6"><!-- em is empty placeholder--><a class="button is-default" href="/323d89bab85b.html" title="【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法"><i class="iconfont icon-prev mr-2 has-text-grey"></i><span class="has-text-weight-semibold">上一页: 【掘金小册·Vue组件精讲-6】组件的通信 3：找到任意组件实例——findComponents 系列方法</span></a><a class="button is-default" href="/b18ba3212f76.html" title="【掘金小册·Vue组件精讲-4】组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法"><span class="has-text-weight-semibold">下一页: 【掘金小册·Vue组件精讲-4】组件的通信 2：派发与广播——自行实现 dispatch 和 broadcast 方法</span><i class="iconfont icon-next ml-2 has-text-grey"></i></a></section><article class="mt-6 comment-container"><script async repo="showlotus/showlotus" src="https://utteranc.es/client.js" issue-term="pathname" theme="preferred-color-scheme"></script></article></div></div></main></main><footer class="is-flex is-flex-direction-column is-align-items-center is-flex-shrink-0 is-family-serif"><section class="sns-container"><!-- TODO 配置个人网站链接--><!-- Github--><a title="github" target="_blank" rel="noopener nofollow" href="//github.com/showlotus"><i class="iconfont icon-github"></i></a><!-- Gitee--><!-- Ins--><!-- RSS--><!-- 知乎--><!-- 领英--><!-- 脸书--></section><p><span>Copyright ©</span><span> showlotus 2026</span></p><div class="is-flex is-justify-content-center is-flex-wrap-wrap"></div><div><span></span></div></footer><script async defer src="https://buttons.github.io/buttons.js"></script><script src="/js/post.js"></script><script src="https://cdn.jsdelivr.net/npm/jquery@2.1.4/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js"></script><script src="/js/clipboard_use.js"></script><script src="/js/codepen.io.js"></script></body></html>
